@@ -102,7 +102,7 @@ public class AllocationInstanceController {
             model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
             return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
-        if(!file.getName().endsWith(".xlsx")){
+        if(!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")){
             model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
             return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
@@ -133,6 +133,7 @@ public class AllocationInstanceController {
                 status=uploadService.insert(new Upload(UploadFileNames.INST_REQ_DATA,fileData));
                 if(status.getStatus()==ResponseStatus.OK) status=instituteReqService.insertAll(fileData);
             }
+            default -> status=new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.UNEXPECTED_CATEGORY);
         }
 
         model.addAttribute("uploadStatus",status);

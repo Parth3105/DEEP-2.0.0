@@ -30,7 +30,7 @@ public class Course {
     @Column(nullable = false)
     private int credits;
 
-    @Pattern(regexp = "^\\d+&", message = "Course Data: Slot should not be blank and must be digit.")
+    @NotBlank(message = "Course Data: Slot should not be blank.")
     @Column(length = 4, nullable = false)
     private String slot;
 }

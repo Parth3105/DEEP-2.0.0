@@ -10,7 +10,7 @@ public interface CourseOfferingService {
     ResponseDto insertAll(byte[] courseOfferData);
     List<CourseOffering> fetchAllCourseOfferings();
     List<CourseOfferingDto> fetchAllCourseOfferingDtos();
-    List<CourseOffering> fetchCourseOfferingBySemester(int semester);
+    List<CourseOffering> fetchCourseOfferingByProgramAndSemester(String program, int semester);
     void deleteAll();
     boolean existsAnyOffer();
 }

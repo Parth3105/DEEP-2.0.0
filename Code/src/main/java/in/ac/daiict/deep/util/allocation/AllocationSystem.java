@@ -56,9 +56,9 @@ public class AllocationSystem {
         CompletableFuture<Void> openForLoadFuture=CompletableFuture.runAsync(() -> {
             courseCategories = new HashMap<>();
             availableSeats = new HashMap<>();
-            openFor=allocationDataLoader.getCourseOffers(semester,courseCategories,availableSeats);
+            openFor=allocationDataLoader.getCourseOffers(program,semester,courseCategories,availableSeats);
         });
-        CompletableFuture<Void> instReqLoadFuture=CompletableFuture.runAsync(() -> instituteRequirements=allocationDataLoader.getInstituteRequirements(semester));
+        CompletableFuture<Void> instReqLoadFuture=CompletableFuture.runAsync(() -> instituteRequirements=allocationDataLoader.getInstituteRequirements(program,semester));
         priorityGroups = new TreeMap<>((i1, i2) -> i2 - i1);
         pendingRequirements=new ArrayList<>();
 

@@ -33,7 +33,7 @@ public class CourseServiceImpl implements CourseService {
         ResponseDto status=dataLoader.getCourseData(new ByteArrayInputStream(courseData),courses);
         if(status.getStatus()!= ResponseStatus.OK) return status;
         courseRepo.saveAll(courses);
-        return new ResponseDto(ResponseStatus.OK,"Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Course Data: Data Inserted Successfully!");
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface InstituteReqService {
     ResponseDto insertAll(byte[] instituteData);
     List<InstituteReq> fetchAllInstituteReqs();
     List<InstituteReqDto> fetchAllInstituteReqDtos();
-    List<InstituteReq> fetchInstituteReqBySemester(int semester);
+    List<InstituteReq> fetchInstituteReqByProgramAndSemester(String program, int semester);
     void deleteAll();
     List<InstituteReqDto> findInstituteReq(String program, int semester);
 }

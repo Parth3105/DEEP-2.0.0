@@ -15,7 +15,7 @@ public interface DataLoader {
     ResponseDto getStudentData(InputStream studentData, List<Student> students);
     ResponseDto getCourseData(InputStream courseData, List<Course> courses);
     ResponseDto getInstituteRequirements(InputStream instReqData, List<InstituteReq> instituteReqs);
-    ResponseDto getCourseForProgram(InputStream offerData, List<CourseOffering> courseOfferings);
+    ResponseDto getSeatMatrix(InputStream offerData, List<CourseOffering> courseOfferings);
     ByteArrayOutputStream createStudentPrefSheet(List<CoursePref> coursePrefList, List<SlotPref> slotPrefList);
     ByteArrayOutputStream createResultSheet(Map<String, AllocationStudent> students, Map<String, AllocationCourse> courses, Map<String, Map<String, String>> courseCategories);
     ByteArrayOutputStream createSeatSummary(List<CourseOffer> openFor, Map<String, AllocationCourse> courses, Map<String, Map<String, Integer>> availableSeats);

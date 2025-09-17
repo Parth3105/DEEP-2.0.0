@@ -10,7 +10,7 @@ import in.ac.daiict.deep.util.allocation.model.AllocationCourse;
 import in.ac.daiict.deep.util.allocation.model.AllocationStudent;
 import in.ac.daiict.deep.util.allocation.model.CourseOffer;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
-import in.ac.daiict.deep.util.dataloader.headers.*;
+import in.ac.daiict.deep.util.dataloader.excelHeaders.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -81,18 +81,18 @@ public class ExcelDataLoader implements DataLoader {
             }
 
             studentWorkbook.close();
-            return new ResponseDto(ResponseStatus.OK, "Student Data Saved Successfully!");
+            return new ResponseDto(ResponseStatus.OK, "Student Data: Uploaded Successfully!");
         } catch (IllegalStateException ise){
             log.error("Failed to parse Excel sheet with error: {}",ise.getMessage(),ise);
-            return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (RuntimeException re){
             log.error("Unexpected error while parsing Excel sheet: {}",re.getMessage(),re);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Student Data: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Student Data: "+ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,21 +123,21 @@ public class ExcelDataLoader implements DataLoader {
                 }
 
                 // No violations then add the course.
-                courses.add(new Course(courseID, courseName, credits, slot));
+                courses.add(course);
             }
             courseWorkbook.close();
-            return new ResponseDto(ResponseStatus.OK, "Course Data Saved Successfully!");
+            return new ResponseDto(ResponseStatus.OK, "Course Data: Uploaded Successfully!");
         } catch (IllegalStateException ise){
             log.error("Failed to parse Excel sheet with error: {}",ise.getMessage(),ise);
-            return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST,"Course Data: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (RuntimeException re){
             log.error("Unexpected error while parsing Excel sheet: {}",re.getMessage(),re);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Course Data: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (IOException ioe) {
             log.error("I/O operation to parse course-data failed: {}", ioe.getMessage(), ioe);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Course Data: "+ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -171,25 +171,25 @@ public class ExcelDataLoader implements DataLoader {
                 instituteReqs.add(instituteReq);
             }
             instReqWorkbook.close();
-            return new ResponseDto(ResponseStatus.OK, "Requirements Saved Successfully!");
+            return new ResponseDto(ResponseStatus.OK, "Institute Requirements: Uploaded Successfully!");
         } catch (IllegalStateException ise){
             log.error("Failed to parse Excel sheet with error: {}",ise.getMessage(),ise);
-            return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST,"Institute Requirements: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (RuntimeException re){
             log.error("Unexpected error while parsing Excel sheet: {}",re.getMessage(),re);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Institute Requirements: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (IOException ioe) {
             log.error("I/O operation to parse institute-requirements failed: {}", ioe.getMessage(), ioe);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Institute Requirements: "+ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Load the course-offering Data from the sheet.
      */
-    public ResponseDto getCourseForProgram(InputStream offerData, List<CourseOffering> courseOfferings) {
+    public ResponseDto getSeatMatrix(InputStream offerData, List<CourseOffering> courseOfferings) {
         try {
             XSSFWorkbook offerWorkbook = new XSSFWorkbook(offerData);
             XSSFSheet offerSheet = offerWorkbook.getSheetAt(0);
@@ -210,7 +210,7 @@ public class ExcelDataLoader implements DataLoader {
 
                 if (!courseIds.contains(courseID)) {
                     courseOfferings.clear();
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.DB_SAVE_ERROR);
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: "+ResponseMessage.DB_SAVE_ERROR);
                 }
 
                 // Validate course-offering data before adding.
@@ -225,18 +225,18 @@ public class ExcelDataLoader implements DataLoader {
                 courseOfferings.add(courseOffering);
             }
             offerWorkbook.close();
-            return new ResponseDto(ResponseStatus.OK, "Course Offerings Data Saved Successfully!");
+            return new ResponseDto(ResponseStatus.OK, "Seat Matrix: Saved Successfully!");
         } catch (IllegalStateException ise){
             log.error("Failed to parse Excel sheet with error: {}",ise.getMessage(),ise);
-            return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST,"Seat-Matrix: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (RuntimeException re){
             log.error("Unexpected error while parsing Excel sheet: {}",re.getMessage(),re);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.EXCEL_PARSING_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Seat-Matrix: "+ResponseMessage.EXCEL_PARSING_ERROR);
         }
         catch (IOException ioe) {
             log.error("I/O operation to parse course-offerings failed: {}", ioe.getMessage(), ioe);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Seat-Matrix: "+ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
 

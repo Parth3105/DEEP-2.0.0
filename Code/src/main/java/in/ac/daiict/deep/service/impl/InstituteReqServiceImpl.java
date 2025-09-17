@@ -32,7 +32,7 @@ public class InstituteReqServiceImpl implements InstituteReqService {
         ResponseDto status=dataLoader.getInstituteRequirements(new ByteArrayInputStream(instituteReqData),instituteReqs);
         if(status.getStatus()!= ResponseStatus.OK) return status;
         instituteReqRepo.saveAll(instituteReqs);
-        return new ResponseDto(ResponseStatus.OK,"Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Institute Requirement: Data Inserted Successfully!");
     }
 
     @Override
@@ -49,8 +49,8 @@ public class InstituteReqServiceImpl implements InstituteReqService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<InstituteReq> fetchInstituteReqBySemester(int semester) {
-        List<InstituteReq> instituteReqList=instituteReqRepo.findBySemester(semester);
+    public List<InstituteReq> fetchInstituteReqByProgramAndSemester(String program, int semester) {
+        List<InstituteReq> instituteReqList=instituteReqRepo.findByProgramAndSemester(program, semester);
         if(instituteReqList==null || instituteReqList.isEmpty()) return null;
         return instituteReqList;
     }

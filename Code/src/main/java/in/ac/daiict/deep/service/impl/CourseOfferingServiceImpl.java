@@ -29,10 +29,10 @@ public class CourseOfferingServiceImpl implements CourseOfferingService {
     public ResponseDto insertAll(byte[] courseOfferData) {
 //        deleteAll();
         List<CourseOffering> courseOffers=new ArrayList<>();
-        ResponseDto status=dataLoader.getCourseForProgram(new ByteArrayInputStream(courseOfferData),courseOffers);
+        ResponseDto status=dataLoader.getSeatMatrix(new ByteArrayInputStream(courseOfferData),courseOffers);
         if(status.getStatus()!= ResponseStatus.OK) return status;
         courseOfferingRepo.saveAll(courseOffers);
-        return new ResponseDto(ResponseStatus.OK,"Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Seat Matrix: Data Inserted Successfully!");
     }
 
     @Override
@@ -49,8 +49,8 @@ public class CourseOfferingServiceImpl implements CourseOfferingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CourseOffering> fetchCourseOfferingBySemester(int semester) {
-        List<CourseOffering> courseOfferingList=courseOfferingRepo.findBySemester(semester);
+    public List<CourseOffering> fetchCourseOfferingByProgramAndSemester(String program, int semester) {
+        List<CourseOffering> courseOfferingList=courseOfferingRepo.findByProgramAndSemester(program,semester);
         if(courseOfferingList==null || courseOfferingList.isEmpty()) return null;
         return courseOfferingList;
     }

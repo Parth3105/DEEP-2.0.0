@@ -17,6 +17,7 @@ public class ResponseMessage {
     public static final String STUDENT_NOT_REGISTERED = "The student's data appears to be missing or the student has not completed the preference submission process.";
     public static final String INCOMPATIBLE_FILE_TYPE="The file-type is incompatible. Ensure that the file-type is .xlsx.";
     public static final String UPLOAD_FAILURE="Upload failed due to a server error. Please try again later.";
+    public static final String UPLOAD_SUCCESS="Data Uploaded Successfully!";
     public static final String UNEXPECTED_CATEGORY="The uploaded file is not recognized. Please use the correct file upload interface.";
     public static final String NO_FILE_DETECTED = "No file was detected in the request. Please select a file and try again.";
     public static final String UPLOAD_OFFERS = "Course Data has been updated. Please re-upload Course Offering file to avoid data loss.";
@@ -37,7 +38,7 @@ public class ResponseMessage {
     public static final String JSON_PARSING_ERROR="Something went wrong while submitting your form. Please try again.";
     public static final String EXCEL_PARSING_ERROR="An unexpected error occurred while processing the Excel sheet. Please ensure the data is in the correct format and try again. If the problem persists, please check the logs.";
 
-    public static String getUploadSuccessMessage() {
-        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";
-    }
+//    public static String getUploadSuccessMessage() {
+//        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";
+//    }
 }

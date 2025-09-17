@@ -130,8 +130,8 @@ public class AllocationDataLoader {
         return courseData;
     }
 
-    public List<CourseOffer> getCourseOffers(int semester, Map<String,Map<String,String>> categories, Map<String,Map<String,Integer>> availableSeats){
-        List<CourseOffering> courseOfferings=courseOfferingService.fetchCourseOfferingBySemester(semester);
+    public List<CourseOffer> getCourseOffers(String program, int semester, Map<String,Map<String,String>> categories, Map<String,Map<String,Integer>> availableSeats){
+        List<CourseOffering> courseOfferings=courseOfferingService.fetchCourseOfferingByProgramAndSemester(program,semester);
         if(courseOfferings==null) return null;
         for(CourseOffering courseOffering: courseOfferings){
             Map<String,String> programCategoryMap=categories.getOrDefault(courseOffering.getCid(),new HashMap<>());
@@ -145,8 +145,8 @@ public class AllocationDataLoader {
         return modelMapper.map(courseOfferings,new TypeToken<List<CourseOffer>>(){}.getType());
     }
 
-    public List<InstituteRequirement> getInstituteRequirements(int semester){
-        List<InstituteReq> instituteReqs=instituteReqService.fetchInstituteReqBySemester(semester);
+    public List<InstituteRequirement> getInstituteRequirements(String program, int semester){
+        List<InstituteReq> instituteReqs=instituteReqService.fetchInstituteReqByProgramAndSemester(program,semester);
         if(instituteReqs==null) return null;
         return modelMapper.map(instituteReqs,new TypeToken<List<InstituteRequirement>>(){}.getType());
     }

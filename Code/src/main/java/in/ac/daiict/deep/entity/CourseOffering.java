@@ -16,7 +16,7 @@ import lombok.*;
 @Entity
 @Table(name = DBConstants.COURSE_OFFERING_TABLE)
 @IdClass(CourseOfferingPK.class)
-public class CourseOffering {
+public class    CourseOffering {
     @Id
     @NotBlank(message = "Seat Matrix: Program field should not be blank.")
     @Column(length = 10)

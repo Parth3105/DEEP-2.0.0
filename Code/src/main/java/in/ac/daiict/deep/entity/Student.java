@@ -16,12 +16,11 @@ import lombok.*;
 @Table(name = DBConstants.STUDENT_TABLE)
 public class Student {
     @Id
-    @Pattern(regexp = "^\\d+$", message = "Student Data: Student-ID should not be blank and must contain only digits.")
     @Size(min = 9, max = 9, message = "Student Data: Student-ID should contain 9 digits. For ex. 20220XXXX.")
     @Column(length = 9)
     private String sid;
 
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Student Data: Student-name should not be blank and must contain only letters.")
+    @NotBlank(message = "Student Data: Student-name should not be blank.")
     @Size(min = 1, max = 100, message = "Student Data: Student name must be within 100 characters.")
     @Column(length = 100, nullable = false)
     private String name;

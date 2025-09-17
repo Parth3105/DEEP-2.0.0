@@ -30,7 +30,7 @@ public class StudentServiceImpl implements StudentService {
         ResponseDto status=dataLoader.getStudentData(new ByteArrayInputStream(studentData),students);
         if(status.getStatus() != ResponseStatus.OK) return status;
         studentRepo.saveAll(students);
-        return new ResponseDto(ResponseStatus.OK,"Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Student Data: Data Inserted Successfully!");
     }
 
     @Override

@@ -14,7 +14,8 @@ public interface CourseOfferingRepo extends JpaRepository<CourseOffering,CourseO
     @Modifying
     @Query(value = "DELETE FROM "+DBConstants.WORKING_SCHEMA+"."+ DBConstants.COURSE_OFFERING_TABLE,nativeQuery = true)
     void deleteAll();
-    List<CourseOffering> findBySemester(int semester);
+
+    List<CourseOffering> findByProgramAndSemester(String program,int semester);
 
     @Query("SELECT COUNT(offer) > 0 FROM CourseOffering offer")
     boolean existsAnyOffer();

@@ -125,6 +125,13 @@
 			<version>5.4.1</version>
 		</dependency>
 
+<!--		Apache-Commons to extract data from CSV file-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.14.1</version>
+		</dependency>
+
 <!--		Flyway Database Migration-->
 		<dependency>
 			<groupId>org.flywaydb</groupId>

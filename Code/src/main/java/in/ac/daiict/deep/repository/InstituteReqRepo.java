@@ -14,6 +14,7 @@ public interface InstituteReqRepo extends JpaRepository<InstituteReq, InstituteR
     @Modifying
     @Query(value = "DELETE FROM "+DBConstants.WORKING_SCHEMA+"."+ DBConstants.INST_REQ_TABLE,nativeQuery = true)
     void deleteAll();
+
     List<InstituteReq> findByProgramAndSemester(String program, int semester);
     List<InstituteReq> findBySemester(int semester);
 }
