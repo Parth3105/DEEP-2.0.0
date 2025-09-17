@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -195,6 +196,9 @@ public class ExcelDataLoader implements DataLoader {
             Iterator<Row> courseOfferIterator = offerSheet.iterator();
             CourseOfferSheetHeader offerHeader = new CourseOfferSheetHeader(offerSheet.getRow(offerSheet.getFirstRowNum()));
 
+            List<Course> courseList=courseService.fetchAllCourses();
+            Set<String> courseIds=courseList.stream().map(Course::getCid).collect(Collectors.toSet());
+
             courseOfferIterator.next();
             while (courseOfferIterator.hasNext()) {
                 Row row = courseOfferIterator.next();
@@ -204,11 +208,10 @@ public class ExcelDataLoader implements DataLoader {
                 String category = row.getCell(offerHeader.CATEGORY).getStringCellValue();
                 int seats = (int) row.getCell(offerHeader.SEATS).getNumericCellValue();
 
-                if (!courseService.isPresent(courseID)) {
+                if (!courseIds.contains(courseID)) {
                     courseOfferings.clear();
                     return new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.DB_SAVE_ERROR);
                 }
-
 
                 // Validate course-offering data before adding.
                 CourseOffering courseOffering=new CourseOffering(program, courseID, semester, category, seats);

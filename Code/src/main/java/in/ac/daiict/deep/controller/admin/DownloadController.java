@@ -78,7 +78,7 @@ public class DownloadController {
         String contentType = null;
         String downloadFilename = null;
         String[] names = {UploadConstants.COURSE_DATA, UploadConstants.INST_REQ_DATA, UploadConstants.SEAT_MATRIX};
-        String[] fileNames = {UploadFileNames.COURSE_DATA, UploadFileNames.INST_REQ_DATA, UploadFileNames.OFFERS_DATA};
+        String[] fileNames = {UploadFileNames.COURSE_DATA, UploadFileNames.INST_REQ_DATA, UploadFileNames.SEAT_MATRIX};
         for (int j = 0; j < names.length; j++) {
             if (names[j].equals(name)) {
                 contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

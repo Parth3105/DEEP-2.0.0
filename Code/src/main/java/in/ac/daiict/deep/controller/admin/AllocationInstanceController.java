@@ -3,9 +3,12 @@ package in.ac.daiict.deep.controller.admin;
 import in.ac.daiict.deep.constant.database.DBConstants;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
+import in.ac.daiict.deep.constant.template.CommonTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
+import in.ac.daiict.deep.constant.uploads.UploadFileNames;
+import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.config.DBConfig;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -97,27 +100,43 @@ public class AllocationInstanceController {
     public String saveUploadedFiles(@PathVariable("category") String category, @RequestParam("upload-data") MultipartFile file, Model model){
         if(file.isEmpty()){
             model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return ""; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
         if(!file.getName().endsWith(".xlsx")){
             model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return ""; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
         ResponseDto status=null;
+        byte[] fileData;
         try {
-            if (category.equals(UploadConstants.STUDENT_DATA)) status = studentService.insertAll(file.getBytes());
-            else if (category.equals(UploadConstants.COURSE_DATA)) status = courseService.insertAll(file.getBytes());
-            else if (category.equals(UploadConstants.SEAT_MATRIX)) status = courseOfferingService.insertAll(file.getBytes());
-            else if (category.equals(UploadConstants.INST_REQ_DATA)) status = instituteReqService.insertAll(file.getBytes());
+            fileData=file.getBytes();
         } catch (IOException ioe){
             log.error("I/O operation to upload/parse {} failed: {}", category, ioe.getMessage(), ioe);
-            return ""; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
 
-        // Do we need to keep the uploaded file in the database? Are we overwriting the rows of each table of uploaded data?
+        String fileName=null;
+        switch (category){
+            case UploadConstants.STUDENT_DATA -> {
+                status=uploadService.insert(new Upload(UploadFileNames.STUDENT_DATA,fileData));
+                if(status.getStatus()==ResponseStatus.OK) status=studentService.insertAll(fileData);
+            }
+            case UploadConstants.COURSE_DATA -> {
+                status=uploadService.insert(new Upload(UploadFileNames.COURSE_DATA,fileData));
+                if(status.getStatus()==ResponseStatus.OK) status=courseService.insertAll(fileData);
+            }
+            case UploadConstants.SEAT_MATRIX -> {
+                status=uploadService.insert(new Upload(UploadFileNames.SEAT_MATRIX,fileData));
+                if(status.getStatus()==ResponseStatus.OK) status=courseOfferingService.insertAll(fileData);
+            }
+            case UploadConstants.INST_REQ_DATA -> {
+                status=uploadService.insert(new Upload(UploadFileNames.INST_REQ_DATA,fileData));
+                if(status.getStatus()==ResponseStatus.OK) status=instituteReqService.insertAll(fileData);
+            }
+        }
 
         model.addAttribute("uploadStatus",status);
-        return ""; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+        return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
     }
 
 //    @PostMapping(AdminEndpoint.SUBMIT_DATA)
@@ -194,7 +213,7 @@ public class AllocationInstanceController {
 //            try {
 //                if (!studentData.isEmpty()) uploads.add(new Upload(UploadFileNames.STUDENT_DATA, studentData.getBytes()));
 //                if(!courseData.isEmpty()) uploads.add(new Upload(UploadFileNames.COURSE_DATA,courseData.getBytes()));
-//                if(!courseOfferingData.isEmpty()) uploads.add(new Upload(UploadFileNames.OFFERS_DATA,courseOfferingData.getBytes()));
+//                if(!courseOfferingData.isEmpty()) uploads.add(new Upload(UploadFileNames.SEAT_MATRIX,courseOfferingData.getBytes()));
 //                if(!instReqData.isEmpty()) uploads.add(new Upload(UploadFileNames.INST_REQ_DATA,instReqData.getBytes()));
 //                if(!uploads.isEmpty()) uploadService.insertAll(uploads);
 //            } catch (IOException ioe) {

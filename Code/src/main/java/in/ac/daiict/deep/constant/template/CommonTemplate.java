@@ -5,4 +5,5 @@ public class CommonTemplate {
     public static String FORGOT_PASSWORD_PAGE="common/forgot-password";
     public static String VERIFY_OTP_PAGE="common/verify-otp";
     public static String RESET_PASSWORD_PAGE="common/reset-password";
+    public static String UPLOAD_STATUS_FRAGMENT="common/status-log :: status-log";
 }
