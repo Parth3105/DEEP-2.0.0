@@ -20,4 +20,6 @@ public interface CourseService {
     boolean isPresent(String cid);
 
     List<AvailableCourseDto> fetchAvailableCourses(String program, int semester);
+
+    long fetchCourseCnt();
 }

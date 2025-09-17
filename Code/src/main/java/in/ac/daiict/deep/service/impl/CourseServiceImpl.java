@@ -62,4 +62,9 @@ public class CourseServiceImpl implements CourseService {
     public List<AvailableCourseDto> fetchAvailableCourses(String program, int semester) {
         return courseRepo.fetchAvailableCourses(program,semester);
     }
+
+    @Override
+    public long fetchCourseCnt() {
+        return courseRepo.count();
+    }
 }

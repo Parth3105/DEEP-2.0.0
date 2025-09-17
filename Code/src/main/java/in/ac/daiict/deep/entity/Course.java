@@ -2,8 +2,8 @@ package in.ac.daiict.deep.entity;
 
 import in.ac.daiict.deep.constant.database.DBConstants;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +27,7 @@ public class Course {
     private String name;
 
     @Positive(message = "Course Data: Credits > 0")
+    @Max(value = 50)
     @Column(nullable = false)
     private int credits;
 

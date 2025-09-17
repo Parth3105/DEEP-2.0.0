@@ -8,6 +8,7 @@ import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
+import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.config.DBConfig;
@@ -24,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.CompletionException;
 
 @Controller
 @AllArgsConstructor
@@ -71,40 +72,46 @@ public class AllocationInstanceController {
                 return "redirect:"+AdminEndpoint.DASHBOARD;
             }
         }
-        return "redirect:"+AdminEndpoint.UPDATE_INSTANCE;
+        return "redirect:"+AdminEndpoint.UPLOAD_DATA_PAGE;
     }
 
-    @GetMapping(AdminEndpoint.UPDATE_INSTANCE)
+    @GetMapping(AdminEndpoint.UPLOAD_DATA_PAGE)
     public String renderUploadPage(Model model, RedirectAttributes redirectAttributes){
         if(instanceNameService.fetchLatestInstance() == null){
             redirectAttributes.addFlashAttribute("updateInstanceError",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.ALLOCATION_INSTANCE_NOT_FOUND));
             return "redirect:"+AdminEndpoint.DASHBOARD;
         }
+        return AdminTemplate.UPLOAD_DATA_PAGE;
+    }
 
-        Map<String, Long> uploadStatus = new ConcurrentSkipListMap<>();
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        for (int sem = 5; sem <= 8; sem++) {
-            int finalSem = sem;
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                long studentCnt = studentService.countBySemester(finalSem);
-                uploadStatus.put("Semester " + finalSem, studentCnt);
-            });
-            futures.add(future);
+    @GetMapping(AdminEndpoint.REFRESH_UPLOAD_STATUS)
+    public String refreshUploadStatus(Model model){
+        CompletableFuture<List<UploadStatusDto>> futureUploadStatusDtoList=CompletableFuture.supplyAsync(() -> studentService.fetchStudentDataUploadStatus());
+        CompletableFuture<Long> futureCourseCnt=CompletableFuture.supplyAsync(() -> courseService.fetchCourseCnt());
+
+        List<UploadStatusDto> uploadStatusDtoList;
+        long courseCnt;
+        try{
+            uploadStatusDtoList = futureUploadStatusDtoList.join();
+            courseCnt = futureCourseCnt.join();
+            model.addAttribute("studentCountTable",uploadStatusDtoList);
+            model.addAttribute("courseCount",courseCnt);
+        } catch (CompletionException ce){
+            log.error("Async task to upload all data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
+            model.addAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
         }
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        model.addAttribute("uploadStatus",uploadStatus);
-        return AdminTemplate.UPDATE_INSTANCE_PAGE;
+        return CommonTemplate.UPLOAD_STATUS_FRAGMENT;
     }
 
     @PostMapping(AdminEndpoint.UPLOAD_DATA)
     public String saveUploadedFiles(@PathVariable("category") String category, @RequestParam("upload-data") MultipartFile file, Model model){
         if(file.isEmpty()){
             model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
         if(!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")){
             model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
         ResponseDto status=null;
         byte[] fileData;
@@ -112,7 +119,7 @@ public class AllocationInstanceController {
             fileData=file.getBytes();
         } catch (IOException ioe){
             log.error("I/O operation to upload/parse {} failed: {}", category, ioe.getMessage(), ioe);
-            return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
 
         String fileName=null;
@@ -137,7 +144,7 @@ public class AllocationInstanceController {
         }
 
         model.addAttribute("uploadStatus",status);
-        return CommonTemplate.UPLOAD_STATUS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+        return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
     }
 
 //    @PostMapping(AdminEndpoint.SUBMIT_DATA)

@@ -2,6 +2,7 @@ package in.ac.daiict.deep.service.impl;
 
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.dto.StudentDto;
+import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Student;
 import in.ac.daiict.deep.repository.StudentRepo;
 import in.ac.daiict.deep.service.StudentService;
@@ -94,5 +95,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void updateEnrollmentStatus(String sid) {
         studentRepo.updateHasEnrolled(sid);
+    }
+
+    @Override
+    public List<UploadStatusDto> fetchStudentDataUploadStatus() {
+        return studentRepo.findAllCountByProgramAndSem();
     }
 }
