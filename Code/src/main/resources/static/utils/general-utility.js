@@ -13,18 +13,18 @@ const status = {
 };
 
 const statusColors = {
-    OK: 'bg-green-600',
-    NO_CONTENT: 'bg-yellow-400',
-    WARNING: 'bg-yellow-400',
-    BAD_REQUEST: 'bg-yellow-400',
-    UNAUTHORIZED: 'bg-red-600',
-    FORBIDDEN: 'bg-red-600',
-    NOT_FOUND: 'bg-red-600',
-    CONFLICT: 'bg-red-600',
-    GONE: 'bg-red-600',
-    SESSION_TIMEOUT: 'bg-yellow-400',
-    INTERNAL_SERVER_ERROR: 'bg-red-600',
-    ERROR: 'bg-red-600'
+    200: "bg-green-600",
+    204: "bg-yellow-400",
+    299: "bg-yellow-400",
+    400: "bg-yellow-400",
+    401: "bg-red-600",
+    403: "bg-red-600",
+    404: "bg-red-600",
+    409: "bg-red-600",
+    410: "bg-red-600",
+    419: "bg-yellow-400",
+    500: "bg-red-600",
+    ERROR: "bg-red-600"
 };
 
 const categoryLabels = {

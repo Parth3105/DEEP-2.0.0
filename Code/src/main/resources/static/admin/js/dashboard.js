@@ -179,43 +179,104 @@ function handleDeclareResult() {
     document.getElementById("declareResultForm").submit();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.semester-btn');
-    const prefCountEl = document.getElementById('prefCount');
-    const allocStatusEl = document.getElementById('allocStatus');
+let currentActiveRow = null;
 
-    function updateCard(semester) {
-        const data = dashboardRequirement.find(item => item.semester === semester);
+// Get all view details buttons
+const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+const detailsPanel = document.getElementById('detailsPanel');
+const tableContainer = document.getElementById('tableContainer');
 
-        if (!data || data.totalStudents === 0) {
-            prefCountEl.textContent = '-- / --';
-            allocStatusEl.textContent = '--';
-        } else {
-            prefCountEl.textContent = `${data.submittedPrefCnt} / ${data.totalStudents}`;
-            allocStatusEl.textContent = data.allocationStatus ? 'Done' : 'Pending';
-        }
+// View details button functionality
+viewDetailsButtons.forEach(button => {
+  button.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const rowIndex = this.getAttribute('data-row');
+    const arrow = this.querySelector('svg');
 
-        // Highlight active button
-        buttons.forEach(btn => {
-            btn.classList.remove('bg-[#46A24A]', 'bg-[#22437E]');
-            btn.classList.add('bg-[#22437E]'); // Reset all to blue
-        });
-
-        const activeBtn = [...buttons].find(btn => parseInt(btn.getAttribute('data-semester'), 10) === semester);
-        if (activeBtn) {
-            activeBtn.classList.remove('bg-[#22437E]');
-            activeBtn.classList.add('bg-[#46A24A]'); // Highlight selected one
-        }
+    // If clicking the same row that's already active, close the panel
+    if (currentActiveRow === rowIndex) {
+      closeDetailsPanel();
+      return;
     }
 
-    // Set up listeners
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            const selectedSem = parseInt(button.getAttribute('data-semester'), 10);
-            updateCard(selectedSem);
-        });
+    // Reset all other arrows
+    viewDetailsButtons.forEach(btn => {
+      if (btn !== this) {
+        btn.querySelector('svg').classList.remove('rotate-90');
+      }
     });
 
-    // Default load: select 5th semester
-    updateCard(5);
+    // Toggle current arrow and show panel
+    arrow.classList.add('rotate-90');
+    showDetailsPanel();
+    currentActiveRow = rowIndex;
+
+    // Update panel content based on row data
+    updatePanelContent(rowIndex);
+  });
+});
+
+function showDetailsPanel() {
+  // Show the details panel
+  detailsPanel.classList.remove("hidden");
+  detailsPanel.classList.remove("w-0");
+  detailsPanel.classList.add("w-80");
+
+  // Adjust table container width
+  if (window.innerWidth >= 1024) { // lg breakpoint
+    tableContainer.classList.remove("w-full");
+    tableContainer.classList.add("flex-1");
+  }
+}
+
+function closeDetailsPanel() {
+  // Hide the details panel completely
+  detailsPanel.classList.add("hidden");
+  detailsPanel.classList.remove("w-80");
+  detailsPanel.classList.add("w-0");
+
+  // Reset table container width
+  tableContainer.classList.remove("flex-1");
+  tableContainer.classList.add("w-full");
+
+  // Reset all arrows
+  viewDetailsButtons.forEach(btn => {
+    btn.querySelector("svg").classList.remove("rotate-90");
+  });
+
+  currentActiveRow = null;
+}
+
+function updatePanelContent(rowIndex) {
+  const row = document.querySelector(`tr[data-row="${rowIndex}"]`);
+  if (!row) return;
+
+  // Example: assume row has data-status and data-date attributes
+  const status = row.getAttribute("data-status");
+  const date = row.getAttribute("data-date");
+
+  detailsPanel.querySelector("h3").textContent = `Row ${rowIndex} Details`;
+  detailsPanel.querySelector("p").textContent = `Status: ${status}, Date: ${date}`;
+}
+
+// Handle window resize
+window.addEventListener('resize', function () {
+  if (window.innerWidth < 1024 && currentActiveRow !== null) {
+    // On mobile, always show full width table
+    tableContainer.classList.add('w-full');
+    tableContainer.classList.remove('flex-1');
+  } else if (window.innerWidth >= 1024 && currentActiveRow !== null) {
+    // On desktop, show split view
+    tableContainer.classList.remove('w-full');
+    tableContainer.classList.add('flex-1');
+  }
+});
+
+// Close panel when clicking outside
+document.addEventListener('click', function (e) {
+  if (!detailsPanel.contains(e.target) && !e.target.closest('.view-details-btn')) {
+    if (currentActiveRow !== null && !e.target.closest('table')) {
+      closeDetailsPanel();
+    }
+  }
 });

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -56,12 +57,15 @@ public class CSVDataLoader implements DataLoader {
             CSVParser csvParser=csvFormat.parse(new InputStreamReader(studentData));
             for(CSVRecord record: csvParser){
                 String studentID=record.get(StudentHeader.studentId);
-                String studentName = record.get(StudentHeader.name);
-                String program = record.get(StudentHeader.program);
+                String studentName = record.get(StudentHeader.name).replaceAll("\\s+"," ");
+                String program = record.get(StudentHeader.program).replaceAll("\\s+"," ");
                 String semester = record.get(StudentHeader.semester);
 
                 if(!NumberUtils.isDigits(studentID)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + record.getRecordNumber()+ ": value = '" + semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + record.getRecordNumber()+ ": value = '" + studentID + "'");
+                }
+                if(!StringUtils.isAlphaSpace(studentName)){
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-name at record " + record.getRecordNumber()+ ": value = '" + studentName + "'");
                 }
                 if(!NumberUtils.isDigits(semester)){
                     return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid semester at record " + record.getRecordNumber()+ ": value = '"+ semester + "'");
@@ -82,6 +86,9 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Student Data: "+ResponseMessage.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException iae){
+            log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST, "Student Data: " + iae.getMessage());
         }
     }
 
@@ -92,8 +99,8 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = csvFormat.parse(new InputStreamReader(courseData));
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(CourseHeader.courseId);
-                String courseName = record.get(CourseHeader.name);
+                String courseID = record.get(CourseHeader.courseId).replaceAll("\\s+","");;
+                String courseName = record.get(CourseHeader.name).replaceAll("\\s+"," ");;
                 String credits = record.get(CourseHeader.credits);
                 String slot = record.get(CourseHeader.slot);
 
@@ -119,6 +126,9 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Course Data: " + ResponseMessage.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException iae){
+            log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: " + iae.getMessage());
         }
     }
 
@@ -129,9 +139,9 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = csvFormat.parse(new InputStreamReader(instReqData));
             for (CSVRecord record : csvParser) {
-                String program = record.get(InstituteReqHeader.program);
+                String program = record.get(InstituteReqHeader.program).replaceAll("\\s+"," ");;
                 String semester = record.get(InstituteReqHeader.semester);
-                String category = record.get(InstituteReqHeader.category);
+                String category = record.get(InstituteReqHeader.category).replaceAll("\\s+"," ");;
                 String count = record.get(InstituteReqHeader.count);
 
                 if (!NumberUtils.isDigits(semester)) {
@@ -156,6 +166,9 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Institute requirement: " + ResponseMessage.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException iae){
+            log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: " + iae.getMessage());
         }
     }
 
@@ -166,10 +179,10 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = csvFormat.parse(new InputStreamReader(seatMatrix));
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(SeatMatrixHeader.courseId);
-                String program = record.get(SeatMatrixHeader.program);
+                String courseID = record.get(SeatMatrixHeader.courseId).replaceAll("\\s+","");
+                String program = record.get(SeatMatrixHeader.program).replaceAll("\\s+"," ");
                 String semester = record.get(SeatMatrixHeader.semester);
-                String category = record.get(SeatMatrixHeader.category);
+                String category = record.get(SeatMatrixHeader.category).replaceAll("\\s+"," ");
                 String seats = record.get(SeatMatrixHeader.seats);
 
                 if (!NumberUtils.isDigits(semester)) {
@@ -194,6 +207,9 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Institute requirement: " + ResponseMessage.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException iae){
+            log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
+            return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: " + iae.getMessage());
         }
     }
 

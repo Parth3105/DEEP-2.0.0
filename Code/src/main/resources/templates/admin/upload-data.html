@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="context-path" th:content="@{/}" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>DEEP - Upload data</title>
+    <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- <link href="/css/output.css" rel="stylesheet"> -->
+</head>
+
+<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+
+<!-- Toast Display -->
+<!-- <div th:replace="~{common/toast-display::toast-display}"></div> -->
+
+<!-- Navbar -->
+<div th:replace="~{common/student-navbar::student-navbar}"></div>
+
+<!-- Main Content -->
+<main class="backdrop-blur-lg rounded-3xl px-7 py-4">
+    <div class="bg-white rounded-2xl py-2 px-4 md:px-8 mb-4" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+        <h1 class="text-xl lg:text-2xl font-bold text-[#1E3C72]">
+            Upload Data
+        </h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Right Column - Status Logs -->
+        <div class="lg:col-span-1 order-1 lg:order-2">
+            <div class="bg-white rounded-2xl shadow-sm p-6 h-full" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+                <div class="flex gap-3">
+                    <img th:src="@{/admin/images/file-xlsx.png}" alt="Upload Icon" class="inline-block w-6 h-6 mr-1">
+                    <h2 class="text-lg font-bold text-[#1E3C72] mb-6">Status Logs</h2>
+                </div>
+
+                <div id="statusLogContainer" class="space-y-3">
+                    <!-- JS will inject logs here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Left Column - Upload Section and Status -->
+        <div class="lg:col-span-2 space-y-6  order-2 lg:order-1">
+            <!-- Upload Section -->
+            <div class="bg-white rounded-2xl shadow-sm p-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+                <div class="flex items-center mb-6">
+                    <img th:src="@{/admin/images/file-xlsx.png}" alt="Upload Icon" class="inline-block w-6 h-6 mr-1">
+                    <h2 class="text-lg font-bold text-[#1E3C72]">Upload Section</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 grid-rows-[auto] md:grid-rows-[auto_auto] gap-4">
+                    <!-- Student Data -->
+                    <div class="upload-box flex flex-col items-center rounded-3xl p-6 bg-blue-100 transition relative">
+                        <div class="flex-1 text-2xl font-bold text-black mb-4 text-center">Student Data</div>
+
+                        <!-- File selection pill (label) -->
+                        <span id="studentFileLabel"
+                              class="w-full mx-auto max-w-sm border-2 border-dashed border-blue-500 text-black px-3 py-4 rounded-2xl text-xs sm:text-sm font-medium text-center cursor-pointer">
+              Max Upload size 5 MB
+            </span>
+
+                        <div class="flex gap-3 items-center mt-4 w-full justify-center">
+              <span id="studentUploadBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-medium text-xs sm:text-sm px-6 py-2 rounded-3xl transition-colors cursor-pointer">
+                Upload
+              </span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input -->
+                    <input type="file" id="studentFile" accept=".xlsx,.csv" class="hidden" />
+
+                    <!-- Institute Requirements -->
+                    <div
+                            class="upload-box flex flex-col items-center rounded-3xl p-6 bg-blue-100 transition relative">
+                        <div class="flex-1 text-2xl font-bold text-black mb-4 text-center">Institute Requirements</div>
+
+                        <!-- File selection pill (label) -->
+                        <span id="instFileLabel"
+                              class="w-full mx-auto max-w-sm border-2 border-dashed border-blue-500 text-black px-3 py-4 rounded-2xl text-xs sm:text-sm font-medium text-center cursor-pointer">
+              Max Upload size 5 MB
+            </span>
+
+                        <div class="flex gap-3 items-center mt-4 w-full justify-center">
+              <span id="instUploadBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-medium text-xs sm:text-sm px-6 py-2 rounded-3xl transition-colors cursor-pointer">
+                Upload
+              </span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input -->
+                    <input type="file" id="instFile" accept=".xlsx,.csv" class="hidden" />
+
+                    <!-- Course Data -->
+                    <div
+                            class="upload-box flex flex-col items-center rounded-3xl p-6 bg-blue-100 transition relative">
+                        <div class="flex-1 text-2xl font-bold text-black mb-4 text-center">Course Data</div>
+
+                        <!-- File selection pill (label) -->
+                        <span id="courseFileLabel"
+                              class="w-full mx-auto max-w-sm border-2 border-dashed border-blue-500 text-black px-3 py-4 rounded-2xl text-xs sm:text-sm font-medium text-center cursor-pointer">
+              Max Upload size 5 MB
+            </span>
+
+                        <div class="flex gap-3 items-center mt-4 w-full justify-center">
+              <span id="courseUploadBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-medium text-xs sm:text-sm px-6 py-2 rounded-3xl transition-colors cursor-pointer">
+                Upload
+              </span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input -->
+                    <input type="file" id="courseFile" accept=".xlsx,.csv" class="hidden" />
+
+                    <!-- Seat Matrix -->
+                    <div
+                            class="upload-box flex flex-col items-center rounded-3xl p-6 bg-blue-100 transition relative">
+                        <div class="flex-1 text-2xl font-bold text-black mb-4 text-center">Seat Matrix</div>
+
+                        <!-- File selection pill (label) -->
+                        <span id="seatFileLabel"
+                              class="w-full mx-auto max-w-sm border-2 border-dashed border-blue-500 text-black px-3 py-4 rounded-2xl text-xs sm:text-sm font-medium text-center cursor-pointer">
+              Max Upload size 5 MB
+            </span>
+
+                        <div class="flex gap-3 items-center mt-4 w-full justify-center">
+              <span id="seatUploadBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-medium text-xs sm:text-sm px-6 py-2 rounded-3xl transition-colors cursor-pointer">
+                Upload
+              </span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden input -->
+                    <input type="file" id="seatFile" accept=".xlsx,.csv" class="hidden" />
+                </div>
+            </div>
+
+            <!-- Upload Status -->
+            <div class="bg-white rounded-2xl shadow-sm p-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+                <div class="flex items-center mb-6">
+                    <img th:src="@{/admin/images/file-xlsx.png}" alt="Upload Icon" class="inline-block w-6 h-6 mr-1">
+                    <h2 class="text-lg font-bold text-[#1E3C72]">Upload Status</h2>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                        <tr class="text-white">
+                            <th class="px-4 py-3 rounded-tl-xl text-left text-sm bg-gradient-to-r from-[#1E3C72] to-[#2A5298] font-medium">Program</th>
+                            <th class="px-4 py-3 text-left text-sm bg-gradient-to-r from-[#1E3C72] to-[#2A5298] font-medium">Semester</th>
+                            <th class="px-4 py-3 rounded-tr-xl text-left text-sm bg-gradient-to-r from-[#1E3C72] to-[#2A5298] font-medium">Students</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
+                            <td class="px-4 py-3">B-Tech ICT</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">387</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 pt-4">
+                    <p class="text-lg font-bold text-gray-900">Total Course Uploaded : 10</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script th:src="@{/utils/general-utility.js}"></script>
+<script th:src="@{/utils/navbar.js}"></script>
+<script th:src="@{/utils/status-response.js}"></script>
+<script th:src="@{/services/FileUploader.js}"></script>
+<script th:src="@{/admin/js/upload-data.js}"></script>
+</body>
+
+</html>

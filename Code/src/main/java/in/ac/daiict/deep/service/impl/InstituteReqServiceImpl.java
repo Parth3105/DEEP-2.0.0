@@ -1,5 +1,6 @@
 package in.ac.daiict.deep.service.impl;
 
+import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.dto.InstituteReqDto;
 import in.ac.daiict.deep.entity.InstituteReq;
@@ -32,7 +33,7 @@ public class InstituteReqServiceImpl implements InstituteReqService {
         ResponseDto status=dataLoader.getInstituteRequirements(new ByteArrayInputStream(instituteReqData),instituteReqs);
         if(status.getStatus()!= ResponseStatus.OK) return status;
         instituteReqRepo.saveAll(instituteReqs);
-        return new ResponseDto(ResponseStatus.OK,"Institute Requirement: Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Institute Requirement: "+ ResponseMessage.UPLOAD_SUCCESS);
     }
 
     @Override

@@ -1,0 +1,19 @@
+<div th:fragment="status-log">
+    <div th:if="${uploadStatus != null}"
+         th:data-status="${uploadStatus.status}"
+         th:data-message="${uploadStatus.message != null ? uploadStatus.message : ''}"
+         th:data-messages="${uploadStatus.messages != null ? #strings.listJoin(uploadStatus.messages, '||') : ''}">
+    </div>
+
+    <div th:if="${noFileDetected != null}"
+         th:data-status="${noFileDetected.status}"
+         th:data-message="${noFileDetected.message != null ? noFileDetected.message : ''}"
+         th:data-messages="${noFileDetected.messages != null ? #strings.listJoin(noFileDetected.messages, '||') : ''}">
+    </div>
+
+    <div th:if="${unexpectedFileType != null}"
+         th:data-status="${unexpectedFileType.status}"
+         th:data-message="${unexpectedFileType.message != null ? unexpectedFileType.message : ''}"
+         th:data-messages="${unexpectedFileType.messages != null ? #strings.listJoin(unexpectedFileType.messages, '||') : ''}">
+    </div>
+</div>
