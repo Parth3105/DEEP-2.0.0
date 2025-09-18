@@ -1,11 +1,12 @@
 <div th:fragment="upload-status">
     <div id="uploadStatusFragment">
-        <div th:each="p, iter : ${uploadStatusDto}"
+        <div th:each="p, iter : ${studentCountTable}"
              class="upload-record"
              th:data-program="${p.program}"
              th:data-semester="${p.semester}"
              th:data-students="${p.studentCount}"
              th:data-index="${iter.index}">
         </div>
+        <div th:text="'Total Course Uploaded : ' + (${courseCount != null} ? ${courseCount} : 0)"></div>
     </div>
 </div>

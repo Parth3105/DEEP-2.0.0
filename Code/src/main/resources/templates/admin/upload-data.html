@@ -159,16 +159,14 @@
                             <th class="px-4 py-3 rounded-tr-xl text-left text-sm bg-gradient-to-r from-[#1E3C72] to-[#2A5298] font-medium">Students</th>
                         </tr>
                         </thead>
-                        <tbody id="uploadStatusContainer" class="divide-y divide-gray-200">
+                        <tbody id="studentStatusContainer" class="divide-y divide-gray-200">
                         <!-- JS will insert rows here -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="mt-4 pt-4">
-                    <p class="text-lg font-bold text-gray-900"
-                       th:text="'Total Course Uploaded : ' + (${courseCount != null} ? ${courseCount} : 0)">
-                    </p>
+                <div id="courseCountContainer" class="mt-4 pt-4">
+
                 </div>
             </div>
         </div>

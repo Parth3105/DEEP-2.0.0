@@ -11,8 +11,6 @@ import in.ac.daiict.deep.util.allocation.model.CourseOffer;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.CoursePrefHeader;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.*;
-import in.ac.daiict.deep.util.dataloader.excelHeaders.CoursePrefSheetHeader;
-import in.ac.daiict.deep.util.dataloader.excelHeaders.SlotPrefSheetHeader;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +20,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -46,8 +41,6 @@ import java.util.zip.ZipOutputStream;
 public class CSVDataLoader implements DataLoader {
 
     private final Validator validator;
-    private final CSVFormat csvFormatReading;
-    private final CSVFormat csvFormatWriting;
     private final CourseService courseService;
     private final StudentService studentService;
     private final CoursePrefService coursePrefService;
@@ -56,10 +49,8 @@ public class CSVDataLoader implements DataLoader {
 
     @Autowired
     @Lazy
-    public CSVDataLoader(Validator validator, CSVFormat csvFormatReading, CourseService courseService, StudentService studentService, CoursePrefService coursePrefService, SlotPrefService slotPrefService, AllocationResultService allocationResultService) {
+    public CSVDataLoader(Validator validator, CourseService courseService, StudentService studentService, CoursePrefService coursePrefService, SlotPrefService slotPrefService, AllocationResultService allocationResultService) {
         this.validator = validator;
-        this.csvFormatReading = CSVFormat.DEFAULT.builder().setIgnoreHeaderCase(true).setTrim(true).setHeader().setSkipHeaderRecord(true).get();;
-        this.csvFormatWriting = CSVFormat.DEFAULT.builder().setHeader(CourseWiseAllocationHeader.class).setSkipHeaderRecord(false).get();
         this.courseService = courseService;
         this.studentService = studentService;
         this.coursePrefService = coursePrefService;
@@ -67,17 +58,32 @@ public class CSVDataLoader implements DataLoader {
         this.allocationResultService = allocationResultService;
     }
 
+    private CSVFormat getCsvFormatWriting(){
+        return CSVFormat.DEFAULT.builder()
+                .setHeader(CourseWiseAllocationHeader.class)
+                .setSkipHeaderRecord(false)
+                .get();
+    }
+    private CSVFormat getCsvFormatReading(){
+        return CSVFormat.DEFAULT.builder()
+                .setIgnoreHeaderCase(true)
+                .setTrim(true)
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .get();
+    }
+
     /**
      * Load the STUDENT_DATA from the sheet.
      */
     public ResponseDto getStudentData(InputStream studentData, List<Student> students) {
         try {
-            CSVParser csvParser= csvFormatReading.parse(new InputStreamReader(studentData));
+            CSVParser csvParser= getCsvFormatReading().parse(new InputStreamReader(studentData));
             for(CSVRecord record: csvParser){
-                String studentID=record.get(StudentHeader.STUDENT_ID);
-                String studentName = record.get(StudentHeader.NAME).replaceAll("\\s+"," ");
-                String program = record.get(StudentHeader.PROGRAM).replaceAll("\\s+"," ");
-                String semester = record.get(StudentHeader.SEMESTER);
+                String studentID=record.get(StudentHeader.STUDENT_ID.toString());
+                String studentName = record.get(StudentHeader.NAME.toString()).replaceAll("\\s+"," ");
+                String program = record.get(StudentHeader.PROGRAM.toString()).replaceAll("\\s+"," ");
+                String semester = record.get(StudentHeader.SEMESTER.toString());
 
                 if(!NumberUtils.isDigits(studentID)){
                     return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + record.getRecordNumber()+ ": value = '" + studentID + "'");
@@ -115,12 +121,12 @@ public class CSVDataLoader implements DataLoader {
      */
     public ResponseDto getCourseData(InputStream courseData, List<Course> courses) {
         try {
-            CSVParser csvParser = csvFormatReading.parse(new InputStreamReader(courseData));
+            CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(courseData));
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(CourseHeader.COURSE_ID).replaceAll("\\s+","");;
-                String courseName = record.get(CourseHeader.NAME).replaceAll("\\s+"," ");;
-                String credits = record.get(CourseHeader.CREDITS);
-                String slot = record.get(CourseHeader.SLOT);
+                String courseID = record.get(CourseHeader.COURSE_ID.toString()).replaceAll("\\s+","");;
+                String courseName = record.get(CourseHeader.NAME.toString()).replaceAll("\\s+"," ");;
+                String credits = record.get(CourseHeader.CREDITS.toString());
+                String slot = record.get(CourseHeader.SLOT.toString());
 
                 if (!NumberUtils.isDigits(credits)) {
                     return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid credits at record " + record.getRecordNumber() + ": value = '" + credits + "'");
@@ -155,12 +161,12 @@ public class CSVDataLoader implements DataLoader {
      */
     public ResponseDto getInstituteRequirements(InputStream instReqData, List<InstituteReq> instituteReqs) {
         try {
-            CSVParser csvParser = csvFormatReading.parse(new InputStreamReader(instReqData));
+            CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(instReqData));
             for (CSVRecord record : csvParser) {
-                String program = record.get(InstituteReqHeader.PROGRAM).replaceAll("\\s+"," ");;
-                String semester = record.get(InstituteReqHeader.SEMESTER);
-                String category = record.get(InstituteReqHeader.CATEGORY).replaceAll("\\s+"," ");;
-                String count = record.get(InstituteReqHeader.COUNT);
+                String program = record.get(InstituteReqHeader.PROGRAM.toString()).replaceAll("\\s+"," ");;
+                String semester = record.get(InstituteReqHeader.SEMESTER.toString());
+                String category = record.get(InstituteReqHeader.CATEGORY.toString()).replaceAll("\\s+"," ");;
+                String count = record.get(InstituteReqHeader.COUNT.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
                     return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid semester at record " + record.getRecordNumber() + ": value = '" + semester + "'");
@@ -195,13 +201,13 @@ public class CSVDataLoader implements DataLoader {
      */
     public ResponseDto getSeatMatrix(InputStream seatMatrix, List<CourseOffering> courseOfferings) {
         try {
-            CSVParser csvParser = csvFormatReading.parse(new InputStreamReader(seatMatrix));
+            CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(seatMatrix));
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(SeatMatrixHeader.COURSE_ID).replaceAll("\\s+","");
-                String program = record.get(SeatMatrixHeader.PROGRAM).replaceAll("\\s+"," ");
-                String semester = record.get(SeatMatrixHeader.SEMESTER);
-                String category = record.get(SeatMatrixHeader.CATEGORY).replaceAll("\\s+"," ");
-                String seats = record.get(SeatMatrixHeader.SEATS);
+                String courseID = record.get(SeatMatrixHeader.COURSE_ID.toString()).replaceAll("\\s+","");
+                String program = record.get(SeatMatrixHeader.PROGRAM.toString()).replaceAll("\\s+"," ");
+                String semester = record.get(SeatMatrixHeader.SEMESTER.toString());
+                String category = record.get(SeatMatrixHeader.CATEGORY.toString()).replaceAll("\\s+"," ");
+                String seats = record.get(SeatMatrixHeader.SEATS.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
                     return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid semester at record " + record.getRecordNumber() + ": value = '" + semester + "'");
@@ -307,7 +313,7 @@ public class CSVDataLoader implements DataLoader {
 
     private ByteArrayOutputStream generateCoursePreferenceCSV(List<CoursePref> coursePrefList) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),csvFormatWriting);
+        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting());
         int entryCnt=0;
         for (CoursePref coursePref : coursePrefList) {
             EnumMap<CoursePrefHeader,Object> row=new EnumMap<>(CoursePrefHeader.class);
@@ -332,7 +338,7 @@ public class CSVDataLoader implements DataLoader {
 
     private ByteArrayOutputStream generateSlotPreferencesCSV(List<SlotPref> slotPrefList) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),csvFormatWriting);
+        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting());
         int entryCnt=0;
         for (SlotPref slotPref : slotPrefList) {
             EnumMap<SlotPrefHeader,Object> row=new EnumMap<>(SlotPrefHeader.class);
@@ -382,7 +388,7 @@ public class CSVDataLoader implements DataLoader {
                 ZipEntry zipEntry = new ZipEntry(fileName);
                 zipOutputStream.putNextEntry(zipEntry);
 
-                CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zipOutputStream),csvFormatWriting);
+                CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zipOutputStream),getCsvFormatWriting());
                 int entryCnt=0;
                 for (AllocationResult allocationResult : allocationResultList) {
                     Student student=studentService.fetchStudentData(allocationResult.getSid());

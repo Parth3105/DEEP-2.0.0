@@ -3,7 +3,7 @@ package in.ac.daiict.deep.controller.admin;
 import in.ac.daiict.deep.constant.database.DBConstants;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
-import in.ac.daiict.deep.constant.template.CommonTemplate;
+import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
@@ -91,6 +91,7 @@ public class AllocationInstanceController {
 
         List<UploadStatusDto> uploadStatusDtoList;
         long courseCnt;
+        System.out.println("reach");
         try{
             uploadStatusDtoList = futureUploadStatusDtoList.join();
             courseCnt = futureCourseCnt.join();
@@ -100,18 +101,18 @@ public class AllocationInstanceController {
             log.error("Async task to upload all data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
             model.addAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
         }
-        return CommonTemplate.UPLOAD_STATUS_FRAGMENT;
+        return FragmentTemplate.UPLOAD_STATUS_FRAGMENT;
     }
 
     @PostMapping(AdminEndpoint.UPLOAD_DATA)
     public String saveUploadedFiles(@PathVariable("category") String category, @RequestParam("upload-data") MultipartFile file, Model model){
         if(file.isEmpty()){
             model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
-        if(!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")){
+        if(!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".csv")){
             model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
         ResponseDto status=null;
         byte[] fileData;
@@ -119,7 +120,7 @@ public class AllocationInstanceController {
             fileData=file.getBytes();
         } catch (IOException ioe){
             log.error("I/O operation to upload/parse {} failed: {}", category, ioe.getMessage(), ioe);
-            return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
         }
 
         String fileName=null;
@@ -144,7 +145,7 @@ public class AllocationInstanceController {
         }
 
         model.addAttribute("uploadStatus",status);
-        return CommonTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+        return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
     }
 
 //    @PostMapping(AdminEndpoint.SUBMIT_DATA)

@@ -5,7 +5,7 @@ import UploadStatusTable from "/services/UploadStatusTable.js";
 
 // Shared log + table
 new StatusLog("statusLogContainer");
-new UploadStatusTable("uploadStatusContainer");
+new UploadStatusTable("studentStatusContainer", "courseCountContainer");
 
 // Four uploaders
 new FileUploader({
