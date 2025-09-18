@@ -1,15 +1,13 @@
-// Add responsive table scroll indicator
-const tables = document.querySelectorAll('.overflow-x-auto');
-tables.forEach(table => {
-  const scrollDiv = table;
-  const tableEl = table.querySelector('table');
-
-  if (tableEl && tableEl.scrollWidth > scrollDiv.clientWidth) {
-    table.classList.add('shadow-inner');
-  }
-});
-
 // Init for all sections
+import FileUploader from "/services/FileUploader.js";
+import StatusLog from "/services/StatusLog.js";
+import UploadStatusTable from "/services/UploadStatusTable.js";
+
+// Shared log + table
+new StatusLog("statusLogContainer");
+new UploadStatusTable("uploadStatusContainer");
+
+// Four uploaders
 new FileUploader({
   type: "Student Data",
   inputId: "studentFile",
@@ -42,3 +40,13 @@ new FileUploader({
   uploadUrl: "admin/upload-data/seat-matrix"
 });
 
+// Add responsive table scroll indicator
+const tables = document.querySelectorAll('.overflow-x-auto');
+tables.forEach(table => {
+  const scrollDiv = table;
+  const tableEl = table.querySelector('table');
+
+  if (tableEl && tableEl.scrollWidth > scrollDiv.clientWidth) {
+    table.classList.add('shadow-inner');
+  }
+});

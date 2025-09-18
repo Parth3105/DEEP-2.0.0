@@ -1,6 +1,6 @@
-class FileUploader {
+export default class FileUploader {
   constructor({ type, inputId, labelId, btnId, uploadUrl, maxLength = 30 }) {
-    this.type = type
+    this.type = type;
     this.fileInput = document.getElementById(inputId);
     this.fileLabel = document.getElementById(labelId);
     this.uploadBtn = document.getElementById(btnId);
@@ -35,73 +35,55 @@ class FileUploader {
   }
 
   initUploadButton() {
-    this.uploadBtn.addEventListener("click", () => {
-      if (!this.fileInput.files.length) {
-        const container = document.getElementById("statusLogContainer");
-        this.addLogToStack(container, statusColors[status.NO_CONTENT], `${this.type}: No Files Selected! Please select a file first.`);
-        return;
-      }
+    this.uploadBtn.addEventListener("click", () => this.uploadFile());
+  }
 
-      const formData = new FormData();
-      console.log(this.fileInput.files)
-      console.log(this.fileInput.files[0])
-      formData.append("upload-data", this.fileInput.files[0]);
+  uploadFile() {
+    if (!this.fileInput.files.length) {
+      this.dispatchEvent("upload:error", { 
+        message: `${this.type}: No Files Selected! Please select a file first.` 
+      });
+      return;
+    }
 
-      const originalText = this.uploadBtn.textContent;
-      this.setLoadingState(true);
+    const formData = new FormData();
+    formData.append("upload-data", this.fileInput.files[0]);
 
-      const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
-      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    const originalText = this.uploadBtn.textContent;
+    this.setLoadingState(true);
 
-      fetch(`${contextPath}${this.uploadUrl}`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          [csrfHeader]: csrfToken
-        }
+    const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    fetch(`${contextPath}${this.uploadUrl}`, {
+      method: "POST",
+      body: formData,
+      headers: { [csrfHeader]: csrfToken }
+    })
+      .then(res => res.text())
+      .then(fragmentHtml => {
+        this.dispatchEvent("upload:success", { type: this.type, fragmentHtml });
       })
-        .then(res => res.text())
-        .then(fragmentHtml => {
-            this.renderStatusLogFragment(fragmentHtml);
-        })
-        .catch(err => console.error(err))
-        .finally(() => {
-          this.setLoadingState(false, originalText);
-        });
-    });
+      .catch(err => {
+        this.dispatchEvent("upload:error", { message: `Upload failed: ${err.message}` });
+      })
+      .finally(() => {
+        this.setLoadingState(false, originalText);
+      });
   }
 
   setLoadingState(isLoading, originalText = "Upload") {
     if (isLoading) {
       this.uploadBtn.innerHTML = `
-        <span style="
-          border: 2px solid #f3f3f3;
-          border-top: 2px solid white;
-          border-radius: 50%;
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          vertical-align: middle;
-          margin-right: 6px;
-          animation: spin 1s linear infinite;
-        "></span> Uploading...
+        <span style="border: 2px solid #f3f3f3; border-top: 2px solid white;
+          border-radius: 50%; width: 14px; height: 14px; display: inline-block;
+          vertical-align: middle; margin-right: 6px; animation: spin 1s linear infinite;">
+        </span> Uploading...
       `;
       this.uploadBtn.style.opacity = "0.7";
       this.uploadBtn.style.pointerEvents = "none";
       this.uploadBtn.style.cursor = "not-allowed";
-
-      if (!document.getElementById("spinner-anim")) {
-        const style = document.createElement("style");
-        style.id = "spinner-anim";
-        style.textContent = `
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `;
-        document.head.appendChild(style);
-      }
     } else {
       this.uploadBtn.textContent = originalText;
       this.uploadBtn.style.opacity = "1";
@@ -110,40 +92,7 @@ class FileUploader {
     }
   }
 
-  renderStatusLogFragment(fragmentHtml) {
-      const container = document.getElementById("statusLogContainer");
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = fragmentHtml;
-
-      const statusDivs = tempDiv.querySelectorAll("div[data-status]");
-
-      statusDivs.forEach(div => {
-          const status = parseInt(div.getAttribute("data-status"));
-          const message = div.getAttribute("data-message");
-          const messagesStr = div.getAttribute("data-messages") || "";
-          const messages = messagesStr ? messagesStr.split("||") : [];
-          const color = statusColors[status] || "bg-gray-500";
-
-          // Single message
-          if (message) this.addLogToStack(container, color, message);
-
-          // Multiple messages
-          messages.forEach(msg => this.addLogToStack(container, color, msg));
-      });
-  }
-
-  addLogToStack(container, color, text) {
-      const logDiv = document.createElement("div");
-      logDiv.className = `${color} text-white p-3 rounded-2xl relative`;
-
-      logDiv.innerHTML = `
-          <button class="absolute top-2 right-3 text-white font-bold hover:text-black">✕</button>
-          <p class="text-base font-medium">${text}</p>
-      `;
-
-      // remove on click of cross
-      logDiv.querySelector("button").addEventListener("click", () => logDiv.remove());
-
-      container.prepend(logDiv); // newest on top
+  dispatchEvent(eventName, detail) {
+    document.dispatchEvent(new CustomEvent(eventName, { detail }));
   }
 }

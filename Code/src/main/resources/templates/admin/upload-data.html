@@ -159,43 +159,16 @@
                             <th class="px-4 py-3 rounded-tr-xl text-left text-sm bg-gradient-to-r from-[#1E3C72] to-[#2A5298] font-medium">Students</th>
                         </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
-                        <tr class="hover:bg-blue-100 text-sm text-black font-bold">
-                            <td class="px-4 py-3">B-Tech ICT</td>
-                            <td class="px-4 py-3">5</td>
-                            <td class="px-4 py-3">387</td>
-                        </tr>
+                        <tbody id="uploadStatusContainer" class="divide-y divide-gray-200">
+                        <!-- JS will insert rows here -->
                         </tbody>
                     </table>
                 </div>
 
                 <div class="mt-4 pt-4">
-                    <p class="text-lg font-bold text-gray-900">Total Course Uploaded : 10</p>
+                    <p class="text-lg font-bold text-gray-900"
+                       th:text="'Total Course Uploaded : ' + (${courseCount != null} ? ${courseCount} : 0)">
+                    </p>
                 </div>
             </div>
         </div>
@@ -205,8 +178,7 @@
 <script th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
 <script th:src="@{/utils/status-response.js}"></script>
-<script th:src="@{/services/FileUploader.js}"></script>
-<script th:src="@{/admin/js/upload-data.js}"></script>
+<script type="module" th:src="@{/admin/js/upload-data.js}"></script>
 </body>
 
 </html>

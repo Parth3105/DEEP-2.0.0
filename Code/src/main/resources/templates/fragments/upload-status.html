@@ -1,0 +1,11 @@
+<div th:fragment="upload-status">
+    <div id="uploadStatusFragment">
+        <div th:each="p, iter : ${uploadStatusDto}"
+             class="upload-record"
+             th:data-program="${p.program}"
+             th:data-semester="${p.semester}"
+             th:data-students="${p.studentCount}"
+             th:data-index="${iter.index}">
+        </div>
+    </div>
+</div>
