@@ -302,12 +302,17 @@ public class AllocationSystem {
             allocationDataLoader.saveAllocationResult(new ArrayList<>(students.values()));
             log.info("Allocation Result saved successfully!");
 //            System.out.println("\n\n Allocation Result saved \n\n");
-            ByteArrayOutputStream byteArrayOutputStream=dataLoader.createCourseWiseAllocation(courses,students);
-            if(byteArrayOutputStream!=null){
-                allocationReportService.insertReport(new AllocationReport(AllocationReportNames.COURSE_WISE_ALLOCATION,semester, byteArrayOutputStream.toByteArray()));
-                log.info("Course-wise Allocation data created and saved!");
-//                System.out.println("\n\n Course-wise Allocation data created and saved. \n\n");
-            }
+
+            /* Saving the generated csv for course-wise allocation in DB.
+
+                ByteArrayOutputStream byteArrayOutputStream=dataLoader.createCourseWiseAllocation();
+                if(byteArrayOutputStream!=null){
+                    allocationReportService.insertReport(new AllocationReport(AllocationReportNames.COURSE_WISE_ALLOCATION,semester, byteArrayOutputStream.toByteArray()));
+                    log.info("Course-wise Allocation data created and saved!");
+                    System.out.println("\n\n Course-wise Allocation data created and saved. \n\n");
+                }
+
+            */
         });
 
         // record Seat Summary

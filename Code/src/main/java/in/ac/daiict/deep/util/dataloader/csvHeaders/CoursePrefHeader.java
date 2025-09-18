@@ -1,14 +1,14 @@
 package in.ac.daiict.deep.util.dataloader.csvHeaders;
 
-public enum CourseHeader {
+public enum CoursePrefHeader {
+    STUDENT_ID("Student ID"),
+    SLOT("Slot"),
     COURSE_ID("Course ID"),
-    NAME("Name"),
-    CREDITS("Credits"),
-    SLOT("Slot");
+    PREFERENCE_INDEX("Preference Index");
 
     private final String header;
 
-    CourseHeader(String header) {
+    CoursePrefHeader(String header) {
         this.header = header;
     }
 

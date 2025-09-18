@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.ByteArrayOutputStream;
@@ -63,26 +64,10 @@ public class PreferenceAndResultController {
         return fetchPreferenceSummary(studentId, model, 'A', redirectAttributes);
     }
     @GetMapping(AdminEndpoint.DOWNLOAD_STUDENT_PREFERENCES)
-    public void downloadStudentPreferences(HttpServletResponse httpServletResponse, @PathVariable("semester") int semester) {
-        CompletableFuture<List<CoursePref>> fetchingCoursePref = CompletableFuture.supplyAsync(() -> coursePrefService.fetchCoursePrefBySemesterSortedBySlotAndPref(semester));
-        CompletableFuture<List<SlotPref>> fetchingSlotPref = CompletableFuture.supplyAsync(() -> slotPrefService.fetchSlotBySemesterSortedBySidAndPref(semester));
-
-        List<CoursePref> coursePrefList=null;
-        List<SlotPref> slotPrefList=null;
+    public void downloadStudentPreferences(HttpServletResponse httpServletResponse, @RequestParam("program") String program, @RequestParam("semester") int semester) {
+        ByteArrayOutputStream byteArrayOutputStream = dataLoader.createStudentPrefSheet(program, semester);
         try {
-            CompletableFuture.allOf(fetchingCoursePref, fetchingSlotPref).join();
-            coursePrefList=fetchingCoursePref.get();
-            slotPrefList=fetchingSlotPref.get();
-        } catch (ExecutionException | InterruptedException e) {
-            if(e instanceof InterruptedException){
-                Thread.currentThread().interrupt(); // Restore interrupt
-                log.warn("Thread was interrupted while waiting for allocation results", e);
-            }
-            else log.error("Async task to fetch allocation result failed with error: {}", e.getCause().getMessage(), e.getCause());
-        }
-
-        try {
-            if (coursePrefList==null || slotPrefList==null || coursePrefList.isEmpty() || slotPrefList.isEmpty()) {
+            if (byteArrayOutputStream==null) {
                 httpServletResponse.setStatus(ResponseStatus.NOT_FOUND);
                 httpServletResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 httpServletResponse.setHeader("Pragma", "no-cache");
@@ -91,9 +76,8 @@ public class PreferenceAndResultController {
                 httpServletResponse.getOutputStream().write(ResponseMessage.STUDENT_PREFERENCES_NOT_FOUND.getBytes());
             }
             else {
-                ByteArrayOutputStream byteArrayOutputStream = dataLoader.createStudentPrefSheet(coursePrefList, slotPrefList);
-                String downloadFilename = "Student Preferences.xlsx";
-                httpServletResponse.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                String downloadFilename = "Student Preferences.csv";
+                httpServletResponse.setContentType("text/csv");
                 httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
                 httpServletResponse.getOutputStream().write(byteArrayOutputStream.toByteArray());
                 httpServletResponse.getOutputStream().flush();

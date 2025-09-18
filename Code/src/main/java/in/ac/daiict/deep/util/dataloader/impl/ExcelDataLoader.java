@@ -3,8 +3,7 @@ package in.ac.daiict.deep.util.dataloader.impl;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.entity.*;
-import in.ac.daiict.deep.service.AllocationResultService;
-import in.ac.daiict.deep.service.CourseService;
+import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.dto.ResponseDto;
 import in.ac.daiict.deep.util.allocation.model.AllocationCourse;
 import in.ac.daiict.deep.util.allocation.model.AllocationStudent;
@@ -29,6 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -36,14 +37,20 @@ import java.util.zip.ZipOutputStream;
 @Component
 @Slf4j
 public class ExcelDataLoader implements DataLoader {
+    private StudentService studentService;
     private CourseService courseService;
+    private CoursePrefService coursePrefService;
+    private SlotPrefService slotPrefService;
     private AllocationResultService allocationResultService;
     private Validator validator;
 
     @Autowired
     @Lazy
-    public ExcelDataLoader(CourseService courseService, AllocationResultService allocationResultService, Validator validator) {
+    public ExcelDataLoader(StudentService studentService, CourseService courseService, CoursePrefService coursePrefService, SlotPrefService slotPrefService, AllocationResultService allocationResultService, Validator validator) {
+        this.studentService=studentService;
         this.courseService = courseService;
+        this.coursePrefService=coursePrefService;
+        this.slotPrefService=slotPrefService;
         this.allocationResultService = allocationResultService;
         this.validator=validator;
     }
@@ -241,7 +248,25 @@ public class ExcelDataLoader implements DataLoader {
     }
 
     @Override
-    public ByteArrayOutputStream createStudentPrefSheet(List<CoursePref> coursePrefList, List<SlotPref> slotPrefList) {
+    public ByteArrayOutputStream createStudentPrefSheet(String program, int semester) {
+        CompletableFuture<List<CoursePref>> fetchingCoursePref = CompletableFuture.supplyAsync(() -> coursePrefService.fetchCoursePrefByProgramAndSemesterSortedBySlotAndPref(program,semester));
+        CompletableFuture<List<SlotPref>> fetchingSlotPref = CompletableFuture.supplyAsync(() -> slotPrefService.fetchSlotByProgramAndSemesterSortedBySidAndPref(program,semester));
+
+        List<CoursePref> coursePrefList;
+        List<SlotPref> slotPrefList;
+        try {
+            CompletableFuture.allOf(fetchingCoursePref, fetchingSlotPref).join();
+            coursePrefList=fetchingCoursePref.get();
+            slotPrefList=fetchingSlotPref.get();
+        } catch (ExecutionException | InterruptedException e) {
+            if(e instanceof InterruptedException){
+                Thread.currentThread().interrupt(); // Restore interrupt
+                log.warn("Thread was interrupted while waiting for allocation results", e);
+            }
+            else log.error("Async task to fetch allocation result failed with error: {}", e.getCause().getMessage(), e.getCause());
+            return null;
+        }
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XSSFWorkbook outputWorkbook = new XSSFWorkbook();
 
@@ -412,7 +437,6 @@ public class ExcelDataLoader implements DataLoader {
             cell.setCellValue(of.getSemester());
             cell.setCellStyle(generalStyle);
 
-
             cell = row.createCell(seatHeader.CATEGORY, CellType.STRING);
             cell.setCellValue(of.getCategory());
             cell.setCellStyle(generalStyle);
@@ -434,11 +458,14 @@ public class ExcelDataLoader implements DataLoader {
         return byteArrayOutputStream;
     }
 
-    public ByteArrayOutputStream createCourseWiseAllocation(Map<String, AllocationCourse> courses, Map<String, AllocationStudent> students) {
+    public ByteArrayOutputStream createCourseWiseAllocation() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
-        Set<String> courseIds = courses.keySet();
-        for (String cid : courseIds) {
+
+        // fetch all courses.
+        List<Course> courses=courseService.fetchAllCourses();
+        for (Course course : courses) {
+            String cid=course.getCid();
             List<AllocationResult> allocationResultList = allocationResultService.fetchCourseWiseAllocation(cid);
             XSSFWorkbook outputWorkbook = new XSSFWorkbook();
             XSSFSheet sheet = outputWorkbook.createSheet("AllocatedStudents");
@@ -454,14 +481,15 @@ public class ExcelDataLoader implements DataLoader {
             int entryNum = 1;
             Row row = sheet.getRow(sheet.getFirstRowNum());
             for (AllocationResult allocationResult : allocationResultList) {
+                Student student=studentService.fetchStudentData(allocationResult.getSid());
                 row = sheet.createRow(entryNum++);
 
                 Cell cell = row.createCell(courseWiseSheetHeader.STUDENT_ID, CellType.STRING);
-                cell.setCellValue(allocationResult.getSid());
+                cell.setCellValue(student.getSid());
                 cell.setCellStyle(generalStyle);
 
                 cell = row.createCell(courseWiseSheetHeader.STUDENT_NAME, CellType.STRING);
-                cell.setCellValue(students.get(allocationResult.getSid()).getName());
+                cell.setCellValue(student.getName());
                 cell.setCellStyle(generalStyle);
 
                 // debug

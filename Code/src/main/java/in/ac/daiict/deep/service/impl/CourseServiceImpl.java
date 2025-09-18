@@ -1,5 +1,6 @@
 package in.ac.daiict.deep.service.impl;
 
+import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.dto.AvailableCourseDto;
 import in.ac.daiict.deep.dto.CourseDto;
@@ -33,7 +34,7 @@ public class CourseServiceImpl implements CourseService {
         ResponseDto status=dataLoader.getCourseData(new ByteArrayInputStream(courseData),courses);
         if(status.getStatus()!= ResponseStatus.OK) return status;
         courseRepo.saveAll(courses);
-        return new ResponseDto(ResponseStatus.OK,"Course Data: Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Course Data: "+ ResponseMessage.UPLOAD_SUCCESS);
     }
 
     @Override

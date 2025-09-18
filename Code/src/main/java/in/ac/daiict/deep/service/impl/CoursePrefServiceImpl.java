@@ -25,8 +25,8 @@ public class CoursePrefServiceImpl implements CoursePrefService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CoursePref> fetchCoursePrefBySemesterSortedBySlotAndPref(int semester) {
-        return coursePrefRepo.findBySemesterOrderBySidAscSlotAscPrefAsc(semester);
+    public List<CoursePref> fetchCoursePrefByProgramAndSemesterSortedBySlotAndPref(String program, int semester) {
+        return coursePrefRepo.findByProgramAndSemesterOrderBySidAscSlotAscPrefAsc(program,semester);
     }
 
     @Override

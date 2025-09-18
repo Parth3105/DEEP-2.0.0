@@ -18,8 +18,8 @@ public interface CoursePrefRepo extends JpaRepository<CoursePref, CoursePrefPK> 
     List<CoursePrefDto> findStudentCoursePref(@Param("sid") String sid);
 
     @Modifying
-    @Query("SELECT new CoursePref(coursePref.sid,coursePref.slot,coursePref.pref,coursePref.cid) FROM CoursePref coursePref JOIN Student student ON coursePref.sid=student.sid WHERE student.semester=:semester ORDER BY coursePref.sid, coursePref.slot, coursePref.pref ASC")
-    List<CoursePref> findBySemesterOrderBySidAscSlotAscPrefAsc(@Param("semester") int semester);
+    @Query("SELECT new CoursePref(coursePref.sid,coursePref.slot,coursePref.pref,coursePref.cid) FROM CoursePref coursePref JOIN Student student ON coursePref.sid=student.sid WHERE student.program=:program AND student.semester=:semester ORDER BY coursePref.sid, coursePref.slot, coursePref.pref ASC")
+    List<CoursePref> findByProgramAndSemesterOrderBySidAscSlotAscPrefAsc(@Param("program") String program, @Param("semester") int semester);
 
     @Modifying
     @Query("SELECT cp FROM CoursePref cp JOIN Student s on cp.sid=s.sid WHERE s.program=:program AND s.semester=:semester ORDER BY cp.sid, cp.pref ASC")

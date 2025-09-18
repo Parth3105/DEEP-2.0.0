@@ -1,5 +1,6 @@
 package in.ac.daiict.deep.service.impl;
 
+import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.dto.StudentDto;
 import in.ac.daiict.deep.dto.UploadStatusDto;
@@ -31,7 +32,7 @@ public class StudentServiceImpl implements StudentService {
         ResponseDto status=dataLoader.getStudentData(new ByteArrayInputStream(studentData),students);
         if(status.getStatus() != ResponseStatus.OK) return status;
         studentRepo.saveAll(students);
-        return new ResponseDto(ResponseStatus.OK,"Student Data: Data Inserted Successfully!");
+        return new ResponseDto(ResponseStatus.OK,"Student Data: "+ ResponseMessage.UPLOAD_SUCCESS);
     }
 
     @Override

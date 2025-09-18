@@ -25,7 +25,7 @@ public class CoursePrefSheetHeader {
         cell.setCellStyle(headerStyle);
 
         cell = row.createCell(COURSE_ID);
-        cell.setCellValue("Semester");
+        cell.setCellValue("Course ID");
         cell.setCellStyle(headerStyle);
 
         cell = row.createCell(PREFERENCE_INDEX);

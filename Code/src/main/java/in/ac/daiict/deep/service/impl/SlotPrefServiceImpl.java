@@ -35,8 +35,8 @@ public class SlotPrefServiceImpl implements SlotPrefService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SlotPref> fetchSlotBySemesterSortedBySidAndPref(int semester) {
-        return slotPrefRepo.findBySemesterOrderBySidAscPrefAsc(semester);
+    public List<SlotPref> fetchSlotByProgramAndSemesterSortedBySidAndPref(String program, int semester) {
+        return slotPrefRepo.findByProgramAndSemesterOrderBySidAscPrefAsc(program,semester);
     }
 
     @Override
