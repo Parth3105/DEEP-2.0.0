@@ -12,9 +12,8 @@ import java.util.List;
 public interface EnrollmentPhaseDetailsService {
     void updateEnrollmentPhaseDetails();
     ResponseDto updateOnStartingPreferenceCollection(String program, int semester, LocalDate closeDate);
-    ResponseDto updateOnExtendingCollectionPeriod(String program, int semester, LocalDate closeDate);
-    ResponseDto updateOnEndingPreferenceCollection(String program, int semester);
-    void autoCloseRegistration();
+    void updateOnEndingPreferenceCollection(String program, int semester);
+    ResponseDto autoCloseRegistration(String program, int semester);
     ResponseDto updateOnDeclaringResults(String program, int semester);
     List<EnrollmentPhaseDetailsDto> fetchAllEnrollmentPhaseDetails();
     String fetchCollectionWindowState(String program, int semester);

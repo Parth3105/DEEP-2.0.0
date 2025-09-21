@@ -38,6 +38,7 @@ public class ResponseMessage {
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
     public static final String JSON_PARSING_ERROR="Something went wrong while submitting your form. Please try again.";
     public static final String EXCEL_PARSING_ERROR="An unexpected error occurred while processing the Excel sheet. Please ensure the data is in the correct format and try again. If the problem persists, please check the logs.";
+    public static final String CANNOT_EXTEND_PERIOD="Cannot Extend. Ensure that the Collection window is open.";
 
     public static final String COLLECTION_START_FORBIDDEN_AFTER_RESULT="Preference collection window cannot be started after result declaration.";
     public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";

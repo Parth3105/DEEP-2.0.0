@@ -12,7 +12,7 @@ public class AdminEndpoint {
     public static final String END_COLLECTION =ADMIN_BASE+"/end-collection";
     public static final String DECLARE_RESULTS=ADMIN_BASE+"/declare-results";
     public static final String REFRESH_ENROLLMENT_PHASE_DETAILS=ADMIN_BASE+"/admin-dashboard/refresh-details";
-    public static final String FETCH_ENROLLMENT_DETAILS="/admin-dashboard/enrollment-phase-details";
+    public static final String FETCH_ENROLLMENT_DETAILS=ADMIN_BASE+"/admin-dashboard/enrollment-phase-details";
 
     /// Endpoint related to instance creation.
     public static final String CREATE_ALLOCATION_INSTANCE=ADMIN_BASE+"/create-instance";

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,27 +67,20 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
 
         // Update collection window's state and end date.
         int updateStatus=enrollmentPhaseDetailsRepo.updateCollectionWindowStateAndCloseDate(program, semester, closeDate, CollectionWindowStateEnum.OPEN.toString());
+        preferenceCollectionTaskManager.scheduleCollection(program,semester,closeDate.atTime(23,59));
         return new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
     }
 
     @Override
-    public ResponseDto updateOnExtendingCollectionPeriod(String program, int semester, LocalDate closeDate) {
-        int updateStatus=enrollmentPhaseDetailsRepo.updateCloseDate(program, semester, closeDate);
-        if(updateStatus==0) return new ResponseDto(ResponseStatus.BAD_REQUEST, "No entry found with program:"+program+" and semester:"+semester);
-        return new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
+    public void updateOnEndingPreferenceCollection(String program, int semester) {
+        preferenceCollectionTaskManager.closeWindow(program,semester);
     }
 
     @Override
-    public ResponseDto updateOnEndingPreferenceCollection(String program, int semester) {
+    public ResponseDto autoCloseRegistration(String program, int semester) {
         int updateStatus=enrollmentPhaseDetailsRepo.updateCollectionWindowState(program, semester, CollectionWindowStateEnum.CLOSED.toString());
         if(updateStatus==0) return new ResponseDto(ResponseStatus.BAD_REQUEST, "No entry found with program:"+program+" and semester:"+semester);
         return new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
-    }
-
-    @Override
-    public void autoCloseRegistration() {
-//        EnrollmentPhaseDetailsDto enrollmentPhaseDetailsDto =new EnrollmentPhaseDetailsDto(CollectionWindowStateEnum.CLOSED.toString());
-//        enrollmentPhaseDetailsRepo.save(new EnrollmentPhaseDetails(RegistrationStatus.getStatusName(), enrollmentPhaseDetailsDto.getRegistrationStatus().getStatusValue()));
     }
 
     @Override

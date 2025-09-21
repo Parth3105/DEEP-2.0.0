@@ -1,6 +1,7 @@
 package in.ac.daiict.deep.controller.admin;
 
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
+import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
@@ -69,15 +70,18 @@ public class DashboardController {
 
     @PostMapping(AdminEndpoint.EXTEND_COLLECTION_PERIOD)
     public String extendCollectionPeriod(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("close-date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate closeDate, Model model){
-        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnExtendingCollectionPeriod(program,semester,closeDate);
+        if(!enrollmentPhaseDetailsService.fetchCollectionWindowState(program,semester).equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString())){
+            model.addAttribute("notExtendable",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.CANNOT_EXTEND_PERIOD));
+            return "";
+        }
+        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program,semester,closeDate);
         model.addAttribute("preferenceCollectionWindowStatus",responseDto);
         return "";
     }
 
     @PostMapping(AdminEndpoint.END_COLLECTION)
     public String endCollection(@RequestParam("program") String program, @RequestParam("semester") int semester, Model model){
-        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection(program,semester);
-        model.addAttribute("preferenceCollectionWindowStatus",responseDto);
+        enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection(program,semester);
         return "";
     }
 

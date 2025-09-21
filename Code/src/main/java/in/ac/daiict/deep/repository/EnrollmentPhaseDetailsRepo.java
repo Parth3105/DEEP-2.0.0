@@ -37,7 +37,7 @@ public interface EnrollmentPhaseDetailsRepo extends JpaRepository<EnrollmentPhas
     @Query("SELECT new in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto(epd.program,epd.semester,epd.collectionWindowState) FROM EnrollmentPhaseDetails epd")
     List<EnrollmentPhaseDetailsDto> findAllCollectionWindowState();
 
-    @Query("SELECT new in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto(epd.program,epd.semester) FROM EnrollmentPhaseDetails epd")
+    @Query("SELECT new in.ac.daiict.deep.dto.ProgramSemesterDto(epd.program,epd.semester) FROM EnrollmentPhaseDetails epd")
     List<ProgramSemesterDto> findAllProgramAndSemester();
 
     @Query("SELECT epd.collectionWindowState FROM EnrollmentPhaseDetails epd WHERE epd.program=:program AND epd.semester=:semester")
