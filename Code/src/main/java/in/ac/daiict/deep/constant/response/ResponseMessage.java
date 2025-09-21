@@ -43,6 +43,9 @@ public class ResponseMessage {
     public static final String COLLECTION_START_FORBIDDEN_AFTER_RESULT="Preference collection window cannot be started after result declaration.";
     public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";
 
+    public static final String COLLECTION_START_FORBIDDEN_AFTER_RESULT="Preference collection window cannot be started after result declaration.";
+    public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";
+
 //    public static String getUploadSuccessMessage() {
 //        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";
 //    }
