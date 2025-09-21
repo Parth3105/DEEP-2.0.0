@@ -2,10 +2,12 @@ package in.ac.daiict.deep.service.impl;
 
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
+import in.ac.daiict.deep.dto.ProgramSemesterDto;
 import in.ac.daiict.deep.dto.StudentDto;
 import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Student;
 import in.ac.daiict.deep.repository.StudentRepo;
+import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.StudentService;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -32,6 +34,8 @@ public class StudentServiceImpl implements StudentService {
         ResponseDto status=dataLoader.getStudentData(new ByteArrayInputStream(studentData),students);
         if(status.getStatus() != ResponseStatus.OK) return status;
         studentRepo.saveAll(students);
+
+
         return new ResponseDto(ResponseStatus.OK,"Student Data: "+ ResponseMessage.UPLOAD_SUCCESS);
     }
 
@@ -65,8 +69,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public long countAllStudents() {
-        return studentRepo.count();
+    public long countStudentsByProgramAndSemester(String program, int semester) {
+        return studentRepo.countByProgramAndSemester(program,semester);
     }
 
     @Override
@@ -101,5 +105,10 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<UploadStatusDto> fetchStudentDataUploadStatus() {
         return studentRepo.findAllCountByProgramAndSem();
+    }
+
+    @Override
+    public List<ProgramSemesterDto> fetchDistinctProgramAndSemester() {
+        return studentRepo.findDistinctProgramAndSemester();
     }
 }

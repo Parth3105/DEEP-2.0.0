@@ -9,9 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class AllocationStatusDto {
+public class AllocationSummaryDto {
+    private String program;
     private int semester;
-    private int statusCode;
     private int allocatedCount;
     private int unAllocatedCount;
 }

@@ -19,4 +19,6 @@ public interface CourseOfferingRepo extends JpaRepository<CourseOffering,CourseO
 
     @Query("SELECT COUNT(offer) > 0 FROM CourseOffering offer")
     boolean existsAnyOffer();
+
+    boolean existsByProgramAndSemester(String program, int semester);
 }

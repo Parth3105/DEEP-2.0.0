@@ -86,18 +86,16 @@ public class AllocationInstanceController {
 
     @GetMapping(AdminEndpoint.REFRESH_UPLOAD_STATUS)
     public String refreshUploadStatus(Model model){
-        CompletableFuture<List<UploadStatusDto>> futureUploadStatusDtoList=CompletableFuture.supplyAsync(() -> studentService.fetchStudentDataUploadStatus());
-        CompletableFuture<Long> futureCourseCnt=CompletableFuture.supplyAsync(() -> courseService.fetchCourseCnt());
+        CompletableFuture<Void> futureUploadStatusDtoList=CompletableFuture.supplyAsync(() -> studentService.fetchStudentDataUploadStatus())
+                .thenAccept(uploadStatusDtoList ->  model.addAttribute("studentCountTable",uploadStatusDtoList));
 
-        List<UploadStatusDto> uploadStatusDtoList;
-        long courseCnt;
-        System.out.println("reach");
+        CompletableFuture<Void> futureCourseCnt=CompletableFuture.supplyAsync(() -> courseService.fetchCourseCnt())
+                .thenAccept(courseCnt -> model.addAttribute("courseCount",courseCnt));
+
         try{
-            uploadStatusDtoList = futureUploadStatusDtoList.join();
-            courseCnt = futureCourseCnt.join();
-            model.addAttribute("studentCountTable",uploadStatusDtoList);
-            model.addAttribute("courseCount",courseCnt);
-        } catch (CompletionException ce){
+            CompletableFuture.allOf(futureUploadStatusDtoList,futureCourseCnt).join();
+        }
+        catch (CompletionException ce){
             log.error("Async task to upload all data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
             model.addAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
         }

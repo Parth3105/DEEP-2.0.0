@@ -1,6 +1,7 @@
 package in.ac.daiict.deep.constant.endpoints;
 
 public class CommonEndPoint {
+    /// Endpoints related to authentication and reset-password.
     public static final String LOGIN="/login";
     public static final String AUTHENTICATE="/login/authenticate";
     public static final String LOGOUT="/logout";

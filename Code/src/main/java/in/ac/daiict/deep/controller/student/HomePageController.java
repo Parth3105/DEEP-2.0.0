@@ -2,9 +2,13 @@ package in.ac.daiict.deep.controller.student;
 
 import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
 import in.ac.daiict.deep.constant.template.StudentTemplate;
-import in.ac.daiict.deep.dto.SystemStatusDto;
-import in.ac.daiict.deep.service.SystemStatusService;
+import in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto;
+import in.ac.daiict.deep.entity.Student;
+import in.ac.daiict.deep.security.auth.CustomUserDetails;
+import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
+import in.ac.daiict.deep.service.StudentService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +17,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 @AllArgsConstructor
 public class HomePageController {
 
-    private SystemStatusService systemStatusService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
+    private StudentService studentService;
 
     @GetMapping(StudentEndpoint.HOME_PAGE)
     public String renderStudentHomePage(Model model){
-        SystemStatusDto systemStatusDto=systemStatusService.fetchAllStatus();
-        model.addAttribute("registrationStatus",systemStatusDto.getRegistrationStatus().getStatusValue());
-        model.addAttribute("resultStatus",systemStatusDto.getResultStatus().getStatusValue());
-        if(systemStatusDto.getRegistrationCloseDate()!=null) model.addAttribute("registrationCloseDate",systemStatusDto.getRegistrationCloseDate().getCloseDate());
+        CustomUserDetails customUserDetails= (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Student student=studentService.fetchStudentData(customUserDetails.getUsername());
+        if(student==null){
+            return StudentTemplate.HOME_PAGE;
+        }
+
+        EnrollmentPhaseDetailsDto enrollmentPhaseDetailsDto=enrollmentPhaseDetailsService.fetchEnrollmentPhaseDetailsByProgramAndSemester(student.getProgram(),student.getSemester());
+        model.addAttribute("homePageDetails",enrollmentPhaseDetailsDto);
         return StudentTemplate.HOME_PAGE;
     }
 

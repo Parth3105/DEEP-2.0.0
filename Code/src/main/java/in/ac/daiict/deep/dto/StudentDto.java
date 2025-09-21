@@ -14,4 +14,9 @@ public class StudentDto {
     private String name;
     private String program;
     private int semester;
+
+    public StudentDto(String program, int semester) {
+        this.program = program;
+        this.semester = semester;
+    }
 }

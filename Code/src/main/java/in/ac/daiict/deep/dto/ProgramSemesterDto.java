@@ -1,4 +1,4 @@
-package in.ac.daiict.deep.entity.compositekeys;
+package in.ac.daiict.deep.dto;
 
 import lombok.*;
 
@@ -7,8 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AllocationReportPK {
-    private String name;
+public class ProgramSemesterDto {
     private String program;
     private int semester;
 }

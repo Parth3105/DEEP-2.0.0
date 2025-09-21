@@ -40,7 +40,7 @@ public class OtpVerificationServiceImpl implements OtpVerificationService {
     public ResponseDto verifyOtp(String username, String otp) {
         OtpVerification otpVerification=otpVerificationRepo.findById(username).orElse(null);
         if(otpVerification==null || otpVerification.getExpiryTime().isBefore(LocalDateTime.now())) return new ResponseDto(ResponseStatus.GONE, ResponseMessage.OTP_EXPIRED);
-        if(otpVerification.getOtp().equals(otp)) return new ResponseDto(ResponseStatus.OK, ResponseMessage.SUCCESS_STATUS);
+        if(otpVerification.getOtp().equals(otp)) return new ResponseDto(ResponseStatus.OK, ResponseMessage.SUCCESS);
         return new ResponseDto(ResponseStatus.UNAUTHORIZED,ResponseMessage.OTP_INVALID);
     }
 

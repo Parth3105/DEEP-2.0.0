@@ -1,30 +1,28 @@
 package in.ac.daiict.deep.service.impl;
 
-import in.ac.daiict.deep.service.RegistrationTaskManager;
-import in.ac.daiict.deep.service.SystemStatusService;
+import in.ac.daiict.deep.service.PreferenceCollectionTaskManager;
+import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
-public class RegistrationTaskManagerImpl implements RegistrationTaskManager {
+public class PreferenceCollectionTaskManagerImpl implements PreferenceCollectionTaskManager {
     private final TaskScheduler taskScheduler;
     private ScheduledFuture<?> activeRegistrationTask;
-    private SystemStatusService systemStatusService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
     private LocalDate closingDate;
 
     @Autowired
     @Lazy
-    public RegistrationTaskManagerImpl(TaskScheduler taskScheduler, SystemStatusService systemStatusService) {
+    public PreferenceCollectionTaskManagerImpl(TaskScheduler taskScheduler, EnrollmentPhaseDetailsService enrollmentPhaseDetailsService) {
         this.taskScheduler = taskScheduler;
-        this.systemStatusService = systemStatusService;
+        this.enrollmentPhaseDetailsService = enrollmentPhaseDetailsService;
     }
 
     @Override
@@ -62,6 +60,6 @@ public class RegistrationTaskManagerImpl implements RegistrationTaskManager {
         }
         activeRegistrationTask=null;
         closingDate=null;
-        systemStatusService.autoCloseRegistration();
+        enrollmentPhaseDetailsService.autoCloseRegistration();
     }
 }

@@ -17,4 +17,5 @@ public interface InstituteReqRepo extends JpaRepository<InstituteReq, InstituteR
 
     List<InstituteReq> findByProgramAndSemester(String program, int semester);
     List<InstituteReq> findBySemester(int semester);
+    boolean existsByProgramAndSemester(String program, int semester);
 }

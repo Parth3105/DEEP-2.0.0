@@ -7,8 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AllocationReportPK {
-    private String name;
+public class EnrollmentPhaseDetailsPK {
     private String program;
     private int semester;
 }

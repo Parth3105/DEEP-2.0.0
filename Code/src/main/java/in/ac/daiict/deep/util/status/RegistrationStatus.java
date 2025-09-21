@@ -1,14 +1,14 @@
 package in.ac.daiict.deep.util.status;
 
-import in.ac.daiict.deep.constant.status.RegistrationStatusEnum;
+import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
 import lombok.Getter;
 
 public class RegistrationStatus {
     @Getter
     private static String statusName="registration_status";
-    private RegistrationStatusEnum statusValue;
+    private CollectionWindowStateEnum statusValue;
 
-    public RegistrationStatus(RegistrationStatusEnum statusValue) {
+    public RegistrationStatus(CollectionWindowStateEnum statusValue) {
         this.statusValue = statusValue;
     }
 
@@ -17,7 +17,7 @@ public class RegistrationStatus {
     }
 
     public void setStatusValue(String statusValue) {
-        this.statusValue = RegistrationStatusEnum.valueOf(statusValue);
+        this.statusValue = CollectionWindowStateEnum.valueOf(statusValue);
     }
 
 }

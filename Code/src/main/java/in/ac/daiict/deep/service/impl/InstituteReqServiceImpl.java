@@ -67,4 +67,9 @@ public class InstituteReqServiceImpl implements InstituteReqService {
         if(instituteReqs==null) return null;
         return modelMapper.map(instituteReqs,new TypeToken<List<InstituteReqDto>>(){}.getType());
     }
+
+    @Override
+    public boolean isRequirementPresent(String program, int semester) {
+        return instituteReqRepo.existsByProgramAndSemester(program, semester);
+    }
 }

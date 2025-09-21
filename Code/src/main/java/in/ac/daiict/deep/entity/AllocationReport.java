@@ -17,10 +17,17 @@ import lombok.Setter;
 @IdClass(AllocationReportPK.class)
 public class AllocationReport {
     @Id
-    @Column(length = 100)
+    @Column(length = 100,nullable = false)
     private String name;
+
     @Id
+    @Column(length = 10, nullable = false)
+    private String program;
+
+    @Id
+    @Column(nullable = false)
     private int semester;
-    @Column(columnDefinition = "BYTEA")
+
+    @Column(columnDefinition = "BYTEA",nullable = false)
     private byte[] file;
 }

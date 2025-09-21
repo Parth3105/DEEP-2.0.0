@@ -1,9 +1,7 @@
 package in.ac.daiict.deep.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import in.ac.daiict.deep.entity.compositekeys.AllocationSummaryPK;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +12,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "allocation_status")
-public class AllocationStatus {
+@Table(name = "allocation_summary")
+@IdClass(AllocationSummaryPK.class)
+public class AllocationSummary {
+    @Id
+    @Column
+    private String program;
     @Id
     @Column
     private int semester;
-    @Column(name = "status_code", nullable = false)
-    private int statusCode;
     @Column(nullable = false)
     private int allocatedCount;
     @Column(nullable = false)

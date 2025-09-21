@@ -13,4 +13,5 @@ public interface InstituteReqService {
     List<InstituteReq> fetchInstituteReqByProgramAndSemester(String program, int semester);
     void deleteAll();
     List<InstituteReqDto> findInstituteReq(String program, int semester);
+    boolean isRequirementPresent(String program, int semester);
 }

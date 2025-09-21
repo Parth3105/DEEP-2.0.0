@@ -2,13 +2,12 @@ package in.ac.daiict.deep.entity.compositekeys;
 
 import lombok.*;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AllocationReportPK {
-    private String name;
+public class AllocationSummaryPK {
     private String program;
     private int semester;
 }

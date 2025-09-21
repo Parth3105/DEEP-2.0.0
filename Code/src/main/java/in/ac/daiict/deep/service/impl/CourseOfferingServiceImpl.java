@@ -61,7 +61,12 @@ public class CourseOfferingServiceImpl implements CourseOfferingService {
     }
 
     @Override
-    public boolean existsAnyOffer() {
+    public boolean isAnyOfferPresent() {
         return courseOfferingRepo.existsAnyOffer();
+    }
+
+    @Override
+    public boolean isOfferPresent(String program, int semester) {
+        return courseOfferingRepo.existsByProgramAndSemester(program, semester);
     }
 }

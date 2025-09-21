@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
-import in.ac.daiict.deep.constant.status.RegistrationStatusEnum;
+import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
 import in.ac.daiict.deep.constant.template.StudentTemplate;
 import in.ac.daiict.deep.entity.CoursePref;
 import in.ac.daiict.deep.entity.SlotPref;
@@ -45,17 +45,13 @@ public class EnrollmentController {
     private StudentReqService studentReqService;
     private CoursePrefService coursePrefService;
     private SlotPrefService slotPrefService;
-    private SystemStatusService systemStatusService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
 
     private Validator validator;
 
     @GetMapping(StudentEndpoint.PREFERENCE_FORM)
     public String renderEnrollmentForm(Model model, RedirectAttributes redirectAttributes) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!systemStatusService.fetchRegistrationStatus().equals(RegistrationStatusEnum.open.toString())) {
-            return "redirect:" + StudentEndpoint.HOME_PAGE;
-        }
-        else if (studentService.fetchEnrollmentStatusForStudent(userDetails.getUsername())) return "redirect:" + StudentEndpoint.PREFERENCE_SUMMARY;
 
         // Send the semester & program of students and institute requirements.
         Student student = studentService.fetchStudentData(userDetails.getUsername());
@@ -64,6 +60,11 @@ public class EnrollmentController {
             model.addAttribute("renderResponse", new ResponseDto(ResponseStatus.NOT_FOUND, ResponseMessage.USER_NOT_FOUND));
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
+        else if (!enrollmentPhaseDetailsService.fetchCollectionWindowState(student.getProgram(),student.getSemester()).equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString())) {
+            return "redirect:" + StudentEndpoint.HOME_PAGE;
+        }
+        else if (student.isHasEnrolled()) return "redirect:" + StudentEndpoint.PREFERENCE_SUMMARY;
+
         model.addAttribute("semester", student.getSemester());
         model.addAttribute("program", student.getProgram());
 
@@ -86,12 +87,12 @@ public class EnrollmentController {
     }
 
     @PostMapping(StudentEndpoint.SUBMIT_PREFERENCE)
-    public String loadSubmittedPreferences(@RequestParam String studentRequirements, @RequestParam String coursePreferences, @RequestParam String slotPreferences, RedirectAttributes redirectAttributes) {
+    public String loadSubmittedPreferences(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("studentRequirements") String studentRequirements, @RequestParam("coursePreferences") String coursePreferences, @RequestParam("slotPreferences") String slotPreferences, RedirectAttributes redirectAttributes) {
         if(studentRequirements ==null || coursePreferences ==null || slotPreferences ==null){
             redirectAttributes.addFlashAttribute("preferenceMissing",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.PREFERENCE_MISSING));
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
-        if (!systemStatusService.fetchRegistrationStatus().equals(RegistrationStatusEnum.open.toString())) {
+        if (!enrollmentPhaseDetailsService.fetchCollectionWindowState(program, semester).equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString())) {
             redirectAttributes.addFlashAttribute("preferenceSubmissionResponse", new ResponseDto(ResponseStatus.FORBIDDEN, ResponseMessage.LATE_SUBMISSION));
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
@@ -136,11 +137,6 @@ public class EnrollmentController {
                 studentReqs.add(studentReq);
             }
             if(!isConstraintViolated) studentReqService.insertAll(studentReqs);
-
-            /*// debug
-            for (StudentReq studentReq : studentReqs)
-                System.out.println(studentReq.getCategory() + ": " + studentReq.getCourseCnt());
-            System.out.println("\n");*/
         });
 
         // record Course Preferences.
@@ -171,9 +167,6 @@ public class EnrollmentController {
                 if(isConstraintViolated) break;
             }
             if(!isConstraintViolated) coursePrefService.insertAll(coursePrefs);
-
-            /*// debug
-            for(CoursePref coursePref:coursePrefs) System.out.println(coursePref.getSlot()+": "+coursePref.getPref()+": "+coursePref.getCid());*/
         });
 
         // record Slot Preferences
@@ -197,10 +190,6 @@ public class EnrollmentController {
                 slotPrefs.add(slotPref);
             }
             if(!isConstraintViolated) slotPrefService.insertAll(slotPrefs);
-
-            /*// debug
-            for(SlotPref slotPref: slotPrefs) System.out.println(slotPref.getPref()+": "+slotPref.getSlot());
-            System.out.println("\n");*/
         });
 
         try {

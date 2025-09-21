@@ -1,0 +1,2 @@
+-- Do not delete or change the names of the other sql scripts especially V1__DDL_Scripts
+-- Adding scripts with higher versions are allowed

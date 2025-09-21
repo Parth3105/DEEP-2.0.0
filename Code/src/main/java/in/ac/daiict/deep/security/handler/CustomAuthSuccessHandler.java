@@ -17,7 +17,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String role=authentication.getAuthorities().iterator().next().getAuthority();
-        if(role.equals(Roles.ROLE_ADMIN)) response.sendRedirect(request.getContextPath()+AdminEndpoint.DASHBOARD);
+        if(role.equalsIgnoreCase(Roles.ROLE_ADMIN)) response.sendRedirect(request.getContextPath()+AdminEndpoint.DASHBOARD);
         else response.sendRedirect(request.getContextPath()+StudentEndpoint.HOME_PAGE);
     }
 }

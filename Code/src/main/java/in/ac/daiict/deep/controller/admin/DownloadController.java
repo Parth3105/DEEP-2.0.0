@@ -1,24 +1,29 @@
 package in.ac.daiict.deep.controller.admin;
 
 import in.ac.daiict.deep.constant.downloads.AllocationReportNames;
-import in.ac.daiict.deep.constant.downloads.DownloadConstants;
+import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
-import in.ac.daiict.deep.entity.AllocationReport;
+import in.ac.daiict.deep.dto.AllocationSummaryDto;
 import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.AllocationReportService;
+import in.ac.daiict.deep.service.AllocationSummaryService;
 import in.ac.daiict.deep.service.UploadService;
+import in.ac.daiict.deep.util.dataloader.DataLoader;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.*;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -26,45 +31,28 @@ import java.io.*;
 public class DownloadController {
     private AllocationReportService allocationReportService;
     private UploadService uploadService;
+    private AllocationSummaryService allocationSummaryService;
 
-    @GetMapping(AdminEndpoint.DOWNLOAD_REPORT_SUBMIT)
-    public void downloadReport(HttpServletResponse httpServletResponse, @PathVariable("semester") int semester, @PathVariable("name") String name) {
-        String contentType = null;
-        String downloadFilename = null;
-        switch (name) {
-            case DownloadConstants.ALLOCATION_RESULTS -> {
-                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                downloadFilename = AllocationReportNames.ALLOCATION_RESULT;
-            }
-            case DownloadConstants.SEAT_SUMMARY -> {
-                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                downloadFilename = AllocationReportNames.SEAT_SUMMARY;
-            }
-            case DownloadConstants.FAILURE_LOG -> {
-                contentType = "text/plain";
-                downloadFilename = AllocationReportNames.ALLOCATION_FAILURE_LOG;
-            }
-            case DownloadConstants.COURSE_WISE_ALLOCATION -> {
-                contentType = "application/zip";
-                downloadFilename = AllocationReportNames.COURSE_WISE_ALLOCATION;
-            }
-        }
-        if (contentType == null) {
-            httpServletResponse.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
-        }
-        AllocationReport allocationReport = allocationReportService.fetchReport(downloadFilename, semester);
+    private DataLoader dataLoader;
+
+    @GetMapping(AdminEndpoint.DOWNLOAD_COURSE_ALLOTMENTS)
+    public void downloadCourseAllotments(HttpServletResponse httpServletResponse){
+        ByteArrayOutputStream courseWiseAllocation = dataLoader.createCourseWiseAllocation();
         try {
-            if (allocationReport == null) {
+            if (courseWiseAllocation ==null || courseWiseAllocation.size()==0) {
                 httpServletResponse.setStatus(ResponseStatus.NOT_FOUND);
                 httpServletResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 httpServletResponse.setHeader("Pragma", "no-cache");
                 httpServletResponse.setDateHeader("Expires", 0);
                 httpServletResponse.setContentType("application/json");
-                httpServletResponse.getOutputStream().write(ResponseMessage.DOWNLOAD_RESULTS_NOT_FOUND.getBytes());
-            } else {
-                httpServletResponse.setContentType(contentType);
+                if(courseWiseAllocation ==null) httpServletResponse.getOutputStream().write(ResponseMessage.DOWNLOADING_ERROR.getBytes());
+                else httpServletResponse.getOutputStream().write(ResponseMessage.COURSE_ALLOTMENTS_NOT_FOUND.getBytes());
+            }
+            else {
+                String downloadFilename = AllocationReportNames.COURSE_WISE_ALLOCATION;
+                httpServletResponse.setContentType("application/zip");
                 httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
-                httpServletResponse.getOutputStream().write(allocationReport.getFile());
+                httpServletResponse.getOutputStream().write(courseWiseAllocation.toByteArray());
                 httpServletResponse.getOutputStream().flush();
             }
         } catch (IOException ioe) {
@@ -73,15 +61,46 @@ public class DownloadController {
         }
     }
 
-    @GetMapping(AdminEndpoint.DOWNLOAD_UPLOADED_REPORT_SUBMIT)
+    @GetMapping(AdminEndpoint.REFRESH_TERM_DETAILS)
+    public String refreshTermData(Model model){
+        model.addAttribute("downloadTermDetails",allocationSummaryService.fetchAll());
+        return FragmentTemplate.DOWNLOAD_TERM_DATA_FRAGMENT;
+    }
+
+    @GetMapping(AdminEndpoint.DOWNLOAD_ALLOCATION_RESULT)
+    public void downloadAllocationResults(HttpServletResponse httpServletResponse, @RequestParam("program") String program, @RequestParam("semester") int semester) {
+        ByteArrayOutputStream allocationReport = allocationReportService.fetchReportsByProgramAndSemesterAsZip(program, semester);
+        try {
+            if (allocationReport == null || allocationReport.size()==0) {
+                httpServletResponse.setStatus(ResponseStatus.NOT_FOUND);
+                httpServletResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                httpServletResponse.setHeader("Pragma", "no-cache");
+                httpServletResponse.setDateHeader("Expires", 0);
+                httpServletResponse.setContentType("application/json");
+                if(allocationReport==null) httpServletResponse.getOutputStream().write(ResponseMessage.DOWNLOADING_ERROR.getBytes());
+                else httpServletResponse.getOutputStream().write(ResponseMessage.RESULTS_NOT_FOUND.getBytes());
+            } else {
+                String downloadFilename="Allocation Reports "+program+" Sem-"+semester+".zip";
+                httpServletResponse.setContentType("application/zip");
+                httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
+                httpServletResponse.getOutputStream().write(allocationReport.toByteArray());
+                httpServletResponse.getOutputStream().flush();
+            }
+        } catch (IOException ioe) {
+            log.error("I/O operation to download file failed: {}", ioe.getMessage(), ioe);
+            httpServletResponse.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(AdminEndpoint.DOWNLOAD_UPLOADED_REPORT)
     public void downloadUploadedData(HttpServletResponse httpServletResponse, @PathVariable("name") String name) {
         String contentType = null;
         String downloadFilename = null;
         String[] names = {UploadConstants.COURSE_DATA, UploadConstants.INST_REQ_DATA, UploadConstants.SEAT_MATRIX};
         String[] fileNames = {UploadFileNames.COURSE_DATA, UploadFileNames.INST_REQ_DATA, UploadFileNames.SEAT_MATRIX};
         for (int j = 0; j < names.length; j++) {
-            if (names[j].equals(name)) {
-                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            if (names[j].equalsIgnoreCase(name)) {
+                contentType = "text/csv";
                 downloadFilename = fileNames[j];
             }
         }
@@ -101,6 +120,31 @@ public class DownloadController {
                 httpServletResponse.setContentType(contentType);
                 httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
                 httpServletResponse.getOutputStream().write(uploadData.getFile());
+                httpServletResponse.getOutputStream().flush();
+            }
+        } catch (IOException ioe) {
+            log.error("I/O operation to download file failed: {}", ioe.getMessage(), ioe);
+            httpServletResponse.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(AdminEndpoint.DOWNLOAD_STUDENT_PREFERENCES)
+    public void downloadStudentPreferences(HttpServletResponse httpServletResponse, @RequestParam("program") String program, @RequestParam("semester") int semester) {
+        ByteArrayOutputStream byteArrayOutputStream = dataLoader.createStudentPrefSheet(program, semester);
+        try {
+            if (byteArrayOutputStream==null) {
+                httpServletResponse.setStatus(ResponseStatus.NOT_FOUND);
+                httpServletResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                httpServletResponse.setHeader("Pragma", "no-cache");
+                httpServletResponse.setDateHeader("Expires", 0);
+                httpServletResponse.setContentType("application/json");
+                httpServletResponse.getOutputStream().write(ResponseMessage.STUDENT_PREFERENCES_NOT_FOUND.getBytes());
+            }
+            else {
+                String downloadFilename = "Student Preferences.csv";
+                httpServletResponse.setContentType("text/csv");
+                httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
+                httpServletResponse.getOutputStream().write(byteArrayOutputStream.toByteArray());
                 httpServletResponse.getOutputStream().flush();
             }
         } catch (IOException ioe) {

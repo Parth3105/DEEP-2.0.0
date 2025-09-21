@@ -11,6 +11,8 @@ import in.ac.daiict.deep.util.allocation.model.CourseOffer;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.CoursePrefHeader;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.*;
+import in.ac.daiict.deep.util.dataloader.excelHeaders.ResultSheetHeader;
+import in.ac.daiict.deep.util.dataloader.excelHeaders.SeatSummarySheetHeader;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,9 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -296,8 +301,6 @@ public class CSVDataLoader implements DataLoader {
             zipOutputStream.putNextEntry(slotPrefEntry);
             zipOutputStream.write(slotPrefCSV.toByteArray());
             zipOutputStream.closeEntry();
-
-            return byteArrayOutputStream;
         } catch (ExecutionException | InterruptedException e) {
             if(e instanceof InterruptedException){
                 Thread.currentThread().interrupt(); // Restore interrupt
@@ -309,6 +312,14 @@ public class CSVDataLoader implements DataLoader {
             log.error("I/O operation to generate the zip file of student-preferences failed: {}", ioe.getMessage(), ioe);
             return null;
         }
+
+        try {
+            zipOutputStream.close();
+        } catch (IOException ioe) {
+            log.error("I/O error occurred while closing the zip file for course-wise allocation: {}", ioe.getMessage(), ioe);
+            return null;
+        }
+        return byteArrayOutputStream;
     }
 
     private ByteArrayOutputStream generateCoursePreferenceCSV(List<CoursePref> coursePrefList) throws IOException {
@@ -362,12 +373,77 @@ public class CSVDataLoader implements DataLoader {
 
     @Override
     public ByteArrayOutputStream createResultSheet(Map<String, AllocationStudent> students, Map<String, AllocationCourse> courses, Map<String, Map<String, String>> courseCategories) {
-        return null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting());
+            int entryCnt = 0;
+            for (AllocationStudent student : students.values()) {
+                for (String courseID : student.getAllocatedCourses()) {
+                    AllocationCourse course = courses.get(courseID);
+                    String category = courseCategories.get(courseID).get(student.getProgram());
+
+                    EnumMap<ResultHeader, Object> row = new EnumMap<>(ResultHeader.class);
+                    row.put(ResultHeader.STUDENT_ID, student.getSid());
+                    row.put(ResultHeader.PROGRAM, student.getProgram());
+                    row.put(ResultHeader.SEMESTER, student.getSemester());
+                    row.put(ResultHeader.COURSE_ID, courseID);
+                    row.put(ResultHeader.COURSE_NAME, course.getName());
+                    row.put(ResultHeader.CATEGORY, category);
+                    row.put(ResultHeader.SLOT, course.getSlot());
+                    row.put(ResultHeader.PRIORITY, student.getPriority());
+                    row.put(ResultHeader.CUMULATIVE_PRIORITY, student.getCumulativePriority());
+
+                    for (ResultHeader resultHeader : ResultHeader.values()) {
+                        csvPrinter.print(row.get(resultHeader));
+                    }
+                    csvPrinter.println();
+                    entryCnt++;
+                    if (entryCnt > 100) {
+                        csvPrinter.flush();
+                        entryCnt = 0;
+                    }
+                }
+            }
+            csvPrinter.flush();
+            return byteArrayOutputStream;
+        } catch (IOException ioe) {
+            log.error("I/O error occurred while preparing the CSV file for allocation-results: {}", ioe.getMessage(), ioe);
+            return null;
+        }
     }
 
     @Override
     public ByteArrayOutputStream createSeatSummary(List<CourseOffer> openFor, Map<String, AllocationCourse> courses, Map<String, Map<String, Integer>> availableSeats) {
-        return null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting());
+            int entryCnt = 0;
+            for (CourseOffer of : openFor) {
+                AllocationCourse course = courses.get(of.getCid());
+                EnumMap<SeatSummaryHeader, Object> row = new EnumMap<>(SeatSummaryHeader.class);
+                row.put(SeatSummaryHeader.COURSE_ID, of.getCid());
+                row.put(SeatSummaryHeader.COURSE_NAME, course.getName());
+                row.put(SeatSummaryHeader.PROGRAM, of.getProgram());
+                row.put(SeatSummaryHeader.SEMESTER, of.getSemester());
+                row.put(SeatSummaryHeader.CATEGORY, of.getCategory());
+                row.put(SeatSummaryHeader.AVAILABLE_SEATS, availableSeats.get(of.getProgram()).get(of.getCid()));
+
+                for (SeatSummaryHeader seatSummaryHeader : SeatSummaryHeader.values()) {
+                    csvPrinter.print(row.get(seatSummaryHeader));
+                }
+                csvPrinter.println();
+                entryCnt++;
+                if (entryCnt > 100) {
+                    csvPrinter.flush();
+                    entryCnt = 0;
+                }
+            }
+            csvPrinter.flush();
+            return byteArrayOutputStream;
+        } catch (IOException ioe) {
+            log.error("I/O error occurred while preparing the CSV file for seat-summary: {}", ioe.getMessage(), ioe);
+            return null;
+        }
     }
 
     @Override
@@ -381,6 +457,7 @@ public class CSVDataLoader implements DataLoader {
 
         for (Course course : courses) {
             List<AllocationResult> allocationResultList = allocationResultService.fetchCourseWiseAllocation(course.getCid());
+            if(allocationResultList.isEmpty()) return new ByteArrayOutputStream(0);
             try{
                 String fileName=course.getCid() + "_Students.csv";
 
@@ -408,7 +485,6 @@ public class CSVDataLoader implements DataLoader {
                 }
                 csvPrinter.flush();
                 zipOutputStream.closeEntry();
-                return byteArrayOutputStream;
             } catch (IOException ioe) {
                 log.error("I/O error occurred while writing the course-wise allocation CSV for cid-{}: {}", course.getCid(),ioe.getMessage(), ioe);
                 return null;

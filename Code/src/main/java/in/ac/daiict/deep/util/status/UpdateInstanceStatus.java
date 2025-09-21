@@ -1,15 +1,15 @@
 package in.ac.daiict.deep.util.status;
 
-import in.ac.daiict.deep.constant.status.UpdateInstanceStatusEnum;
+import in.ac.daiict.deep.constant.enums.UploadStatusEnum;
 import lombok.Getter;
 
 
 public class UpdateInstanceStatus {
     @Getter
     private static String statusName="update_instance_status";
-    private UpdateInstanceStatusEnum statusValue;
+    private UploadStatusEnum statusValue;
 
-    public UpdateInstanceStatus(UpdateInstanceStatusEnum statusValue) {
+    public UpdateInstanceStatus(UploadStatusEnum statusValue) {
         this.statusValue = statusValue;
     }
 

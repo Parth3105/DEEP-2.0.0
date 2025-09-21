@@ -18,9 +18,9 @@ public class HomeController {
         }
 
         boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_ADMIN));
+                .anyMatch(auth -> auth.getAuthority().equalsIgnoreCase(Roles.ROLE_ADMIN));
         boolean isStudent = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals(Roles.ROLE_STUDENT));
+                .anyMatch(auth -> auth.getAuthority().equalsIgnoreCase(Roles.ROLE_STUDENT));
 
         if (isAdmin) {
             return "redirect:"+ AdminEndpoint.DASHBOARD;

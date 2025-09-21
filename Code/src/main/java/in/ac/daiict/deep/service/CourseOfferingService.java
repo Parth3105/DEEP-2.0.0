@@ -12,5 +12,6 @@ public interface CourseOfferingService {
     List<CourseOfferingDto> fetchAllCourseOfferingDtos();
     List<CourseOffering> fetchCourseOfferingByProgramAndSemester(String program, int semester);
     void deleteAll();
-    boolean existsAnyOffer();
+    boolean isAnyOfferPresent();
+    boolean isOfferPresent(String program, int semester);
 }

@@ -42,7 +42,7 @@ public class InstanceNameServiceImpl implements InstanceNameService {
     @Override
     public boolean insertNewInstance(String newInstanceName) {
         InstanceName instanceName=instanceNameRepo.save(new InstanceName(newInstanceName, new Timestamp(System.currentTimeMillis())));
-        return instanceName.getInstanceName().equals(newInstanceName);
+        return instanceName.getInstanceName().equalsIgnoreCase(newInstanceName);
     }
 
     @Override

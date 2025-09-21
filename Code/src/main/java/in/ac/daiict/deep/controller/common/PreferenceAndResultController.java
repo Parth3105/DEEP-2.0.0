@@ -1,20 +1,18 @@
 package in.ac.daiict.deep.controller.common;
 
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
+import in.ac.daiict.deep.constant.enums.ResultStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
-import in.ac.daiict.deep.constant.status.ResultStatusEnum;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.StudentTemplate;
 import in.ac.daiict.deep.dto.*;
-import in.ac.daiict.deep.entity.CoursePref;
-import in.ac.daiict.deep.entity.SlotPref;
+import in.ac.daiict.deep.entity.Student;
 import in.ac.daiict.deep.security.auth.CustomUserDetails;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.dto.ResponseDto;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,11 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +35,7 @@ public class PreferenceAndResultController {
     private CoursePrefService coursePrefService;
     private SlotPrefService slotPrefService;
     private AllocationResultService allocationResultService;
-    private SystemStatusService systemStatusService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
     private DataLoader dataLoader;
 
     @GetMapping(StudentEndpoint.PREFERENCE_SUMMARY)
@@ -51,41 +46,18 @@ public class PreferenceAndResultController {
 
     @GetMapping(StudentEndpoint.ALLOCATION_RESULT)
     public String loadMyAllocationResult(Model model, RedirectAttributes redirectAttributes) {
-        if(!systemStatusService.fetchResultStatus().equals(ResultStatusEnum.declared.toString())){
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Student student=studentService.fetchStudentData(userDetails.getUsername());
+        if(!enrollmentPhaseDetailsService.fetchResultState(student.getProgram(),student.getSemester()).equalsIgnoreCase(ResultStateEnum.DECLARED.toString())){
             redirectAttributes.addFlashAttribute("renderResponse", new ResponseDto(ResponseStatus.NOT_FOUND, ResponseMessage.RESULTS_NOT_DECLARED));
             return "redirect:"+StudentEndpoint.HOME_PAGE;
         }
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return fetchAllocationResult(userDetails.getUsername(), model, 'S', redirectAttributes);
     }
 
     @GetMapping(AdminEndpoint.STUDENT_PREFERENCE_FILTER)
     public String loadSubmittedPreferences(@PathVariable("sid") String studentId, Model model, RedirectAttributes redirectAttributes) {
         return fetchPreferenceSummary(studentId, model, 'A', redirectAttributes);
-    }
-    @GetMapping(AdminEndpoint.DOWNLOAD_STUDENT_PREFERENCES)
-    public void downloadStudentPreferences(HttpServletResponse httpServletResponse, @RequestParam("program") String program, @RequestParam("semester") int semester) {
-        ByteArrayOutputStream byteArrayOutputStream = dataLoader.createStudentPrefSheet(program, semester);
-        try {
-            if (byteArrayOutputStream==null) {
-                httpServletResponse.setStatus(ResponseStatus.NOT_FOUND);
-                httpServletResponse.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-                httpServletResponse.setHeader("Pragma", "no-cache");
-                httpServletResponse.setDateHeader("Expires", 0);
-                httpServletResponse.setContentType("application/json");
-                httpServletResponse.getOutputStream().write(ResponseMessage.STUDENT_PREFERENCES_NOT_FOUND.getBytes());
-            }
-            else {
-                String downloadFilename = "Student Preferences.csv";
-                httpServletResponse.setContentType("text/csv");
-                httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
-                httpServletResponse.getOutputStream().write(byteArrayOutputStream.toByteArray());
-                httpServletResponse.getOutputStream().flush();
-            }
-        } catch (IOException ioe) {
-            log.error("I/O operation to download file failed: {}", ioe.getMessage(), ioe);
-            httpServletResponse.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @GetMapping(AdminEndpoint.ALLOCATION_RESULTS_FILTER)
@@ -168,7 +140,7 @@ public class PreferenceAndResultController {
         }
 
         CompletableFuture<List<AllocationResultDto>> fetchingAllocationResult =CompletableFuture.supplyAsync(() -> allocationResultService.fetchAllocationResult(studentId, studentDto.getProgram()));
-        CompletableFuture<String> fetchingResultStatus =CompletableFuture.supplyAsync(() -> systemStatusService.fetchResultStatus());
+        CompletableFuture<String> fetchingResultStatus =CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchResultState(studentDto.getProgram(),studentDto.getSemester()));
 
         CompletableFuture.allOf(fetchingAllocationResult, fetchingResultStatus);
         List<AllocationResultDto> allocationResultDtoList;
@@ -201,7 +173,7 @@ public class PreferenceAndResultController {
                 return "redirect:" + StudentEndpoint.HOME_PAGE;
             }
         }
-        if (allocationResultDtoList == null || (requester=='S' && (resultStatus==null || resultStatus.equals(ResultStatusEnum.pending.toString())))) {
+        if (allocationResultDtoList == null || (requester=='S' && (resultStatus==null || resultStatus.equalsIgnoreCase(ResultStateEnum.PENDING.toString())))) {
             // not found any results.
             if(requester=='S'){
                 redirectAttributes.addFlashAttribute("renderResponse", new ResponseDto(ResponseStatus.NOT_FOUND, ResponseMessage.RESULTS_NOT_FOUND_STUDENT));

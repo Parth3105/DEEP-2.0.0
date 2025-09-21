@@ -36,6 +36,7 @@ public class AllocationSystem {
     private Map<String, Map<String, String>> courseCategories; // key=courseID,value=map with key=program,value=category
     private int[] maxRequirement;
     private int semester;
+    private String program;
 
     // failure detection purpose variables
     private List<String> pendingRequirements;
@@ -50,6 +51,7 @@ public class AllocationSystem {
 
     public ResponseDto initiateAllocation(String program, int semester, Map<String,Long> unmetReqCnt){
         this.semester=semester;
+        this.program=program;
         maxRequirement = new int[1];
         CompletableFuture<Void> studentLoadFuture=CompletableFuture.runAsync(() -> students=allocationDataLoader.getStudentData(program,semester,maxRequirement));
         CompletableFuture<Void> courseLoadFuture=CompletableFuture.runAsync(()-> courses=allocationDataLoader.getCourseData());
@@ -82,7 +84,7 @@ public class AllocationSystem {
      */
     private int getInstituteRequirement(String program, int semester, String category) {
         for (InstituteRequirement req : instituteRequirements) {
-            if (req.getProgram().equals(program) && req.getSemester() == semester && req.getCategory().equals(category))
+            if (req.getProgram().equalsIgnoreCase(program) && req.getSemester() == semester && req.getCategory().equalsIgnoreCase(category))
                 return req.getCourseCnt();
         }
         return 0;
@@ -111,7 +113,7 @@ public class AllocationSystem {
 //        System.out.println("All Students allocated? " + );
 //        System.out.println("Not allocated in phase-2: " + unmetReqCnt[0]);
 //        System.out.println("--------------------------------------------------------------------------------");
-        return new ResponseDto(ResponseStatus.OK, ResponseMessage.SUCCESS_STATUS);
+        return new ResponseDto(ResponseStatus.OK, ResponseMessage.EXECUTION_SUCCESS);
     }
 
     /**
@@ -220,7 +222,7 @@ public class AllocationSystem {
     private boolean canAllocateCourse(AllocationStudent student, String courseID, boolean isPhaseOne, boolean isErrorPhase) {
         boolean flag = false;
         for (CourseOffer openCourse : openFor) {
-            if (openCourse.getCid().equals(courseID) && openCourse.getProgram().equals(student.getProgram()) && openCourse.getSemester() == student.getSemester()) {
+            if (openCourse.getCid().equalsIgnoreCase(courseID) && openCourse.getProgram().equalsIgnoreCase(student.getProgram()) && openCourse.getSemester() == student.getSemester()) {
                 flag = true;
                 break;
             }
@@ -273,7 +275,7 @@ public class AllocationSystem {
         availableSeats.put(student.getProgram(), programSpecificSeats);
     }
 
-    private boolean isStudentReqFulfilled(boolean isPhaseOne, Map<String, Long> unmetReqCnt) {
+    private void isStudentReqFulfilled(boolean isPhaseOne, Map<String, Long> unmetReqCnt) {
         boolean flag = true;
         for (AllocationStudent student : students.values()) {
             if(student.getRequirements()==null) continue;
@@ -293,7 +295,6 @@ public class AllocationSystem {
                 }
             }
         }
-        return flag;
     }
 
     private void saveOutput(){
@@ -302,17 +303,6 @@ public class AllocationSystem {
             allocationDataLoader.saveAllocationResult(new ArrayList<>(students.values()));
             log.info("Allocation Result saved successfully!");
 //            System.out.println("\n\n Allocation Result saved \n\n");
-
-            /* Saving the generated csv for course-wise allocation in DB.
-
-                ByteArrayOutputStream byteArrayOutputStream=dataLoader.createCourseWiseAllocation();
-                if(byteArrayOutputStream!=null){
-                    allocationReportService.insertReport(new AllocationReport(AllocationReportNames.COURSE_WISE_ALLOCATION,semester, byteArrayOutputStream.toByteArray()));
-                    log.info("Course-wise Allocation data created and saved!");
-                    System.out.println("\n\n Course-wise Allocation data created and saved. \n\n");
-                }
-
-            */
         });
 
         // record Seat Summary
@@ -325,7 +315,7 @@ public class AllocationSystem {
         // record Failure Log
         CompletableFuture<Void> recordFailureLog=CompletableFuture.runAsync(() -> {
             ByteArrayOutputStream byteArrayOutputStream=getAllocationFailureDetail();
-            allocationReportService.insertReport(new AllocationReport(AllocationReportNames.ALLOCATION_FAILURE_LOG,semester,byteArrayOutputStream.toByteArray()));
+            allocationReportService.insertReport(new AllocationReport(AllocationReportNames.ALLOCATION_FAILURE_LOG,program,semester,byteArrayOutputStream.toByteArray()));
             log.info("Failure Log saved!");
 //            System.out.println("\n\n Failure Log saved \n\n");
         });
@@ -334,7 +324,7 @@ public class AllocationSystem {
         CompletableFuture<Void> createAllocationResultSheet=CompletableFuture.runAsync(() -> {
             ByteArrayOutputStream byteArrayOutputStream=dataLoader.createResultSheet(students,courses,courseCategories);
             if(byteArrayOutputStream!=null){
-                allocationReportService.insertReport(new AllocationReport(AllocationReportNames.ALLOCATION_RESULT,semester,byteArrayOutputStream.toByteArray()));
+                allocationReportService.insertReport(new AllocationReport(AllocationReportNames.ALLOCATION_RESULT,program,semester,byteArrayOutputStream.toByteArray()));
                 log.info("Allocation result sheet created and saved!");
 //                System.out.println("\n\n Allocation result sheet created and saved. \n\n");
             }
@@ -345,7 +335,7 @@ public class AllocationSystem {
         CompletableFuture<Void> createSeatSummarySheet=CompletableFuture.runAsync(() -> {
             ByteArrayOutputStream byteArrayOutputStream=dataLoader.createSeatSummary(openFor,courses,availableSeats);
             if(byteArrayOutputStream!=null){
-                allocationReportService.insertReport(new AllocationReport(AllocationReportNames.SEAT_SUMMARY,semester,byteArrayOutputStream.toByteArray()));
+                allocationReportService.insertReport(new AllocationReport(AllocationReportNames.SEAT_SUMMARY,program,semester,byteArrayOutputStream.toByteArray()));
                 log.info("Seat Summary sheet created and saved!");
 //                System.out.println("\n\n Seat Summary sheet created and saved. \n\n");
             }
@@ -397,7 +387,7 @@ public class AllocationSystem {
                         if(student.getAllocatedSlots()!=null && student.getAllocatedSlots().contains(coursePrefEntry.getKey())) continue;
                         List<String> updatedPref=coursePrefAfterAllocation.getOrDefault(coursePrefEntry.getKey(),new ArrayList<>());
                         for(String courseId: coursePrefEntry.getValue()){
-                            if (!courseCategories.get(courseId).getOrDefault(student.getProgram(), "").equals(entry.getKey())) continue;
+                            if (!courseCategories.get(courseId).getOrDefault(student.getProgram(), "").equalsIgnoreCase(entry.getKey())) continue;
                             updatedPref.add(courseId);
                         }
                         coursePrefAfterAllocation.put(coursePrefEntry.getKey(),updatedPref);
