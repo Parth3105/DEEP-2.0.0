@@ -1,13 +1,16 @@
 <div th:fragment="toast-display">
-  <!-- Stack Container-->
-  <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-4"></div>
+  <!-- Outer fixed container -->
+  <div id="toast-wrapper" class="fixed top-6 sm:left-[9px] z-50 w-full max-w-[100%] flex justify-center">
+    <!-- Inner relative container for stacking toasts -->
+    <div id="toast-container" class="relative w-full flex flex-col items-center gap-0"></div>
+  </div>
 
-  <!-- Hidden Toast Template ( Used For Cloning )-->
-  <div id="toast-template"
-       class="hidden max-w-xs text-sm text-white rounded-xl shadow-lg"
+  <!-- Hidden Toast Template -->
+  <div id="toast-template" class="hidden w-full max-w-full sm:max-w-3xl text-sm text-white rounded-xl shadow-lg"
        role="alert" tabindex="-1">
-    <div class="flex p-4 gap-2 items-start rounded-xl">
-      <span class="toast-message"></span>
+    <div class="flex p-4 w-full rounded-xl relative">
+      <span class="flex-1 toast-message"></span>
+      <button class="toast-close absolute top-0.5 right-2 text-white font-bold text-lg">&times;</button>
     </div>
   </div>
 </div>

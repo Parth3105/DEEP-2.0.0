@@ -3,6 +3,10 @@ export default class UploadStatusTable {
     this.studentContainer = document.getElementById(studentContainerId);
     this.courseContainer = document.getElementById(courseContainerId);
 
+    // Initial refresh when page loads
+    this.refresh();
+
+    // Listen for custom event when upload succeeds
     document.addEventListener("upload:success", e => {
       if (e.detail.type === "Student Data" || e.detail.type === "Course Data") {
         this.refresh();
@@ -21,35 +25,34 @@ export default class UploadStatusTable {
     })
       .then(res => res.text())
       .then(fragmentHtml => this.populateFromFragment(fragmentHtml))
-      .catch(err => console.error("Table refresh failed:", err));
+      .catch(err => console.error("Refresh failed:", err));
   }
 
   populateFromFragment(fragmentHtml) {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = fragmentHtml;
 
-    if(this.courseContainer) {
-        const courseCountElement = tempDiv.querySelector("div[th\\:text]");
-        if (courseCountElement) {
-          this.courseContainer.innerHTML = courseCountElement.textContent;
-        }
+    const records = tempDiv.querySelectorAll(".upload-record");
+    const courseDiv = tempDiv.querySelector("#uploadStatusFragment > div:last-child");
+
+    // Update student table
+    if (this.studentContainer) {
+      this.studentContainer.innerHTML = ""; // clear old rows
+      records.forEach(record => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-blue-100 text-sm text-black font-bold";
+        tr.innerHTML = `
+          <td class="px-4 py-3">${record.dataset.program}</td>
+          <td class="px-4 py-3">${record.dataset.semester}</td>
+          <td class="px-4 py-3">${record.dataset.students}</td>
+        `;
+        this.studentContainer.appendChild(tr);
+      });
     }
 
-    if (this.studentContainer) {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = fragmentHtml;
-
-        const records = tempDiv.querySelectorAll(".upload-record");
-        this.studentContainer.innerHTML = "";
-
-        records.forEach(record => {
-          const tr = document.createElement("tr");
-          tr.className = "hover:bg-blue-100 text-sm text-black font-bold";
-          tr.innerHTML = `
-            <td class="px-4 py-3">${record.dataset.program}</td>
-            <td class="px-4 py-3">${record.dataset.semester}</td>
-            <td class="px-4 py-3">${record.dataset.students}</td>
-          `;
-          this.studentContainer.appendChild(tr);
-        });
+    // Update course count
+    if (this.courseContainer && courseDiv) {
+      this.courseContainer.textContent = courseDiv.textContent;
     }
   }
 }

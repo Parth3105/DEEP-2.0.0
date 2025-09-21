@@ -46,3 +46,11 @@ package.json
 package-lock.json
 postcss.config.js
 tailwind.config.js
+
+### Tailwind - Production ###
+node_modules
+src/main/resources/tailwind-src
+package.json
+package-lock.json
+postcss.config.js
+tailwind.config.js

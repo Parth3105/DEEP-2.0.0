@@ -7,8 +7,8 @@
   <meta name="context-path" th:content="@{/}" />
   <title>DEEP - Admin Dashboard</title>
   <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
-  <link th:href="@{/css/output.css}" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link th:href="@{/css/output.css}" rel="stylesheet">
   <script th:src="@{https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js}"></script>
 
   <style>
@@ -48,9 +48,9 @@
   </style>
 </head>
 
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
-<!-- Toast Display -->
+<!-- Toast -->
 <div th:replace="~{common/toast-display::toast-display}"></div>
 
 <div class="mx-auto">
@@ -137,7 +137,7 @@
     <!-- Main Table Container -->
     <div class="mb-6">
       <div class="flex flex-col lg:flex-row gap-6">
-        <div id="tableContainer" class="flex-100 transition-width w-full bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div id="tableContainer" class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-xs lg:text-sm">
               <thead>
@@ -156,15 +156,15 @@
                   Details</th>
               </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="allocated">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">120 / 387</td>
+              <tbody class="divide-y divide-gray-200 font-medium text-[#16355f]">
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="allocated">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">120 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-green-100 text-green-800 rounded-xl">Allocated</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Main Phase Open</td>
+                <td class="px-4 py-3">Main Phase Open</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="0">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -175,14 +175,14 @@
                   </button>
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="pending">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">120 / 387</td>
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="pending">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">120 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-yellow-100 text-yellow-800 rounded-xl">Pending</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Main Phase Closed</td>
+                <td class="px-4 py-3">Main Phase Closed</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="1">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -193,14 +193,14 @@
                   </button>
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="pending">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">120 / 387</td>
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="pending">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">120 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-yellow-100 text-yellow-800 rounded-xl">Pending</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Add - Drop | Open</td>
+                <td class="px-4 py-3">Add - Drop | Open</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="2">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -211,14 +211,14 @@
                   </button>
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="pending">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">120 / 387</td>
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="pending">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">120 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-yellow-100 text-yellow-800 rounded-xl">Pending</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Add - Drop | Closed</td>
+                <td class="px-4 py-3">Add - Drop | Closed</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="3">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -229,14 +229,14 @@
                   </button>
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="pending">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">120 / 387</td>
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="pending">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">120 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-yellow-100 text-yellow-800 rounded-xl">Pending</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Add - Drop II Open</td>
+                <td class="px-4 py-3">Add - Drop II Open</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="4">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -247,14 +247,14 @@
                   </button>
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50 cursor-pointer" data-status="pending">
-                <td class="px-4 py-3 text-gray-900 font-medium">B-Tech ICT</td>
-                <td class="px-4 py-3 text-gray-900">5</td>
-                <td class="px-4 py-3 text-gray-900">110 / 387</td>
+              <tr class="hover:bg-blue-200 cursor-pointer" data-status="pending">
+                <td class="px-4 py-3">B-Tech ICT</td>
+                <td class="px-4 py-3">5</td>
+                <td class="px-4 py-3">110 / 387</td>
                 <td class="px-4 py-3">
                   <span class="px-3 py-1 font-medium bg-yellow-100 text-yellow-800 rounded-xl">Pending</span>
                 </td>
-                <td class="px-4 py-3 text-gray-900">Add - Drop II Closed</td>
+                <td class="px-4 py-3">Add - Drop II Closed</td>
                 <td class="px-4 py-3">
                   <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="5">
                     <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -283,7 +283,7 @@
             </label>
 
             <h3 class="text-xl font-bold text-[#1E3C72] mb-1">Begin/End Preference Collection</h3>
-            <p class="text-xs text-gray-600 mb-4 text-center">Manually toggle Collection window</p>
+            <p class="text-xs text-gray-600 mb-4 text-center">Manually toggle Preference Collection window</p>
 
             <!-- Close Date Display (Visible After Submit) -->
             <div th:if="${registrationCloseDate != null}"
@@ -295,11 +295,24 @@
                         th:text="${registrationStatus != 'open'} ? 'Preference collection Ended' : ${registrationCloseDate}"></span>
               </div>
 
-              <!-- Extend Button -->
-              <button th:if="${registrationStatus == 'open'}" onclick="openExtendModal()" type="button"
-                      class="ml-4 px-3 py-2 text-sm rounded-lg bg-blue-100 text-blue-800 hover:bg-blue-200 transition cursor-pointer">
-                Extend Period
-              </button>
+              <div class="flex flex-col sm:flex-row lg:flex-col gap-3 items-center justify-center">
+                <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3">
+                  <button th:if="${registrationStatus == 'open'}" onclick="openExtendModal()" type="button"
+                          class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">
+                    Extend Period
+                  </button>
+
+                  <button th:if="${registrationStatus == 'open'}" type="button"
+                          class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">
+                    Move to Next Phase
+                  </button>
+                </div>
+
+                <button th:if="${registrationStatus == 'open'}" type="button"
+                        class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">
+                  Declare Results
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -420,8 +433,8 @@
               class="bg-[#B8D7FF] rounded-2xl px-6 py-10 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-101 cursor-pointer group">
         <img th:src="@{/admin/images/create-instance.svg}" alt="create icon"
              class="w-13 h-13 mb-2 mx-auto transition-transform duration-300">
-        <h3 class="text-lg font-bold text-[#1E3C72]">Create Allocation Instance</h3>
-        <p class="text-xs text-gray-600">Start a new allocation session</p>
+        <h3 class="text-lg font-bold text-[#1E3C72]">Create New Term</h3>
+        <p class="text-xs text-gray-600">Start a new Term allocation</p>
       </button>
 
       <!-- Modal -->
@@ -429,8 +442,8 @@
            class="hidden fixed inset-0 z-40 backdrop-blur-sm bg-black/30 flex justify-center items-center px-4">
         <div
                 class="bg-soft-blue-to-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-blue-100 z-50 transition-all">
-          <h2 class="text-2xl font-bold text-[#1E3C72] mb-1 text-center">Create Allocation Instance</h2>
-          <p class="text-sm text-gray-600 text-center mb-6">Fill in the details to create a new Instance</p>
+          <h2 class="text-2xl font-bold text-[#1E3C72] mb-1 text-center">Create New Term</h2>
+          <p class="text-sm text-gray-600 text-center mb-6">Fill in the details to create a new term</p>
 
           <form th:action="@{/admin/create-instance}" method="post" id="createForm" class="space-y-4">
             <!-- Season -->
@@ -510,8 +523,8 @@
               class="bg-[#B8D7FF] rounded-2xl px-6 py-10 text-center shadow-lg transition-all duration-300 transform cursor-pointer group hover:shadow-xl hover:scale-101 disabled:opacity-50 disabled:cursor-not-allowed">
         <img th:src="@{/admin/images/update-instance.svg}" alt="update icon"
              class="w-10 h-10 mb-4 mx-auto transition-transform duration-300">
-        <h3 class="text-lg font-bold text-[#1E3C72]">Update Instance</h3>
-        <p class="text-xs text-gray-600">Permanently updates current instance and associated data</p>
+        <h3 class="text-lg font-bold text-[#1E3C72]">Upload Data</h3>
+        <p class="text-xs text-gray-600">Upload required data for preference collection & allocation</p>
       </button>
 
       <!-- Run Allocation -->
@@ -520,7 +533,7 @@
         <img th:src="@{/admin/images/run-allocation.svg}" alt="run icon"
              class="w-11 h-11 mb-4 mx-auto transition-transform duration-300">
         <h3 class="text-lg font-bold text-[#1E3C72]">Run Allocation</h3>
-        <p class="text-xs text-gray-600">Trigger the backend allocation program</p>
+        <p class="text-xs text-gray-600">Trigger the allocation program</p>
       </button>
 
       <!-- Download Reports -->
@@ -529,7 +542,7 @@
         <img th:src="@{/admin/images/download-reports.svg}" alt="download icon"
              class="w-11 h-11 mb-4 mx-auto transition-transform duration-300">
         <h3 class="text-lg font-bold text-[#1E3C72]">Download Reports</h3>
-        <p class="text-xs text-gray-600">Export Excel reports of preferences/results</p>
+        <p class="text-xs text-gray-600">Download reports of preferences / allocation results</p>
       </button>
     </div>
 
@@ -551,10 +564,9 @@
   const resultStatus = [[${ resultStatus }]];
 </script>
 
-<script src="/utils/general-utility.js"></script>
-<script src="/utils/navbar.js"></script>
-<script src="/utils/status-response.js"></script>
-<script src="/admin/js/dashboard.js"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
+<script th:src="@{/utils/navbar.js}"></script>
+<script type="module" th:src="@{/admin/js/dashboard.js}"></script>
 </body>
 
 </html>
