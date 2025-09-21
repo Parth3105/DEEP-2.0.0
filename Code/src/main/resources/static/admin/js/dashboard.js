@@ -1,13 +1,16 @@
+import ToastManager from '/services/ToastManager.js';
+const toastManager = new ToastManager();
+
 if(instanceCreationError) {
-    printStatusResponse(instanceCreationError);
+    toastManager.printStatusResponse(instanceCreationError)
 }
 
 if(updateInstanceError) {
-    printStatusResponse(updateInstanceError);
+    toastManager.printStatusResponse(instanceCreationError)
 }
 
 if (resultStatus === 'declared' && sessionStorage.getItem("showDeclareToast") === "true") {
-    showToast("Results are successfully declared!", statusColors.OK);
+    toastManager.printStatusResponse({ status: status.OK,  message: "Results are successfully declared!"})
     sessionStorage.removeItem("showDeclareToast");
 }
 
@@ -51,14 +54,14 @@ function handleOpenRegistration(event) {
   const rawValue = dateInput.value.trim();
 
   if (!rawValue) {
-    showToast("Please select a close date.", 'warning');
+    toastManager.printStatusResponse({ status: status.WARNING, message: "Please select a close date."})
     return;
   }
 
   // Parse to Date object
   const parsedDate = new Date(rawValue);
   if (isNaN(parsedDate.getTime())) {
-    showToast("Invalid date selected.");
+    toastManager.printStatusResponse({ status: status.ERROR, message: "Invalid date selected."})
     return;
   }
 
@@ -90,13 +93,13 @@ function handleExtend(event) {
     const rawValue = input.value.trim();
 
     if (!rawValue) {
-      showToast("Please select a new close date.", 'warning');
+      toastManager.printStatusResponse({ status: status.WARNING, message: "Please select a new close date."})
       return;
     }
 
     const parsedDate = new Date(rawValue);
     if (isNaN(parsedDate.getTime())) {
-      showToast("Invalid date.");
+      toastManager.printStatusResponse({ status: status.ERROR, message: "Please select a new close date."})
       return;
     }
 
@@ -170,7 +173,7 @@ function handleDeclareResult() {
 
     if (pendingSemesters.length > 0) {
         const semList = pendingSemesters.join(', ');
-        showToast(`Allocation pending for Semester(s): ${semList}`, statusColors.ERROR);
+        toastManager.printStatusResponse({ status: status.ERROR, message: `Allocation pending for Semester(s): ${semList}`})
         return;
     }
 
@@ -280,3 +283,19 @@ document.addEventListener('click', function (e) {
     }
   }
 });
+
+window.closeNewRegistrationModal = closeNewRegistrationModal;
+window.openRegModal = openRegModal;
+window.closeRegModal = closeRegModal;
+window.handleOpenRegistration = handleOpenRegistration;
+window.openExtendModal = openExtendModal;
+window.closeExtendModal = closeExtendModal;
+window.handleExtend = handleExtend;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.openDeclareRegModal = openDeclareRegModal;
+window.closeDeclareRegModal = closeDeclareRegModal;
+window.handleDeclareResult = handleDeclareResult;
+window.showDetailsPanel = showDetailsPanel;
+window.closeDetailsPanel = closeDetailsPanel;
+window.updatePanelContent = updatePanelContent;

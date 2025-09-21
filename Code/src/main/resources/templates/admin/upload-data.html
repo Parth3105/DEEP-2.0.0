@@ -9,17 +9,14 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>DEEP - Upload data</title>
     <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- <link href="/css/output.css" rel="stylesheet"> -->
+<!--    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>-->
+    <link href="/css/output.css" rel="stylesheet">
 </head>
 
 <body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
-<!-- Toast Display -->
-<!-- <div th:replace="~{common/toast-display::toast-display}"></div> -->
-
 <!-- Navbar -->
-<div th:replace="~{common/student-navbar::student-navbar}"></div>
+<div th:replace="~{common/admin-navbar::admin-navbar}"></div>
 
 <!-- Main Content -->
 <main class="backdrop-blur-lg rounded-3xl px-7 py-4">
@@ -73,7 +70,7 @@
                     </div>
 
                     <!-- Hidden input -->
-                    <input type="file" id="studentFile" accept=".xlsx,.csv" class="hidden" />
+                    <input type="file" id="studentFile" accept=".csv" class="hidden" />
 
                     <!-- Institute Requirements -->
                     <div
@@ -95,7 +92,7 @@
                     </div>
 
                     <!-- Hidden input -->
-                    <input type="file" id="instFile" accept=".xlsx,.csv" class="hidden" />
+                    <input type="file" id="instFile" accept=".csv" class="hidden" />
 
                     <!-- Course Data -->
                     <div
@@ -117,7 +114,7 @@
                     </div>
 
                     <!-- Hidden input -->
-                    <input type="file" id="courseFile" accept=".xlsx,.csv" class="hidden" />
+                    <input type="file" id="courseFile" accept=".csv" class="hidden" />
 
                     <!-- Seat Matrix -->
                     <div
@@ -139,7 +136,7 @@
                     </div>
 
                     <!-- Hidden input -->
-                    <input type="file" id="seatFile" accept=".xlsx,.csv" class="hidden" />
+                    <input type="file" id="seatFile" accept=".csv" class="hidden" />
                 </div>
             </div>
 
@@ -160,22 +157,22 @@
                         </tr>
                         </thead>
                         <tbody id="studentStatusContainer" class="divide-y divide-gray-200">
-                        <!-- JS will insert rows here -->
+
+                            <!-- JS will insert rows here -->
                         </tbody>
                     </table>
                 </div>
 
-                <div id="courseCountContainer" class="mt-4 pt-4">
-
+                <div id="courseCountContainer" class="font-bold mt-4 pt-4">
+                    <!-- JS will insert here -->
                 </div>
             </div>
         </div>
     </div>
 </main>
 
-<script th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
 <script type="module" th:src="@{/admin/js/upload-data.js}"></script>
 </body>
 

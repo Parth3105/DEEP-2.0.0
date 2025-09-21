@@ -1,4 +1,4 @@
-const status = {
+export const status = {
     OK: 200,
     NO_CONTENT: 204,
     WARNING: 299,
@@ -9,10 +9,11 @@ const status = {
     CONFLICT: 409,
     GONE: 410,
     SESSION_TIMEOUT: 419,
-    INTERNAL_SERVER_ERROR: 500
+    INTERNAL_SERVER_ERROR: 500,
+    ERROR: 'ERROR'
 };
 
-const statusColors = {
+export const statusColors = {
     200: "bg-green-600",
     204: "bg-yellow-400",
     299: "bg-yellow-400",
@@ -27,7 +28,7 @@ const statusColors = {
     ERROR: "bg-red-600"
 };
 
-const categoryLabels = {
+export const categoryLabels = {
     'ICTE': 'ICT Electives',
     'TE': 'Technical Electives',
     'SE': 'Science Electives',
@@ -138,3 +139,6 @@ function HandleAdminRoute(url) {
     const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
     window.location.href = `${contextPath}admin/${url}`;
 }
+
+window.HandleStudentRoute = HandleStudentRoute;
+window.HandleAdminRoute = HandleAdminRoute;
