@@ -47,9 +47,9 @@ public class DashboardController {
             if (!isRequirementPresent || !isOfferPresent) {
                 List<String> missingDataMsg = new ArrayList<>();
                 if (!isRequirementPresent)
-                    missingDataMsg.add("Institute Requirements for program:" + program + " and semester:" + semester + " seems to be missing. Ensure that the required data has been uploaded.");
+                    missingDataMsg.add("Institute Requirements for program: " + program + " and semester: " + semester + " seems to be missing. Ensure that the required data has been uploaded.");
                 if (!isOfferPresent)
-                    missingDataMsg.add("Seat Matrix for program:" + program + " and semester:" + semester + " seems to be missing. Ensure that the required data has been uploaded.");
+                    missingDataMsg.add("Seat Matrix for program: " + program + " and semester: " + semester + " seems to be missing. Ensure that the required data has been uploaded.");
                 model.addAttribute("missingData", new ResponseDto(ResponseStatus.BAD_REQUEST, missingDataMsg));
                 return "";
             }

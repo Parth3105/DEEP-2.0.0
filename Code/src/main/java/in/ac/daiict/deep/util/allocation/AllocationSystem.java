@@ -71,9 +71,9 @@ public class AllocationSystem {
 
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR);
         }
-        if(students==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.STUDENT_DATA_NOT_FOUND);
+        if(students==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student data is not available for program:"+program+" & semester: "+semester);
         else if(courses==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.COURSE_DATA_NOT_FOUND);
-        else if(openFor==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.COURSE_OFFERS_NOT_FOUND);
+        else if(openFor==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.SEAT_MATRIX_NOT_FOUND);
         ResponseDto response=allocationInPhase(unmetReqCnt);
         saveOutput();
         return response;

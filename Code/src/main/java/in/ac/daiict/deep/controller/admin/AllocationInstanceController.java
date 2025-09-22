@@ -8,7 +8,6 @@ import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
-import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.config.DBConfig;
@@ -45,7 +44,7 @@ public class AllocationInstanceController {
         String latestInstanceName=instanceNameService.fetchLatestInstance();
         String newInstanceName=(season+"_"+Year+"_"+version).toLowerCase();
         if(instanceNameService.checkIfNewInstanceExists(newInstanceName)){
-            redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.CONFLICT, ResponseMessage.INSTANCE_ALREADY_EXISTS));
+            redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.CONFLICT, ResponseMessage.TERM_ALREADY_EXISTS));
             return "redirect:"+AdminEndpoint.DASHBOARD;
         }
         boolean canCreate=instanceNameService.insertNewInstance(newInstanceName);
