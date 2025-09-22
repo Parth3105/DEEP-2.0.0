@@ -9,7 +9,7 @@
     <link th:href="@{/css/output.css}" rel="stylesheet">
 </head>
 
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 <div class="mx-auto">
     <!-- Header -->
     <div th:replace="~{common/student-navbar::student-navbar}"></div>
@@ -55,9 +55,9 @@
     </div>
 </footer>
 
-<script th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
-<script th:src="@{/student/js/student-faqs.js}"></script>
+<script type="module" th:src="@{/student/js/student-faqs.js}"></script>
 </body>
 
 </html>

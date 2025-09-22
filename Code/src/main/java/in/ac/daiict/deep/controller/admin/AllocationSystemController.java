@@ -1,7 +1,7 @@
 package in.ac.daiict.deep.controller.admin;
 
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
-import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
+import in.ac.daiict.deep.constant.enums.ResultStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
@@ -39,7 +39,7 @@ public class AllocationSystemController {
     @GetMapping(AdminEndpoint.RUN_ALLOCATION_PAGE)
     public String renderRunAllocationPage(Model model){
         // Logic to send all enrollment-phase details containing all required statuses.
-        CompletableFuture<Void> statusFetchFuture=CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchAllEnrollmentPhaseDetails())
+        CompletableFuture<Void> statusFetchFuture=CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchEnrollmentPhaseDetailsByResultState(ResultStateEnum.PENDING.toString()))
                 .thenAccept(registrationStatus -> model.addAttribute("allRequiredStatus",registrationStatus));
 
 /*
@@ -76,12 +76,7 @@ public class AllocationSystemController {
     }
 
     @PostMapping(AdminEndpoint.EXECUTE_ALLOCATION)
-    public String initiateAllocation(@ModelAttribute("executionFilter") List<AllocationReqFilterDto> executionFilter, @RequestParam("registrationStatus") String registrationStatus, RedirectAttributes redirectAttributes){
-        /*CompletableFuture.runAsync(() -> {
-            if (registrationStatus.equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString()))
-                enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection();
-        });*/
-
+    public String initiateAllocation(@ModelAttribute("executionFilter") List<AllocationReqFilterDto> executionFilter, RedirectAttributes redirectAttributes){
         List<CompletableFuture<Void>> futureMultipleAllocationTask=new ArrayList<>();
         for(AllocationReqFilterDto filter: executionFilter){
             futureMultipleAllocationTask.add(CompletableFuture.runAsync(() -> handleAllocation(filter.getProgram(),filter.getSemester(),redirectAttributes)));
@@ -97,6 +92,7 @@ public class AllocationSystemController {
     }
 
     private void handleAllocation(String program, int semester, RedirectAttributes redirectAttributes){
+        enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection(program,semester);
         Map<String,Long> unmetReqCnt=new HashMap<>();
         CompletableFuture<ResponseDto> futureAllocationResponse=CompletableFuture.supplyAsync(() -> allocationSystem.initiateAllocation(program,semester,unmetReqCnt));
         CompletableFuture<Long> futureStudentCount=CompletableFuture.supplyAsync(() -> studentService.countStudentsByProgramAndSemester(program,semester));

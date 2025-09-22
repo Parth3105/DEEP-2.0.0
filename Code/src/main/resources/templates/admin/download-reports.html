@@ -9,202 +9,143 @@
     <link th:href="@{/css/output.css}" rel="stylesheet">
 </head>
 
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
 <!-- Toast Display -->
-<div th:replace="~{common/toast-display::toast-display}"></div>
+ <div th:replace="~{common/toast-display::toast-display}"></div>
 
-<div class="mx-auto">
-    <!-- Header -->
-    <div th:replace="~{common/admin-navbar::admin-navbar}"></div>
+<!-- Header -->
+ <div th:replace="~{common/admin-navbar::admin-navbar}"></div>
 
-    <!-- Main Content -->
-    <main class="backdrop-blur-lg rounded-3xl px-7 py-4">
-        <div class="mx-auto">
-            <div class="bg-white rounded-2xl py-2 px-7 md:px-9 mb-6"
-                 style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                <h1 class="text-xl lg:text-2xl font-bold text-[#1E3C72]">
-                    Download Reports
-                </h1>
+<!-- Main Content -->
+<main class="backdrop-blur-lg rounded-3xl px-7 py-4">
+    <div class="mx-auto">
+        <div class="bg-white rounded-2xl py-2 px-7 md:px-9 mb-6"
+             style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <h1 class="text-xl lg:text-2xl font-bold text-[#1E3C72]">
+                Download Reports
+            </h1>
+        </div>
+
+        <!-- Export Course-wise allocation Section -->
+        <div class="bg-white rounded-2xl shadow-md px-7 py-6 md:px-9 mb-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <!-- Section Header -->
+            <div class="flex items-center mb-9">
+                <img th:src="@{/admin/images/link-blue.svg}" alt="SVG Icon" class="w-5 h-5 mr-3">
+                <h2 class="text-xl font-bold text-[#1E3C72]">Download Course wise Allotments</h2>
             </div>
 
-            <!-- Export Input Data Section -->
-            <div class="bg-white rounded-2xl shadow-md px-7 py-6 md:px-9 mb-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                <!-- Section Header -->
-                <div class="flex items-center mb-9">
-                    <img th:src="@{/admin/images/link-blue.svg}" alt="SVG Icon" class="w-5 h-5 mr-3">
-                    <h2 class="text-xl font-bold text-[#1E3C72]">Export Input Data</h2>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- Course Data -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/course-data.svg}" alt="Course Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Course Data</h3>
-                                <p class="text-xs text-gray-500">Export Course Data in Excel Format</p>
-                            </div>
+            <div class="space-y-8">
+                <!-- Course Data -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <img th:src="@{/admin/images/course-data.svg}" alt="Course Icon" class="w-5 h-5 mb-4 mr-3">
+                        <div>
+                            <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Course-wise Allotments</h3>
+                            <p class="text-xs text-gray-500">Download Data of Students in each course</p>
                         </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="name" value="course-data">
-                            <button type="submit" class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
-                                <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
-                                Export to Excel
-                            </button>
-                        </form>
                     </div>
-
-                    <!-- Institute Requirements -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/instititue-requirements.svg}" alt="Institute Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Institute Requirements</h3>
-                                <p class="text-xs text-gray-500">Export Institute Requirements in Excel Format</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="name" value="institute-requirements">
-                            <button type="submit" class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
-                                <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
-                                Export to Excel
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Course Offerings Details -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/course-offerings-details.svg}" alt="Course Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Course Offerings Details</h3>
-                                <p class="text-xs text-gray-500">Export Course Offerings Details in Excel Format</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="name" value="course-offerings">
-                            <button type="submit" class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer mb-1 sm:mb-0">
-                                <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
-                                Export to Excel
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Export Allocation Result Section -->
-            <div class="bg-white rounded-2xl shadow-md px-7 py-6 md:px-9 mb-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                <!-- Section Header -->
-                <div class="flex items-center mb-9">
-                    <img th:src="@{/admin/images/link-blue.svg}" alt="SVG Icon" class="w-5 h-5 mr-3">
-                    <h2 class="text-xl font-bold text-[#1E3C72]">Export Allocation Results</h2>
-                </div>
-
-                <!-- Semester Selection -->
-                <div class="mb-6 sm:flex sm:items-center">
-                    <label class="block text-lg font-bold text-[#1E3C72] mb-2 sm:mt-1 sm:mr-5">Select Semester :</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button type="button" class="result-semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                data-sem="5">5</button>
-                        <button type="button" class="result-semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                data-sem="6">6</button>
-                        <button type="button" class="result-semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                data-sem="7">7</button>
-                        <button type="button" class="result-semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                data-sem="8">8</button>
-                    </div>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- Allocation results -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/allocation-output.svg}" alt="allocation-output Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Allocation Results</h3>
-                                <p class="text-xs text-gray-500">Export Student-Course allocations</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="semester" class="result-semester-input" value="">
-                            <input type="hidden" name="name" value="allocation-result">
-                            <button type="submit" class="result-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-not-allowed opacity-50 mb-1 sm:mb-0"
-                                    disabled>
-                                <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
-                                Export to Excel
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Seat Summary -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/seat-summary.svg}" alt="seat-summary Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Seat Summary</h3>
-                                <p class="text-xs text-gray-500">Export available seats after allocations</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="semester" class="result-semester-input" value="">
-                            <input type="hidden" name="name" value="seat-summary">
-                            <button type="submit" class="result-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-not-allowed opacity-50 mb-1 sm:mb-0"
-                                    disabled>
-                                <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
-                                Export to Excel
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Course-wise Allotments -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/course-wise-allotments.svg}" alt="course-wise-allotments Icon" class="w-6 h-6 mb-4 ml-[-2px] mr-2">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Course-wise Allotments</h3>
-                                <p class="text-xs text-gray-500">Export Data of Students in each course</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="semester" class="result-semester-input" value="">
-                            <input type="hidden" name="name" value="course-wise-allocation">
-                            <button type="submit" class="result-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] min-w-40 max-w-44 sm:max-w-auto text-white pr-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-not-allowed opacity-50 mb-1 sm:mb-0"
-                                    disabled>
-                                <img th:src="@{/admin/images/zip-file.svg}" alt="Zip Icon" class="w-5 h-6 mr-2">
-                                Export to Zip
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- allocation-failure-logs -->
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex items-center mb-2 sm:mb-0">
-                            <img th:src="@{/admin/images/allocation-failure-logs.svg}" alt="allocation-failure-logs Icon" class="w-5 h-5 mb-4 mr-3">
-                            <div>
-                                <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Allocation Failure Logs</h3>
-                                <p class="text-xs text-gray-500">Export Allocation logs of students with unmet elective requirements</p>
-                            </div>
-                        </div>
-                        <form th:action="@{/admin/download-reports}" method="get">
-                            <input type="hidden" name="semester" class="result-semester-input" value="">
-                            <input type="hidden" name="name" value="failure-log">
-                            <button type="submit" class="result-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] min-w-40 max-w-44 sm:max-w-auto text-white pr-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-not-allowed opacity-50 mb-1 sm:mb-0"
-                                    disabled>
-                                <img th:src="@{/admin/images/text-file.svg}" alt="Text Icon" class="w-5 h-6 mr-2">
-                                Export to Text
-                            </button>
-                        </form>
-                    </div>
+                    <form th:action="@{/admin/download-reports}" method="get">
+                        <input type="hidden" name="name" value="course-allotments">
+                        <button type="submit" data-file-name="course-allotments" class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
+                            <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
+                            Download ZIP
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    </main>
-</div>
 
-<script th:src="@{/utils/general-utility.js}"></script>
+        <!-- Input Data Section -->
+        <div class="bg-white rounded-2xl shadow-md px-7 py-6 md:px-9 mb-6"
+             style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <!-- Section Header -->
+            <div class="flex items-center mb-9">
+                <img th:src="@{/admin/images/link-blue.svg}" alt="SVG Icon" class="w-5 h-5 mr-3">
+                <h2 class="text-xl font-bold text-[#1E3C72]">Download Input Data</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Course Data -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <img th:src="@{/admin/images/course-data.svg}" alt="Course Icon" class="w-5 h-5 mb-4 mr-3">
+                        <div>
+                            <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Course Data</h3>
+                            <p class="text-xs text-gray-500">Download Course Data in Excel Format</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/admin/download-reports}" method="get">
+                        <input type="hidden" name="name" value="course-data">
+                        <button type="submit" data-file-name="course-data"
+                                class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
+                            <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
+                            Download CSV
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Institute Requirements -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <img th:src="@{/admin/images/instititue-requirements.svg}" alt="institute Requirements Icon" class="w-5 h-5 mb-4 mr-3">
+                        <div>
+                            <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Institute Requirements</h3>
+                            <p class="text-xs text-gray-500">Download Institute Requirements in Excel Format</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/admin/download-reports}" method="get">
+                        <input type="hidden" name="name" value="institute-requirements">
+                        <button type="submit" data-file-name="institute-requirements"
+                                class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
+                            <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
+                            Download CSV
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Seat Matrix -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-2 sm:mb-0">
+                        <img th:src="@{/admin/images/course-offerings-details.svg}" alt="Course Icon" class="w-5 h-5 mb-4 mr-3">
+                        <div>
+                            <h3 class="font-bold text-[1.1rem] text-[#1E3C72]">Seat Matrix Details</h3>
+                            <p class="text-xs text-gray-500">Download Seat Matrix Details in Excel Format</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/admin/download-reports}" method="get">
+                        <input type="hidden" name="name" value="seat-matrix">
+                        <button type="submit" data-file-name="seat-matrix"
+                                class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] max-w-44 sm:max-w-auto text-white px-3 py-2 rounded-lg font-medium flex justify-center items-center cursor-pointer">
+                            <img th:src="@{/admin/images/excel-file.svg}" alt="Excel Icon" class="w-5 h-5 mr-2">
+                            Download CSV
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Term Data Section -->
+        <div class="bg-white rounded-2xl shadow-md px-7 py-6 md:px-9"
+             style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <!-- Section Header -->
+            <div class="flex items-center mb-9">
+                <img th:src="@{/admin/images/link-blue.svg}" alt="SVG Icon" class="w-5 h-5 mr-3">
+                <h2 class="text-xl font-bold text-[#1E3C72]">Download Term Data</h2>
+            </div>
+
+            <div class="flex flex-col justify-between gap-6">
+                <div class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
+                    <div id="downloadTermDataFragment" hidden></div>
+                    <div id="downloadTableContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
-<script th:src="@{/admin/js/download-reports.js}"></script>
+<script type="module" th:src="@{/admin/js/download-reports.js}"></script>
 </body>
 </html>

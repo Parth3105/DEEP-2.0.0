@@ -19,7 +19,7 @@ export default class UploadStatusTable {
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    fetch(`${contextPath}admin/refresh-status`, {
+    fetch(`${contextPath}admin/upload-data/refresh-status`, {
       method: "GET",
       headers: { [csrfHeader]: csrfToken }
     })

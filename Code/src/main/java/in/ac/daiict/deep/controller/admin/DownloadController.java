@@ -7,10 +7,10 @@ import in.ac.daiict.deep.constant.uploads.UploadFileNames;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
-import in.ac.daiict.deep.dto.AllocationSummaryDto;
 import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.AllocationReportService;
 import in.ac.daiict.deep.service.AllocationSummaryService;
+import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.UploadService;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +32,7 @@ public class DownloadController {
     private AllocationReportService allocationReportService;
     private UploadService uploadService;
     private AllocationSummaryService allocationSummaryService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
 
     private DataLoader dataLoader;
 
@@ -63,7 +64,8 @@ public class DownloadController {
 
     @GetMapping(AdminEndpoint.REFRESH_TERM_DETAILS)
     public String refreshTermData(Model model){
-        model.addAttribute("downloadTermDetails",allocationSummaryService.fetchAll());
+        model.addAttribute("downloadTermDetails",enrollmentPhaseDetailsService.fetchAllProgramAndSemester());
+        System.out.println(enrollmentPhaseDetailsService.fetchAllProgramAndSemester());
         return FragmentTemplate.DOWNLOAD_TERM_DATA_FRAGMENT;
     }
 
@@ -141,8 +143,8 @@ public class DownloadController {
                 httpServletResponse.getOutputStream().write(ResponseMessage.STUDENT_PREFERENCES_NOT_FOUND.getBytes());
             }
             else {
-                String downloadFilename = "Student Preferences.csv";
-                httpServletResponse.setContentType("text/csv");
+                String downloadFilename = "Student Preferences "+program+" Sem-"+semester+".zip";
+                httpServletResponse.setContentType("application/zip");
                 httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\"" + downloadFilename + "\"");
                 httpServletResponse.getOutputStream().write(byteArrayOutputStream.toByteArray());
                 httpServletResponse.getOutputStream().flush();

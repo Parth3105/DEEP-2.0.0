@@ -4,6 +4,7 @@ import in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto;
 import in.ac.daiict.deep.dto.ProgramSemesterDto;
 import in.ac.daiict.deep.entity.EnrollmentPhaseDetails;
 import in.ac.daiict.deep.entity.compositekeys.EnrollmentPhaseDetailsPK;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -37,7 +38,7 @@ public interface EnrollmentPhaseDetailsRepo extends JpaRepository<EnrollmentPhas
     @Query("SELECT new in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto(epd.program,epd.semester,epd.collectionWindowState) FROM EnrollmentPhaseDetails epd")
     List<EnrollmentPhaseDetailsDto> findAllCollectionWindowState();
 
-    @Query("SELECT new in.ac.daiict.deep.dto.ProgramSemesterDto(epd.program,epd.semester) FROM EnrollmentPhaseDetails epd")
+    @Query("SELECT new in.ac.daiict.deep.dto.ProgramSemesterDto(epd.program,epd.semester) FROM EnrollmentPhaseDetails epd ORDER BY epd.program,epd.semester ASC")
     List<ProgramSemesterDto> findAllProgramAndSemester();
 
     @Query("SELECT epd.collectionWindowState FROM EnrollmentPhaseDetails epd WHERE epd.program=:program AND epd.semester=:semester")
@@ -45,4 +46,8 @@ public interface EnrollmentPhaseDetailsRepo extends JpaRepository<EnrollmentPhas
 
     @Query("SELECT epd.resultState FROM EnrollmentPhaseDetails epd WHERE epd.program=:program AND epd.semester=:semester")
     String findResultStateByProgramAndSemester(@Param("program") String program, @Param("semester") int semester);
+
+    List<EnrollmentPhaseDetails> findByCollectionWindowState(String state);
+
+    List<EnrollmentPhaseDetails> findByResultState(String state, Sort sort);
 }

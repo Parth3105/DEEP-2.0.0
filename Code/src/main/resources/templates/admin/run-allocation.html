@@ -1,175 +1,206 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="context-path" th:content="@{/}" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>DEEP - Run Allocation</title>
     <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
-    <link th:href="@{/css/output.css}" rel="stylesheet">
-    <script th:src="@{https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js}"></script>
+    <link href="/css/output.css" rel="stylesheet">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script> -->
 </head>
 
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
 <!-- Toast Display -->
 <div th:replace="~{common/toast-display::toast-display}"></div>
 
-<div class="mx-auto">
-    <!-- Header -->
-    <div th:replace="~{common/admin-navbar::admin-navbar}"></div>
+<!-- Header -->
+<div th:replace="~{common/admin-navbar::admin-navbar}"></div>
 
-    <!-- Welcome Section -->
-    <main class="backdrop-blur-lg px-7 py-6">
-        <div class="mx-auto">
-            <div class="bg-white rounded-2xl py-2 px-4 md:px-8 mb-6"
-                 style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                <h1 class="text-xl lg:text-2xl font-bold text-[#1E3C72]">
-                    Run Allocation
-                </h1>
+<!-- Welcome Section -->
+<main class="backdrop-blur-lg px-7 py-6">
+    <div class="bg-white rounded-2xl py-2 px-4 md:px-8 mb-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+        <h1 class="text-xl lg:text-2xl font-bold text-[#1E3C72]">
+            Run Allocation
+        </h1>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="flex flex-col lg:flex-row gap-y-6 lg:gap-x-6">
+        <!-- Left Card - Allocate Courses -->
+        <div class="flex-3 bg-white rounded-2xl shadow-md px-4 py-6 md:p-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <!-- Card Header -->
+            <div class="flex items-center mb-6">
+                <img th:src="@{/admin/images/allocate-courses.svg}" alt="Allocate Courses Icon" class="w-7 h-7 mt-[-13px] mr-1">
+                <div>
+                    <h2 class="text-xl font-bold text-[#1E3C72]">Allocate Courses</h2>
+                    <p class="text-xs text-gray-500">Initiate the course allocation</p>
+                </div>
             </div>
 
-            <!-- Main Content Grid -->
-            <div class="flex flex-col lg:flex-row gap-y-6 lg:gap-x-6 mb-6">
+            <div class="flex flex-col gap-6">
+                <div class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
+                    <form id="executeAllocationForm" th:action="@{/admin/run-allocation/execute}" method="post">
+                        <input type="hidden" name="executionFilter" id="executionFilter" />
 
-                <!-- Left Card - Allocate Courses -->
-                <div class="flex-1 bg-white rounded-2xl shadow-md px-4 py-6 md:p-6" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                    <!-- Card Header -->
-                    <div class="flex items-center mb-6">
-                        <img th:src="@{/admin/images/allocate-courses.svg}" alt="Allocate Courses Icon" class="w-7 h-7 mt-[-13px] mr-1">
-                        <div>
-                            <h2 class="text-xl font-bold text-[#1E3C72]">Allocate Courses</h2>
-                            <p class="text-xs text-gray-500">Initiate the course allocation</p>
+                        <div class="overflow-x-auto" id="runAllocationSelectionContainer">
+                            <table class="w-full text-xs lg:text-sm">
+                                <thead>
+                                <tr class="bg-slate-700 text-white">
+                                    <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                                        Program
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                                        Semester
+                                    </th>
+                                    <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                                        Action
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 font-medium text-[#16355f]">
+                                <tr th:each="item, iter : ${allRequiredStatus}"
+                                    th:data-program="${item.program}"
+                                    th:data-semester="${item.semester}"
+                                    class="hover:bg-blue-200 cursor-pointer">
+
+                                    <td class="px-4 py-3" th:text="${item.program}">Program</td>
+                                    <td class="px-4 py-3" th:text="${item.semester}">Semester</td>
+
+                                    <td class="px-4 py-3 flex justify-center mt-1">
+                                        <input type="checkbox" class="row-selector cursor-pointer scale-125" />
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-
-                    <form id="allocationForm" method="post" th:action="@{/admin/execute-allocation/5}" class="ml-8">
-                        <!-- Select Semester Section -->
-                        <div class="mb-6">
-                            <label class="block text-lg font-bold text-[#1E3C72] mb-2">Select Semester :</label>
-                            <div class="flex flex-wrap gap-2">
-                                <button type="button"
-                                        class="semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                        data-sem="5">5
-                                </button>
-                                <button type="button"
-                                        class="semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                        data-sem="6">6
-                                </button>
-                                <button type="button"
-                                        class="semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                        data-sem="7">7
-                                </button>
-                                <button type="button"
-                                        class="semester-btn w-11 h-11 rounded-full bg-1E3C72 text-white text-xl font-medium cursor-pointer"
-                                        data-sem="8">8
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Hidden input to store semester -->
-                        <input type="hidden" name="semester" id="selectedSemester" value="5"/>
-                        <input type="hidden" name="registrationStatus" th:value="${registrationStatus}"/>
-                        <input type="hidden" name="_csrf" th:value="${_csrf.token}" th:if="${_csrf}"/>
-
-                        <!-- Execute Allocation Button -->
-                        <button type="submit" id="executeBtn"
-                                th:disabled="${resultStatus == 'declared'}"
-                                th:classappend="${resultStatus == 'declared'} ? ' opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
-                                class="w-full max-w-48 bg-gradient-to-r from-[#27AE60] to-[#2ECC71] text-white px-2 py-2 rounded-xl font-medium flex items-center justify-center">
-
-                            <!-- Spinner -->
-                            <svg id="spinner" class="hidden animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-
-                            <img th:src="@{/admin/images/execute-allocation.svg}" alt="Execute Icon" class="w-7 h-7 mr-2" id="executeIcon">
-                            Execute Allocation
-                        </button>
                     </form>
                 </div>
 
-                <!-- Execute Allocation Confirmation Modal -->
-                <div id="closeRegModal"
-                     class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-center items-center px-4">
-                    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl border border-blue-100">
-                        <h2 class="text-xl font-bold text-[#1E3C72] mb-2 text-center">Confirm Execution</h2>
-                        <p class="text-sm text-gray-600 text-center mb-4">
-                            ⚠️ Executing the allocation algorithm will automatically close the Preference capturing window.<br>
-                            Are you sure you want to proceed?
+                <!-- Execute Allocation Button -->
+                <div class="flex flex-col gap-4 mt-6 items-center">
+                    <div id="seatMatrixContainer" class="flex justify-end">
+                        <!-- Initial Button -->
+                        <button id="updateSeatBtn"
+                                class="bg-[#1E3C72] text-white px-3 py-1 rounded-xl font-medium flex text-sm items-center cursor-pointer">
+                            <img th:src="@{/admin/images/link.svg}" alt="Download Icon" class="w-4 h-4 mr-2">
+                            Update Seat Matrix
+                        </button>
+                    </div>
+
+                    <!-- Hidden Upload Section -->
+                    <div id="seatMatrixUpload"
+                         class="hidden relative bg-[#1E3C72] text-white rounded-2xl p-6 mt-4 max-w-lg mx-auto shadow-md">
+
+                        <!-- Close (X) button -->
+                        <button id="closeSeatUpload" class="cursor-pointer absolute top-1 right-3 text-white hover:text-red-400 text-xl font-bold">
+                            &times;
+                        </button>
+
+                        <!-- Title with image -->
+                        <div class="flex items-center gap-3 mb-3">
+                            <img th:src="@{/admin/images/link.svg}" alt="Seat Icon" class="w-6 h-6">
+                            <h2 class="text-lg font-semibold">Update Seat Matrix</h2>
+                        </div>
+
+                        <!-- Details text -->
+                        <p class="text-sm mb-4">
+                            Please Upload the Updated seat matrix for the Add - Drop Course Below.
                         </p>
 
-                        <!-- Button Controls -->
-                        <div class="flex justify-end gap-4 pt-2 w-full">
-                            <!-- Cancel Button -->
-                            <button type="button"
-                                    onclick="closeCloseRegModal()"
-                                    class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-[#1E3C72] transition cursor-pointer">
-                                Cancel
-                            </button>
+                        <!-- Upload label -->
+                        <span id="seatFileLabel"
+                              class="w-full mx-auto max-w-sm border-2 border-dashed border-blue-500 px-3 py-4 rounded-2xl text-xs sm:text-sm font-medium text-center cursor-pointer block">
+                  Max Upload size 5 MB
+                </span>
 
-                            <!-- OK Button triggers execute -->
-                            <button type="button"
-                                    onclick="handleExecuteConfirmation()"
-                                    class="px-4 py-2 rounded-lg bg-[#1E3C72] text-white hover:bg-[#16355f] transition cursor-pointer">
-                                OK
-                            </button>
+                        <!-- Upload button -->
+                        <div class="flex gap-3 items-center mt-4 w-full justify-center">
+                  <span id="seatUploadBtn"
+                        class="bg-green-500 hover:bg-green-600 font-medium text-xs sm:text-sm px-6 py-2 rounded-3xl transition-colors cursor-pointer">
+                    Upload
+                  </span>
                         </div>
                     </div>
+
+                    <button type="submit" id="executeBtn" th:disabled="${resultStatus == 'declared'}"
+                            th:classappend="${resultStatus == 'declared'} ? ' opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'"
+                            class="w-full max-w-48 bg-gradient-to-r from-[#27AE60] to-[#2ECC71] text-white px-2 py-2 rounded-xl font-medium flex items-center justify-center">
+
+                        <!-- Spinner -->
+                        <svg id="spinner" class="hidden animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+
+                        <img th:src="@{/admin/images/execute-allocation.svg}" alt="Execute Icon" class="w-7 h-7 mr-2" id="executeIcon">
+                        Execute Allocation
+                    </button>
                 </div>
-
-                <!-- Right Card - Allocation Summary -->
-                <div class="flex-2 bg-white rounded-2xl shadow-md px-4 py-6 sm:px-6 sm:py-5" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
-                    <!-- Card Header -->
-                    <div class="flex items-center mb-6">
-                        <img th:src="@{/admin/images/allocation-summary.svg}" alt="Allocation Summary Icon" class="w-6 h-6 mt-1 mr-1">
-                        <h2 class="text-xl font-bold text-[#1E3C72]">Allocation Summary</h2>
-                    </div>
-
-                    <!-- Summary Cards -->
-                    <div class="flex flex-col sm:flex-row gap-6 justify-between">
-                        <!-- Allocation Status -->
-                        <div class="bg-[#AADAF9] flex-1 flex flex-col justify-center items-center rounded-2xl mx-4 sm:mx-0 px-6 text-center min-h-[170px]">
-                            <div class="mb-6">
-                                <span class="text-xl font-bold text-black">Allocation Status</span>
-                            </div>
-                            <div id="allocation-status" class="text-white px-7 py-2 rounded-xl font-medium text-lg">
-                                <span id="allocation-status-text" class="mb-2">Yet to Run</span>
-                            </div>
-                        </div>
-
-                        <!-- Total Students Allocated -->
-                        <div class="bg-[#AADAF9] flex-1 flex flex-col justify-center items-center rounded-2xl mx-4 sm:mx-0 px-6 text-center min-h-[170px]">
-                            <div class="mb-4">
-                                <span class="text-xl font-bold text-black">Students Successfully Allocated</span>
-                            </div>
-                            <div id="allocated-count" class="text-5xl font-bold text-gray-800 mb-2">--</div>
-                        </div>
-
-                        <!-- Students Not Allocated -->
-                        <div class="bg-[#AADAF9] flex-1 flex flex-col justify-center items-center rounded-2xl mx-4 sm:mx-0 px-6 text-center min-h-[170px]">
-                            <div class="mb-4">
-                                <span class="text-xl font-bold text-black">Students Unsuccessfully Allocated</span>
-                            </div>
-                            <div id="unallocated-count" class="text-5xl font-bold text-gray-800 mb-2">--</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Download Reports Button -->
-            <div class="mb-6 flex justify-center sm:block">
-                <button onclick="HandleAdminRoute('download-reports')" class="bg-[#1E3C72] text-white px-4 py-3 rounded-lg font-medium flex text-md items-center cursor-pointer">
-                    <img th:src="@{/admin/images/link.svg}" alt="Download Icon" class="w-6 h-6 mr-2">
-                    Download Reports
-                </button>
             </div>
         </div>
-    </main>
-</div>
+
+        <!-- Execute Allocation Confirmation Modal -->
+        <div id="closeRegModal"
+             class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-center items-center px-4">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl border border-blue-100">
+                <h2 class="text-xl font-bold text-[#1E3C72] mb-2 text-center">Confirm Execution</h2>
+                <p class="text-sm text-gray-600 text-center mb-4">
+                    ⚠️ Executing the allocation algorithm will automatically close the Preference capturing window.<br>
+                    Are you sure you want to proceed?
+                </p>
+
+                <!-- Button Controls -->
+                <div class="flex justify-end gap-4 pt-2 w-full">
+                    <!-- Cancel Button -->
+                    <button type="button"
+                            onclick="closeCloseRegModal()"
+                            class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-[#1E3C72] transition cursor-pointer">
+                        Cancel
+                    </button>
+
+                    <!-- OK Button triggers execute -->
+                    <button type="button"
+                            onclick="handleExecuteConfirmation()"
+                            class="px-4 py-2 rounded-lg bg-[#1E3C72] text-white hover:bg-[#16355f] transition cursor-pointer">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Card - Allocation Summary -->
+        <div class="flex-10 bg-white rounded-2xl shadow-md px-4 py-6 sm:px-6 sm:py-5" style="box-shadow: 0px 2px 27px -5px rgba(0,0,0,0.2);">
+            <!-- Card Header -->
+            <div class="flex items-center mb-6">
+                <img th:src="@{/admin/images/allocation-summary.svg}" alt="Allocation Summary Icon" class="w-6 h-6 mt-1 mr-1">
+                <div>
+                    <h2 class="text-xl font-bold text-[#1E3C72]">Allocation Summary</h2>
+                    <p class="text-xs text-gray-500">View the allocation algorithm's summary</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-between gap-6">
+                <div class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
+                    <div id="runAllocationTableContainer"></div>
+                </div>
+
+                <!-- Download Reports Button -->
+                <div class="flex justify-center lg:justify-end ">
+                    <button onclick="HandleAdminRoute('download-reports')"
+                            class="bg-[#1E3C72] text-white px-4 py-3 rounded-lg font-medium flex text-md items-center cursor-pointer">
+                        <img th:src="@{/admin/images/link.svg}" alt="Download Icon" class="w-6 h-6 mr-2">
+                        Download Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
 <script th:inline="javascript">
     const semester = [[${semester != null ? semester : 5}]];
@@ -177,9 +208,8 @@
     const registrationStatus = [[${registrationStatus}]];
 </script>
 
-<script th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
-<script th:src="@{/admin/js/run-allocation.js}"></script>
+<script type="module" th:src="@{/admin/js/run-allocation.js}"></script>
 </body>
 </html>

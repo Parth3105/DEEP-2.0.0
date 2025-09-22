@@ -1,0 +1,17 @@
+<div th:fragment="dashboard-phase-summary">
+  <div id="phaseSummaryFragment">
+    <div th:each="detail, iter : ${enrollmentPhaseDetails}"
+         class="phase-status"
+         th:data-program="${detail.program}"
+         th:data-semester="${detail.semester}"
+         th:data-totalStudents="${detail.totalStudents}"
+         th:data-preferenceSubmissionCnt="${detail.preferenceSubmissionCnt}"
+         th:data-allocationState="${detail.allocationState}"
+         th:data-enrollmentPhase="${detail.enrollmentPhase}"
+         th:data-resultState="${detail.resultState}"
+         th:data-collectionWindowState="${detail.collectionWindowState}"
+         th:data-endDate="${detail.endDate}"
+         th:data-index="${iter.index}">
+    </div>
+  </div>
+</div>

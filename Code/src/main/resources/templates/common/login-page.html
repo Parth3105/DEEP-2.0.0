@@ -8,7 +8,7 @@
     <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
     <link th:href="@{/css/output.css}" rel="stylesheet">
 </head>
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
 <!-- Toast Display -->
 <div th:replace="~{common/toast-display::toast-display}"></div>
@@ -136,8 +136,7 @@
     /*]]>*/
 </script>
 
-<script th:src="@{/utils/general-utility.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
-<script th:src="@{/student/js/login-page.js}"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/student/js/login-page.js}"></script>
 </body>
 </html>

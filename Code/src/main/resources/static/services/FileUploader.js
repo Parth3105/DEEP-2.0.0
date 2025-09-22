@@ -1,38 +1,70 @@
 export default class FileUploader {
-  constructor({ type, inputId, labelId, btnId, uploadUrl, maxLength = 30 }) {
-    this.type = type;
-    this.fileInput = document.getElementById(inputId);
-    this.fileLabel = document.getElementById(labelId);
-    this.uploadBtn = document.getElementById(btnId);
-    this.uploadUrl = uploadUrl;
-    this.maxLength = maxLength;
+  constructor({ type, inputId, labelId, btnId, uploadUrl, maxLength = 30, previewId }) {
+      this.type = type;
+      this.fileInput = document.getElementById(inputId);
+      this.fileLabel = document.getElementById(labelId);
+      this.uploadBtn = document.getElementById(btnId);
+      this.uploadUrl = uploadUrl;
+      this.maxLength = maxLength;
+      this.previewBox = previewId ? document.getElementById(previewId) : null;
 
-    if (!this.fileInput || !this.fileLabel || !this.uploadBtn) {
-      console.warn(`FileUploader: Missing elements for ${labelId}`);
-      return;
+      if (!this.fileInput || !this.fileLabel || !this.uploadBtn) {
+        console.warn(`FileUploader: Missing elements for ${labelId}`);
+        return;
+      }
+
+      this.initFileSelector();
+      this.initUploadButton();
     }
 
-    this.initFileSelector();
-    this.initUploadButton();
-  }
+    initFileSelector() {
+      this.fileLabel.addEventListener("click", () => this.fileInput.click());
 
-  initFileSelector() {
-    this.fileLabel.addEventListener("click", () => this.fileInput.click());
+      this.fileInput.addEventListener("change", () => {
+        if (this.fileInput.files.length > 0) {
+          let file = this.fileInput.files[0];
+          let name = file.name;
 
-    this.fileInput.addEventListener("change", () => {
-      if (this.fileInput.files.length > 0) {
-        let name = this.fileInput.files[0].name;
-        if (name.length > this.maxLength) {
-          const ext = name.substring(name.lastIndexOf("."));
-          const base = name.substring(0, this.maxLength - ext.length - 3);
-          name = base + "..." + ext;
+          // truncate if too long
+          if (name.length > this.maxLength) {
+            const ext = name.substring(name.lastIndexOf("."));
+            const base = name.substring(0, this.maxLength - ext.length - 3);
+            name = base + "..." + ext;
+          }
+          this.fileLabel.textContent = name;
+
+          // show preview if available
+          if (this.previewBox) {
+            this.showFilePreview(file);
+          }
+
+        } else {
+          this.fileLabel.textContent = "Max Upload size 5 MB";
+          if (this.previewBox) {
+            this.previewBox.innerHTML = "<p>No file selected</p>";
+            this.previewBox.classList.add("hidden");
+          }
         }
-        this.fileLabel.textContent = name;
-      } else {
-        this.fileLabel.textContent = "Max Upload size 5 MB";
-      }
-    });
-  }
+      });
+    }
+
+    showFilePreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split("\n").slice(0, 5); // first 5 lines
+
+        let previewHtml = `
+          <p><strong>File:</strong> ${file.name} (${(file.size / 1024).toFixed(1)} KB)</p>
+          <p class="mt-2 font-semibold">Preview:</p>
+          <pre class="text-[10px] sm:text-xs bg-gray-100 rounded p-2 overflow-x-auto">${lines.join("\n")}</pre>
+        `;
+        this.previewBox.innerHTML = previewHtml;
+        this.previewBox.classList.remove("hidden");
+      };
+
+      reader.readAsText(file);
+    }
 
   initUploadButton() {
     this.uploadBtn.addEventListener("click", () => this.uploadFile());

@@ -1,5 +1,8 @@
+import ToastManager from '/services/ToastManager.js';
+const toastManager = new ToastManager();
+
 if(renderResponse) {
-    printStatusResponse(renderResponse);
+    toastManager.printStatusResponse(renderResponse)
 }
 
 let selectedSemester = null;
@@ -51,7 +54,7 @@ function HandleDownloadButtonClick(downloadBtns) {
             e.preventDefault();
 
             if (!selectedSemester) {
-                showToast('Please select a semester first!');
+                toastManager.printStatusResponse({ status: status.WARNING,  message: "Please select a semester first!" });
                 return;
             }
 
@@ -98,8 +101,7 @@ function HandleDownloadButtonClick(downloadBtns) {
                     window.URL.revokeObjectURL(url);
                 }
             } catch (err) {
-                console.error("Fetch error:", err);
-                showToast("Something went wrong due to Network Error. Please contact support.", statusColors.ERROR);
+                toastManager.printStatusResponse({ status: status.ERROR,  message: "Something went wrong due to Network Error. Please contact support." });
             } finally {
                 // Always restore button after fetch resolves or fails
                 this.innerHTML = originalText;
@@ -236,3 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+window.HandleSemesterSelection = HandleSemesterSelection;
+window.InitializeDownloadButtons = InitializeDownloadButtons;
+window.HandleDownloadButtonClick = HandleDownloadButtonClick;
+window.submitWithPath = submitWithPath;

@@ -13,19 +13,14 @@ import in.ac.daiict.deep.service.AllocationSummaryService;
 import in.ac.daiict.deep.service.PreferenceCollectionTaskManager;
 import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.StudentService;
-import in.ac.daiict.deep.util.status.RegistrationCloseDate;
-import in.ac.daiict.deep.util.status.RegistrationStatus;
-import in.ac.daiict.deep.util.status.ResultStatus;
-import in.ac.daiict.deep.util.status.UpdateInstanceStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +62,8 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
 
         // Update collection window's state and end date.
         int updateStatus=enrollmentPhaseDetailsRepo.updateCollectionWindowStateAndCloseDate(program, semester, closeDate, CollectionWindowStateEnum.OPEN.toString());
-        preferenceCollectionTaskManager.scheduleCollection(program,semester,closeDate.atTime(23,59));
+        if(closeDate.isBefore(LocalDate.now())) updateOnEndingPreferenceCollection(program, semester);
+        else preferenceCollectionTaskManager.scheduleCollection(program,semester,closeDate.atTime(23,59));
         return new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
     }
 
@@ -96,34 +92,12 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
     }
 
     @Override
-    public List<EnrollmentPhaseDetailsDto> fetchAllEnrollmentPhaseDetails() {
-        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsList=enrollmentPhaseDetailsRepo.findAll();
-        return modelMapper.map(enrollmentPhaseDetailsList,new TypeToken<List<EnrollmentPhaseDetailsDto>>(){}.getType());
-    }
+    public List<EnrollmentPhaseDetailsDto> fetchEnrollmentPhaseDetailsByResultState(String resultState) {
+        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsList=enrollmentPhaseDetailsRepo.findByResultState(resultState,Sort.by("program","semester").ascending());
 
-    @Override
-    public String fetchCollectionWindowState(String program, int semester) {
-        return enrollmentPhaseDetailsRepo.findCollectionWindowStateByProgramAndSemester(program, semester);
-    }
-
-    @Override
-    public String fetchResultState(String program, int semester) {
-        return enrollmentPhaseDetailsRepo.findResultStateByProgramAndSemester(program, semester);
-    }
-
-    @Override
-    public EnrollmentPhaseDetailsDto fetchEnrollmentPhaseDetailsByProgramAndSemester(String program, int semester) {
-        EnrollmentPhaseDetails enrollmentPhaseDetails=enrollmentPhaseDetailsRepo.findById(new EnrollmentPhaseDetailsPK(program,semester)).orElse(null);
-        return modelMapper.map(enrollmentPhaseDetails, EnrollmentPhaseDetailsDto.class);
-    }
-
-    @Override
-    public List<EnrollmentPhaseDetailsDto> fetchDashboardDetails() {
-        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsList=enrollmentPhaseDetailsRepo.findAll();
         List<CompletableFuture<EnrollmentPhaseDetailsDto>> futureEnrollmentPhaseDetailsPreparation=new ArrayList<>();
-
         for(EnrollmentPhaseDetails enrollmentPhaseDetails: enrollmentPhaseDetailsList){
-            CompletableFuture<EnrollmentPhaseDetailsDto> futureEnrollmentPhaseDetailsDto=CompletableFuture.supplyAsync(() -> prepareEnrollmentPhase(enrollmentPhaseDetails));
+            CompletableFuture<EnrollmentPhaseDetailsDto> futureEnrollmentPhaseDetailsDto=CompletableFuture.supplyAsync(() -> prepareEnrollmentPhaseDetail(enrollmentPhaseDetails));
             futureEnrollmentPhaseDetailsPreparation.add(futureEnrollmentPhaseDetailsDto);
         }
 
@@ -144,13 +118,67 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
         return enrollmentPhaseDetailsDtoList;
     }
 
-    private EnrollmentPhaseDetailsDto prepareEnrollmentPhase(EnrollmentPhaseDetails enrollmentPhaseDetails){
+    @Override
+    public String fetchCollectionWindowState(String program, int semester) {
+        return enrollmentPhaseDetailsRepo.findCollectionWindowStateByProgramAndSemester(program, semester);
+    }
+
+    @Override
+    public String fetchResultState(String program, int semester) {
+        return enrollmentPhaseDetailsRepo.findResultStateByProgramAndSemester(program, semester);
+    }
+
+    @Override
+    public EnrollmentPhaseDetailsDto fetchEnrollmentPhaseDetailsByProgramAndSemester(String program, int semester) {
+        EnrollmentPhaseDetails enrollmentPhaseDetails=enrollmentPhaseDetailsRepo.findById(new EnrollmentPhaseDetailsPK(program,semester)).orElse(null);
+        return modelMapper.map(enrollmentPhaseDetails, EnrollmentPhaseDetailsDto.class);
+    }
+
+    @Override
+    public List<EnrollmentPhaseDetailsDto> fetchDashboardDetails() {
+        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsList=enrollmentPhaseDetailsRepo.findAll(Sort.by("program","semester").ascending());
+
+        List<CompletableFuture<EnrollmentPhaseDetailsDto>> futureEnrollmentPhaseDetailsPreparation=new ArrayList<>();
+        for(EnrollmentPhaseDetails enrollmentPhaseDetails: enrollmentPhaseDetailsList){
+            CompletableFuture<EnrollmentPhaseDetailsDto> futureEnrollmentPhaseDetailsDto=CompletableFuture.supplyAsync(() -> prepareEnrollmentPhaseDetail(enrollmentPhaseDetails));
+            futureEnrollmentPhaseDetailsPreparation.add(futureEnrollmentPhaseDetailsDto);
+        }
+
+        CompletableFuture.allOf(futureEnrollmentPhaseDetailsPreparation.toArray(new CompletableFuture[0])).join();
+
+        List<EnrollmentPhaseDetailsDto> enrollmentPhaseDetailsDtoList=new ArrayList<>();
+        try {
+            for (CompletableFuture<EnrollmentPhaseDetailsDto> futureEnrollmentPhaseDetailsDto : futureEnrollmentPhaseDetailsPreparation) enrollmentPhaseDetailsDtoList.add(futureEnrollmentPhaseDetailsDto.get());
+        } catch (InterruptedException | ExecutionException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt(); // Restore interrupt
+                log.warn("Thread was interrupted while waiting enrollment phase details.", e);
+            } else
+                log.error("Async task to fetch/prepare enrollment phase details failed with error: {}", e.getCause().getMessage(), e.getCause());
+
+            return null;
+        }
+        return enrollmentPhaseDetailsDtoList;
+    }
+
+    private EnrollmentPhaseDetailsDto prepareEnrollmentPhaseDetail(EnrollmentPhaseDetails enrollmentPhaseDetails){
         String allocationState= AllocationStateEnum.PENDING.toString();
         if(allocationSummaryService.checkIfExists(enrollmentPhaseDetails.getProgram(), enrollmentPhaseDetails.getSemester())) allocationState=AllocationStateEnum.ALLOCATED.toString();
         long totalStudents=studentService.countStudentsByProgramAndSemester(enrollmentPhaseDetails.getProgram(),enrollmentPhaseDetails.getSemester());
         long prefSubmissionCnt=studentService.countEnrolledStudents();
         return new EnrollmentPhaseDetailsDto(enrollmentPhaseDetails.getProgram(),enrollmentPhaseDetails.getSemester(),enrollmentPhaseDetails.getEnrollmentPhase(),enrollmentPhaseDetails.getCollectionWindowState(),enrollmentPhaseDetails.getEndDate(),enrollmentPhaseDetails.getResultState(),allocationState,totalStudents,prefSubmissionCnt);
     }
+
+    @Override
+    public List<EnrollmentPhaseDetails> fetchDetailsWithOpenCollectionWindow() {
+        return enrollmentPhaseDetailsRepo.findByCollectionWindowState(CollectionWindowStateEnum.OPEN.toString());
+    }
+
+    @Override
+    public List<ProgramSemesterDto> fetchAllProgramAndSemester() {
+        return enrollmentPhaseDetailsRepo.findAllProgramAndSemester();
+    }
+
     /*
     @Override
     public EnrollmentPhaseDetailsDto fetchAllStatus() {

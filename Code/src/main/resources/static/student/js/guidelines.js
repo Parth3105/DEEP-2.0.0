@@ -1,3 +1,5 @@
+import { guidelines } from "/utils/general-utility.js";
+
 const guidelineContainer = document.getElementById("guidelineTimeline");
 
 if (!guidelines || guidelines.length === 0) {

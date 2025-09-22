@@ -1,3 +1,5 @@
+import { status, statusColors } from '/utils/general-utility.js';
+
 export default class StatusLog {
   constructor(containerId) {
     this.container = document.getElementById(containerId);

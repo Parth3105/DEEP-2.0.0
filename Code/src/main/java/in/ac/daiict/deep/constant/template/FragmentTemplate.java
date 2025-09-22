@@ -6,4 +6,5 @@ public class FragmentTemplate {
     public static String ALLOCATION_SUMMARY_FRAGMENT="fragments/allocation-summary :: allocation-summary";
     public static String DOWNLOAD_TERM_DATA_FRAGMENT="fragments/download-term-data :: download-term-data";
     public static String ENROLLMENT_PHASE_DETAILS="fragments/dashboard-phase-summary :: dashboard-phase-summary";
+    public static String TOAST_MESSAGE_DETAILS="fragments/toast-messages :: toast-messages";
 }

@@ -50,6 +50,7 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
     }
 
     public void closeWindow(String program, int semester){
+        System.out.println("Ending preference Collection");
         Map<Integer,ScheduledFuture<?>> semesterBased=preferenceCollectionTasks.get(program);
         if(semesterBased==null) return;
 
@@ -60,6 +61,8 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
                 ResponseDto responseDto = enrollmentPhaseDetailsService.autoCloseRegistration(program, semester);
                 semesterBased.remove(semester);
                 if(preferenceCollectionTasks.get(program).isEmpty()) preferenceCollectionTasks.remove(program);
+
+                System.out.println("Preference Collection ended.");
             } catch (Exception e){
                 log.error("Failed to close Preference-Collection Window due to error: {}",e.getMessage(),e);
                 scheduleCollection(program, semester, LocalDateTime.now().plusDays(1));

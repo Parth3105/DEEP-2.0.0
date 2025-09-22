@@ -1,0 +1,10 @@
+<div th:fragment="download-term-data">
+    <div id="downloadTermDataFragment">
+        <div th:each="p, iter : ${downloadTermDetails}"
+             class="download-allocation-record"
+             th:data-program="${p.program}"
+             th:data-semester="${p.semester}"
+             th:data-index="${iter.index}">
+        </div>
+    </div>
+</div>

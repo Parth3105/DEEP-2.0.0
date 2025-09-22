@@ -8,5 +8,6 @@ import java.util.List;
 public interface AllocationSummaryService {
     void insertAllocationSummary(AllocationSummary allocationSummary);
     List<AllocationSummaryDto> fetchAll();
+    List<AllocationSummaryDto> fetchAllWithCalculatedTotalStudents();
     boolean checkIfExists(String program, int semester);
 }

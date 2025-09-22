@@ -11,7 +11,16 @@ import lombok.Setter;
 @Getter
 public class AllocationSummaryDto {
     private String program;
-    private int semester;
-    private int allocatedCount;
-    private int unAllocatedCount;
+    private long semester;
+    private long allocatedCount;
+    private long unAllocatedCount;
+    private long totalStudents;
+
+    public AllocationSummaryDto(String program, long semester, long allocatedCount, long unAllocatedCount) {
+        this.program = program;
+        this.semester = semester;
+        this.allocatedCount = allocatedCount;
+        this.unAllocatedCount = unAllocatedCount;
+        totalStudents = allocatedCount+unAllocatedCount;
+    }
 }

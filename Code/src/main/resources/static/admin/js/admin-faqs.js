@@ -1,3 +1,5 @@
+import { adminFAQs } from "/utils/general-utility.js";
+
 const container = document.getElementById('faqContainer');
 
 if (!adminFAQs || adminFAQs.length === 0) {

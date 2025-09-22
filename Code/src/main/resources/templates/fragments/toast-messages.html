@@ -1,0 +1,25 @@
+<div th:fragment="toast-messages">
+  <!-- Missing data -->
+  <div th:if="${missingData}"
+       th:data-status="${missingData.status}"
+       th:data-msg="${missingData.messages}"
+       class="toast-data"></div>
+
+  <!-- Internal server error -->
+  <div th:if="${internalServerError}"
+       th:data-status="${internalServerError.status}"
+       th:data-msg="${internalServerError.message}"
+       class="toast-data"></div>
+
+  <!-- Preference collection status -->
+  <div th:if="${preferenceCollectionWindowStatus}"
+       th:data-status="${preferenceCollectionWindowStatus.status}"
+       th:data-msg="${preferenceCollectionWindowStatus.message}"
+       class="toast-data"></div>
+
+  <!-- Extend period error -->
+  <div th:if="${notExtendable}"
+       th:data-status="${notExtendable.status}"
+       th:data-msg="${notExtendable.message}"
+       class="toast-data"></div>
+</div>

@@ -1,5 +1,8 @@
+import ToastManager from '/services/ToastManager.js';
+const toastManager = new ToastManager();
+
 if(renderResponse) {
-    printStatusResponse(renderResponse);
+    toastManager.printStatusResponse(renderResponse)
 }
 
 function submitWithPath(event) {
@@ -10,3 +13,5 @@ function submitWithPath(event) {
         window.location.href = `${contextPath}admin/allocation-results/${encodeURIComponent(sid)}`;
     }
 }
+
+window.submitWithPath = submitWithPath;

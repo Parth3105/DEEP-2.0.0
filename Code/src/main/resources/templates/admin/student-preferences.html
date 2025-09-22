@@ -10,7 +10,7 @@
   <script th:src="@{https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js}"></script>
 </head>
 
-<body class="min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
 
 <!-- Toast Display -->
 <div th:replace="~{common/toast-display::toast-display}"></div>
@@ -188,10 +188,9 @@
   /*]]>*/
 </script>
 
-<script th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
 <script th:src="@{/utils/navbar.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
-<script th:src="@{/admin/js/student-preferences.js}"></script>
+<script type="module" th:src="@{/admin/js/student-preferences.js}"></script>
 
 </body>
 </html>

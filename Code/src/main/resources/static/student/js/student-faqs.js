@@ -1,3 +1,5 @@
+import { studentFAQs } from "/utils/general-utility.js";
+
 const container = document.getElementById('faqContainer');
 
 if (!studentFAQs || studentFAQs.length === 0) {

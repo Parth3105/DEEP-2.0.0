@@ -4,6 +4,7 @@ import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
+import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -51,7 +52,7 @@ public class DashboardController {
                 if (!isOfferPresent)
                     missingDataMsg.add("Seat Matrix for program: " + program + " and semester: " + semester + " seems to be missing. Ensure that the required data has been uploaded.");
                 model.addAttribute("missingData", new ResponseDto(ResponseStatus.BAD_REQUEST, missingDataMsg));
-                return "";
+                return FragmentTemplate.TOAST_MESSAGE_DETAILS;
             }
         } catch (ExecutionException | InterruptedException e) {
             if(e instanceof InterruptedException){
@@ -60,29 +61,32 @@ public class DashboardController {
             }
             else log.error("Async task to verify the existence of data failed with error: {}", e.getCause().getMessage(), e.getCause());
             model.addAttribute("internalServerError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-            return "";
+            return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
-
-        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program,semester,closeDate);
-        model.addAttribute("preferenceCollectionWindowStatus",responseDto);
-        return "";
+        ResponseDto responseDto = enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program, semester, closeDate);
+        model.addAttribute("preferenceCollectionWindowStatus", responseDto);
+        return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
 
     @PostMapping(AdminEndpoint.EXTEND_COLLECTION_PERIOD)
     public String extendCollectionPeriod(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("close-date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate closeDate, Model model){
+        System.out.println("Reached");
+
         if(!enrollmentPhaseDetailsService.fetchCollectionWindowState(program,semester).equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString())){
             model.addAttribute("notExtendable",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.CANNOT_EXTEND_PERIOD));
-            return "";
+            return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
-        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program,semester,closeDate);
-        model.addAttribute("preferenceCollectionWindowStatus",responseDto);
-        return "";
+        ResponseDto responseDto = enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program, semester, closeDate);
+        model.addAttribute("preferenceCollectionWindowStatus", responseDto);
+        return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
 
     @PostMapping(AdminEndpoint.END_COLLECTION)
     public String endCollection(@RequestParam("program") String program, @RequestParam("semester") int semester, Model model){
+        System.out.println(program);
+        System.out.println(semester);
         enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection(program,semester);
-        return "";
+        return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
 
     @PostMapping(AdminEndpoint.DECLARE_RESULTS)

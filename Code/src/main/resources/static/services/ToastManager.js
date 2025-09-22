@@ -21,11 +21,8 @@ export default class ToastManager {
       message = optionalMessage;
     }
 
-    const statusEntry = Object.entries(status).find(([_, code]) => code === statusCode);
+    const statusEntry = Object.entries(status).find(([_, code]) => code == statusCode);
     const [statusKey] = statusEntry || [];
-    console.log(statusEntry)
-    console.log(statusKey)
-    console.log(statusColors[status[statusKey]])
     const color = statusColors[status[statusKey]] || 'bg-red-600';
 
     if (message) this.enqueueToast(message, color);

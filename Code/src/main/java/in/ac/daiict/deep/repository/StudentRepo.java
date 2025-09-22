@@ -30,7 +30,7 @@ public interface StudentRepo extends JpaRepository<Student,String>{
     long countByHasEnrolled(boolean hasEnrolled);
     List<Student> findByProgramAndSemester(String program, int semester);
 
-    @Query("SELECT new in.ac.daiict.deep.dto.UploadStatusDto(s.program,s.semester,COUNT(s)) FROM Student s GROUP BY s.program, s.semester")
+    @Query("SELECT new in.ac.daiict.deep.dto.UploadStatusDto(s.program,s.semester,COUNT(s)) FROM Student s GROUP BY s.program, s.semester ORDER BY s.program, s.semester ASC")
     List<UploadStatusDto> findAllCountByProgramAndSem();
 
     @Query("SELECT DISTINCT new in.ac.daiict.deep.dto.ProgramSemesterDto(s.program,s.semester) FROM Student s")

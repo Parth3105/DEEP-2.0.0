@@ -1,0 +1,13 @@
+<div th:fragment="dashboard-phase-summary">
+  <div id="allocationSummaryFragment">
+    <div th:each="detail, iter : ${allocationSummary}"
+         class="phase-status"
+         th:data-program="${detail.program}"
+         th:data-semester="${detail.semester}"
+         th:data-allocatedCount="${detail.allocatedCount}"
+         th:data-unAllocatedCount="${detail.unAllocatedCount}"
+         th:data-totalStudents="${detail.totalStudents}"
+         th:data-index="${iter.index}">
+    </div>
+  </div>
+</div>

@@ -1,18 +1,20 @@
+import ToastManager from '/services/ToastManager.js';
+const toastManager = new ToastManager();
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Check for login error in URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('error')) {
-        showToast('Invalid username or password.', statusColors.ERROR);
+        toastManager.printStatusResponse({ status: status.ERROR,  message: "Invalid username or password." })
     }
 
     // Session expired response
     if (sessionExpired) {
-        printStatusResponse(sessionExpired);
+        toastManager.printStatusResponse(sessionExpired)
     }
 
     // Reset password response
     if (resetResponse) {
-        printStatusResponse(resetResponse);
+        toastManager.printStatusResponse(resetResponse)
     }
 });
 
@@ -38,3 +40,6 @@ function togglePasswordVisibility() {
     icon.src = isPassword ? `${contextPath}student/images/view.svg` : `${contextPath}student/images/close-eye.svg`;
     icon.alt = isPassword ? 'Hide password' : 'Show password';
 }
+
+window.handleLoginSubmit = handleLoginSubmit;
+window.togglePasswordVisibility = togglePasswordVisibility;

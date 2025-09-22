@@ -37,7 +37,7 @@ export const categoryLabels = {
     'HASSE': 'Humanities and Social Sciences Electives'
 };
 
-const studentFAQs = [
+export const studentFAQs = [
   {
     question: "Can I edit my preferences after submission?",
     answer: "No, you cannot edit the preferences once submitted."
@@ -68,7 +68,7 @@ const studentFAQs = [
   }
 ];
 
-const adminFAQs = [
+export const adminFAQs = [
   {
     question: "Will previous instance data be preserved?",
     answer: "Yes, previous instance data is preserved in the Database, unless explicitly deleted."
@@ -99,7 +99,7 @@ const adminFAQs = [
   }
 ];
 
-const guidelines = [
+export const guidelines = [
   {
     title: "Rank your preferences carefully.",
     description: "Your top choice should be ranked 1, the next best as 2, and so on."
