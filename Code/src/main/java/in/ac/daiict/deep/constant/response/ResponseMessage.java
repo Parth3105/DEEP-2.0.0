@@ -70,10 +70,6 @@ public class ResponseMessage {
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
     public static final String JSON_PARSING_ERROR="Something went wrong while submitting your form. Please try again.";
 
-
-    public static final String COLLECTION_START_FORBIDDEN_AFTER_RESULT="Preference collection window cannot be started after result declaration.";
-    public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";
-
 //    public static String getUploadSuccessMessage() {
 //        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";
 //    }
