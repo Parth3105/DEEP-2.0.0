@@ -44,6 +44,8 @@ public class ResponseMessage {
     public static final String RESULTS_NOT_FOUND_ADMIN = "No results found. The student may not be allocated yet or doesn't exist.";
 
     // Messages related to execute allocation.
+    public static final String JSON_PARSING_ERROR_ALLOCATION_EXECUTION="Something went wrong while executing the allocation. Please try again later.";
+    public static final String SEMESTER_PARSING_ERROR="Semester should only contains digit. Found: ";
     public static final String COURSE_DATA_NOT_FOUND="Course data is not available.";
     public static final String SEAT_MATRIX_NOT_FOUND ="Seat Matrix is not available";
     public static final String EXECUTION_SUCCESS ="Execution Successful!";
@@ -68,7 +70,7 @@ public class ResponseMessage {
     // Messages related to preference-form submission.
     public static final String LATE_SUBMISSION="Preference Collection period has ended. Submissions are no longer accepted.";
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
-    public static final String JSON_PARSING_ERROR="Something went wrong while submitting your form. Please try again.";
+    public static final String JSON_PARSING_ERROR_FORM_SUBMISSION ="Something went wrong while submitting your form. Please try again.";
 
 //    public static String getUploadSuccessMessage() {
 //        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";

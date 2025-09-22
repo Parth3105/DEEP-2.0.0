@@ -1,6 +1,10 @@
 package in.ac.daiict.deep.controller.admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
+import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
 import in.ac.daiict.deep.constant.enums.ResultStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
@@ -63,9 +67,6 @@ public class AllocationSystemController {
             model.addAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR));
         }
 
-        // Sending List to thymeleaf to retrieve the filtered choices.
-        model.addAttribute("executionFilter",new ArrayList<AllocationReqFilterDto>());
-
         return AdminTemplate.RUN_ALLOCATION_PAGE;
     }
 
@@ -76,11 +77,27 @@ public class AllocationSystemController {
     }
 
     @PostMapping(AdminEndpoint.EXECUTE_ALLOCATION)
-    public String initiateAllocation(@ModelAttribute("executionFilter") List<AllocationReqFilterDto> executionFilter, RedirectAttributes redirectAttributes){
-        List<CompletableFuture<Void>> futureMultipleAllocationTask=new ArrayList<>();
-        for(AllocationReqFilterDto filter: executionFilter){
-            futureMultipleAllocationTask.add(CompletableFuture.runAsync(() -> handleAllocation(filter.getProgram(),filter.getSemester(),redirectAttributes)));
+    public String initiateAllocation(@RequestParam("executionFilter") String executionFilter, RedirectAttributes redirectAttributes, Model model){
+        // Parsing JSON containing the filters for executing allocation.
+        ObjectMapper objectMapper=new ObjectMapper();
+        Map<String,List<String>> programSemesterMapping;
+        try {
+            programSemesterMapping=objectMapper.readValue(executionFilter,new TypeReference<>(){});
+        } catch (JsonProcessingException e) {
+            log.error("JSON processing to read program-semester filters to execute allocation failed with error: {}",e.getMessage());
+            model.addAttribute("jsonParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.JSON_PARSING_ERROR_ALLOCATION_EXECUTION));
+            return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
+
+        List<CompletableFuture<Void>> futureMultipleAllocationTask=new ArrayList<>();
+        List<String> semesterParsingErrorMsg= new ArrayList<>();
+        for(Map.Entry<String,List<String>> programSemesterEntry: programSemesterMapping.entrySet()){
+            for(String semester: programSemesterEntry.getValue()){
+                if(!semester.matches("%\\d+$")) semesterParsingErrorMsg.add(ResponseMessage.SEMESTER_PARSING_ERROR+semester+" for program: "+programSemesterEntry.getKey());
+                else futureMultipleAllocationTask.add(CompletableFuture.runAsync(() -> handleAllocation(programSemesterEntry.getKey(),Integer.parseInt(semester),redirectAttributes)));
+            }
+        }
+        model.addAttribute("semesterParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST,semesterParsingErrorMsg));
 
         try{
             CompletableFuture.allOf(futureMultipleAllocationTask.toArray(new CompletableFuture[0])).join();

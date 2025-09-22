@@ -109,7 +109,7 @@ public class EnrollmentController {
             selectedSlotPreferences=objectMapper.readValue(slotPreferences,new TypeReference<>(){});
         } catch (JsonProcessingException e) {
             log.error("JSON processing to read student enrollment-details failed with error: {}",e.getMessage());
-            redirectAttributes.addFlashAttribute("jsonParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.JSON_PARSING_ERROR));
+            redirectAttributes.addFlashAttribute("jsonParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.JSON_PARSING_ERROR_FORM_SUBMISSION));
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
 
