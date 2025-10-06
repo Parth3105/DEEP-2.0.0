@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
-import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
 import in.ac.daiict.deep.constant.enums.ResultStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
-import in.ac.daiict.deep.dto.AllocationReqFilterDto;
 import in.ac.daiict.deep.entity.AllocationSummary;
 import in.ac.daiict.deep.service.AllocationSummaryService;
 import in.ac.daiict.deep.service.StudentService;
@@ -105,7 +103,7 @@ public class AllocationSystemController {
             log.error("Async task to handle allocation failed with error: {}", ce.getCause().getMessage(), ce.getCause());
             redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR));
         }
-        return "redirect: "+AdminEndpoint.REFRESH_ALLOCATION_SUMMARY;
+        return "redirect:"+AdminEndpoint.REFRESH_ALLOCATION_SUMMARY;
     }
 
     private void handleAllocation(String program, int semester, RedirectAttributes redirectAttributes){

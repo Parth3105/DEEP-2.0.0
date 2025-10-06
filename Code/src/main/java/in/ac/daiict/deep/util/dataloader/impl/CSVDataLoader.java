@@ -91,13 +91,13 @@ public class CSVDataLoader implements DataLoader {
                 String semester = record.get(StudentHeader.SEMESTER.toString());
 
                 if(!NumberUtils.isDigits(studentID)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + record.getRecordNumber()+ ": value = '" + studentID + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + (record.getRecordNumber()+1) + ": value = '" + studentID + "'");
                 }
-                if(!StringUtils.isAlphaSpace(studentName)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-name at record " + record.getRecordNumber()+ ": value = '" + studentName + "'");
+                if(!studentName.matches("^[A-Za-z .]+$")){
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-name at record " + (record.getRecordNumber()+1) + ": value = '" + studentName + "'");
                 }
                 if(!NumberUtils.isDigits(semester)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid semester at record " + record.getRecordNumber()+ ": value = '"+ semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '"+ semester + "'");
                 }
 
                 // Validate student data before adding.
@@ -134,10 +134,10 @@ public class CSVDataLoader implements DataLoader {
                 String slot = record.get(CourseHeader.SLOT.toString());
 
                 if (!NumberUtils.isDigits(credits)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid credits at record " + record.getRecordNumber() + ": value = '" + credits + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid credits at record " + (record.getRecordNumber()+1) + ": value = '" + credits + "'");
                 }
                 if (!NumberUtils.isDigits(slot)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid slot at record " + record.getRecordNumber() + ": value = '" + slot + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid slot at record " + (record.getRecordNumber()+1) + ": value = '" + slot + "'");
                 }
 
                 // Validate course data before adding.
@@ -174,10 +174,10 @@ public class CSVDataLoader implements DataLoader {
                 String count = record.get(InstituteReqHeader.COUNT.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid semester at record " + record.getRecordNumber() + ": value = '" + semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '" + semester + "'");
                 }
                 if (!NumberUtils.isDigits(count)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid count at record " + record.getRecordNumber() + ": value = '" + count + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid count at record " + (record.getRecordNumber()+1) + ": value = '" + count + "'");
                 }
 
                 // Validate institute-requirement data before adding.
@@ -215,10 +215,10 @@ public class CSVDataLoader implements DataLoader {
                 String seats = record.get(SeatMatrixHeader.SEATS.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid semester at record " + record.getRecordNumber() + ": value = '" + semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '" + semester + "'");
                 }
                 if (!NumberUtils.isDigits(seats)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid seats at record " + record.getRecordNumber() + ": value = '" + seats + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid seats at record " + (record.getRecordNumber()+1) + ": value = '" + seats + "'");
                 }
 
                 // Validate course-offering data before adding.

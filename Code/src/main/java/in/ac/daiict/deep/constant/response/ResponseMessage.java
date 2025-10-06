@@ -28,7 +28,7 @@ public class ResponseMessage {
     public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";
 
     // Messages related to upload data.
-    public static final String ALLOCATION_INSTANCE_NOT_FOUND="No instance found to update. Please create an instance to continue.";
+    public static final String ALLOCATION_INSTANCE_NOT_FOUND="No term found to upload data. Please create a new term to continue.";
     public static final String INCOMPATIBLE_FILE_TYPE="The file-type is incompatible. Ensure that the file-type is .csv";
     public static final String UNEXPECTED_CATEGORY="The uploaded file is not recognized. Please use the correct file upload interface.";
     public static final String DB_SAVE_ERROR="Some entries refer to non-existing course in seat-matrix. Please verify your data.";

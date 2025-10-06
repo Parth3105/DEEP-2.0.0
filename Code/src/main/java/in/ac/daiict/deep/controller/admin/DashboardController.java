@@ -4,7 +4,6 @@ import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.enums.CollectionWindowStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
-import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto;
 import in.ac.daiict.deep.dto.ResponseDto;
