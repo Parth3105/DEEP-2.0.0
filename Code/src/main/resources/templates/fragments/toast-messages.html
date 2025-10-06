@@ -22,4 +22,14 @@
        th:data-status="${notExtendable.status}"
        th:data-msg="${notExtendable.message}"
        class="toast-data"></div>
+
+  <div th:if="${jsonParsingError}"
+       th:data-status="${jsonParsingError.status}"
+       th:data-msg="${jsonParsingError.message}"
+       class="toast-data"></div>
+
+  <div th:if="${semesterParsingError}"
+       th:data-status="${semesterParsingError.status}"
+       th:data-msg="${semesterParsingError.message}"
+       class="toast-data"></div>
 </div>

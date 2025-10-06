@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
+import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
 import in.ac.daiict.deep.constant.enums.ResultStateEnum;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
+import in.ac.daiict.deep.dto.AllocationReqFilterDto;
 import in.ac.daiict.deep.entity.AllocationSummary;
 import in.ac.daiict.deep.service.AllocationSummaryService;
 import in.ac.daiict.deep.service.StudentService;
@@ -70,13 +72,16 @@ public class AllocationSystemController {
 
     @GetMapping(AdminEndpoint.REFRESH_ALLOCATION_SUMMARY)
     public String refreshAllocationSummary(Model model){
+        System.out.println("Here");
         model.addAttribute("allocationSummary",allocationSummaryService.fetchAll());
+        System.out.println(allocationSummaryService.fetchAll());
         return FragmentTemplate.ALLOCATION_SUMMARY_FRAGMENT;
     }
 
     @PostMapping(AdminEndpoint.EXECUTE_ALLOCATION)
     public String initiateAllocation(@RequestParam("executionFilter") String executionFilter, RedirectAttributes redirectAttributes, Model model){
         // Parsing JSON containing the filters for executing allocation.
+        System.out.println("reached");
         ObjectMapper objectMapper=new ObjectMapper();
         Map<String,List<String>> programSemesterMapping;
         try {
@@ -84,6 +89,7 @@ public class AllocationSystemController {
         } catch (JsonProcessingException e) {
             log.error("JSON processing to read program-semester filters to execute allocation failed with error: {}",e.getMessage());
             model.addAttribute("jsonParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST, ResponseMessage.JSON_PARSING_ERROR_ALLOCATION_EXECUTION));
+            System.out.println("json");
             return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
 
@@ -91,19 +97,22 @@ public class AllocationSystemController {
         List<String> semesterParsingErrorMsg= new ArrayList<>();
         for(Map.Entry<String,List<String>> programSemesterEntry: programSemesterMapping.entrySet()){
             for(String semester: programSemesterEntry.getValue()){
-                if(!semester.matches("%\\d+$")) semesterParsingErrorMsg.add(ResponseMessage.SEMESTER_PARSING_ERROR+semester+" for program: "+programSemesterEntry.getKey());
+                if(!semester.matches("\\d+$")) semesterParsingErrorMsg.add(ResponseMessage.SEMESTER_PARSING_ERROR+semester+" for program: "+programSemesterEntry.getKey());
                 else futureMultipleAllocationTask.add(CompletableFuture.runAsync(() -> handleAllocation(programSemesterEntry.getKey(),Integer.parseInt(semester),redirectAttributes)));
             }
         }
+        System.out.println("semester");
         model.addAttribute("semesterParsingError",new ResponseDto(ResponseStatus.BAD_REQUEST,semesterParsingErrorMsg));
 
         try{
+            System.out.println("future");
             CompletableFuture.allOf(futureMultipleAllocationTask.toArray(new CompletableFuture[0])).join();
         } catch (CompletionException ce){
             log.error("Async task to handle allocation failed with error: {}", ce.getCause().getMessage(), ce.getCause());
+            System.out.println("internal");
             redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR));
         }
-        return "redirect:"+AdminEndpoint.REFRESH_ALLOCATION_SUMMARY;
+        return "redirect:"+AdminEndpoint.RUN_ALLOCATION_PAGE;
     }
 
     private void handleAllocation(String program, int semester, RedirectAttributes redirectAttributes){

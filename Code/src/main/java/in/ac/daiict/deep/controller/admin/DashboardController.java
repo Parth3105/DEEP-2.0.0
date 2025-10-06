@@ -92,7 +92,7 @@ public class DashboardController {
     public String declareResults(@RequestParam("program") String program, @RequestParam("semester") int semester, Model model){
         ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnDeclaringResults(program,semester);
         model.addAttribute("preferenceCollectionWindowStatus",responseDto);
-        return "";
+        return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
 
     @PostMapping(AdminEndpoint.REFRESH_ENROLLMENT_PHASE_DETAILS)

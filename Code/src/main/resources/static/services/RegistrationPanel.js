@@ -43,7 +43,7 @@ export default class RegistrationPanel {
           ${isOpen ? `
             <button onclick="window.registrationPanel.openExtendModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Extend Period</button>
             <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Move to Next Phase</button>
-            <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
+            <button onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
           ` : ''}
         </div>
       </div>
@@ -255,6 +255,56 @@ export default class RegistrationPanel {
       });
   }
 
+  handleDeclareResult(event) {
+      event.preventDefault();
+      const program = this.dataDiv.dataset.program || '';
+      const semester = this.dataDiv.dataset.semester || '';
+
+      const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      const url = `${contextPath}admin/declare-results?program=${encodeURIComponent(program)}&semester=${encodeURIComponent(semester)}`;
+
+      fetch(url, { method: 'POST', headers: { [csrfHeader]: csrfToken } })
+        .then(res => res.text())
+        .catch(err => {
+          console.error(err);
+          this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
+        })
+        .finally(() => {
+          window.dashboardTable.refresh().then(() => {
+            // Find latest matching dataDiv by program+semester instead of relying only on index
+            const program = this.dataDiv.dataset.program;
+            const semester = this.dataDiv.dataset.semester;
+
+            const updatedDiv = Array.from(window.dashboardTable.detailsData)
+              .find(div => div.dataset.program === program && div.dataset.semester === semester);
+
+            if (updatedDiv) {
+              this.dataDiv = updatedDiv;
+              this.showDetails(updatedDiv);
+            }
+
+            this.closeDeclareRegModal();
+          });
+
+          document.querySelectorAll('.toast-data').forEach(el => {
+            let data = el.getAttribute('data-msg');
+            let status = el.getAttribute('data-status');
+
+            if (!data) return;
+            data = data.trim();
+            if (data.startsWith('[') && data.endsWith(']')) data = data.slice(1, -1);
+
+            data.split(',').forEach(msg => {
+              const message = msg.trim();
+              if (message) this.toastManager?.printStatusResponse({ status, message });
+            });
+          });
+        });
+    }
+
   closeNewRegistrationModal() {
     const modal = document.getElementById("registrationModal");
     const toggleRegistration = document.getElementById("toggleRegistration");
@@ -280,4 +330,12 @@ export default class RegistrationPanel {
   closeModal() {
     document.getElementById('create-instance-modal').classList.add('hidden');
   }
+
+  openDeclareRegModal() {
+      document.getElementById('DeclareRegModal').classList.remove('hidden');
+  };
+
+  closeDeclareRegModal() {
+      document.getElementById('DeclareRegModal').classList.add('hidden');
+  };
 }

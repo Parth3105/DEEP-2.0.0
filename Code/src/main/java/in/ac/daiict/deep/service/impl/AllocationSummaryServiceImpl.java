@@ -38,7 +38,9 @@ public class AllocationSummaryServiceImpl implements AllocationSummaryService {
     public List<AllocationSummaryDto> fetchAll() {
         List<AllocationSummary> allocationStatusList= allocationSummaryRepo.findAll();
         if(allocationStatusList.isEmpty()) return null;
-        return modelMapper.map(allocationStatusList,new TypeToken<List<AllocationSummaryDto>>(){}.getType());
+        List<AllocationSummaryDto> allocationSummaryDtoList=new ArrayList<>();
+        for(AllocationSummary allocationSummary: allocationStatusList) allocationSummaryDtoList.add(new AllocationSummaryDto(allocationSummary.getProgram(),allocationSummary.getSemester(),allocationSummary.getAllocatedCount(),allocationSummary.getUnallocatedCount()));
+        return allocationSummaryDtoList;
     }
 
     @Override
