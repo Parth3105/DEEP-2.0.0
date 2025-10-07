@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,11 +20,17 @@ public class AllocationSummary {
     @Id
     @Column
     private String program;
+
     @Id
     @Column
     private int semester;
-    @Column(nullable = false)
+
+    @Column(nullable = false, name = "allocated_count")
     private int allocatedCount;
-    @Column(nullable = false)
+
+    @Column(nullable = false, name = "unallocated_count")
     private int unallocatedCount;
+
+    @Column(nullable = false, name = "last_execution_time")
+    private LocalDateTime lastExecutionTime;
 }

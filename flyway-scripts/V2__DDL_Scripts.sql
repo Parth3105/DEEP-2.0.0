@@ -115,6 +115,7 @@ CREATE TABLE allocation_summary(
     semester INTEGER,
     allocated_count INTEGER NOT NULL,
     unallocated_count INTEGER NOT NULL,
+	last_execution_time TIMESTAMP NOT NULL,
 	PRIMARY KEY(program,semester)
 );
 

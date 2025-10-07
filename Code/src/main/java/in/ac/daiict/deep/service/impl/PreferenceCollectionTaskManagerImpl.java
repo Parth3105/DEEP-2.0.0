@@ -50,7 +50,6 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
     }
 
     public void closeWindow(String program, int semester){
-        System.out.println("Ending preference Collection");
         Map<Integer,ScheduledFuture<?>> semesterBased=preferenceCollectionTasks.get(program);
         if(semesterBased==null) return;
 

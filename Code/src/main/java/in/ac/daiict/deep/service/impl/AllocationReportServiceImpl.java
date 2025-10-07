@@ -43,7 +43,8 @@ public class AllocationReportServiceImpl implements AllocationReportService {
         ZipOutputStream zipOutputStream=new ZipOutputStream(byteArrayOutputStream);
 
         for(AllocationReport allocationReport: allocationReportList){
-            ZipEntry zipEntry=new ZipEntry(allocationReport.getName()+" "+allocationReport.getProgram()+" Sem-"+allocationReport.getSemester());
+            int fileExtensionStartInd=allocationReport.getName().lastIndexOf('.');
+            ZipEntry zipEntry=new ZipEntry(allocationReport.getName().substring(0,fileExtensionStartInd)+" "+allocationReport.getProgram()+" Sem-"+allocationReport.getSemester()+allocationReport.getName().substring(fileExtensionStartInd));
             try {
                 zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.write(allocationReport.getFile());

@@ -13,6 +13,7 @@ import in.ac.daiict.deep.util.allocation.model.InstituteRequirement;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 @Component
+@Scope("prototype")
 @Slf4j
 public class AllocationSystem {
     private AllocationDataLoader allocationDataLoader;
@@ -357,6 +359,10 @@ public class AllocationSystem {
         printWriter.println("\n\n\n");
 
         for (String studentID : pendingRequirements) {
+            if(students.get(studentID)==null){
+                System.out.println(studentID+" is null");
+                continue;
+            }
             AllocationStudent student = students.get(studentID);
 
             printWriter.println("================================================================================");
@@ -387,7 +393,7 @@ public class AllocationSystem {
                         if(student.getAllocatedSlots()!=null && student.getAllocatedSlots().contains(coursePrefEntry.getKey())) continue;
                         List<String> updatedPref=coursePrefAfterAllocation.getOrDefault(coursePrefEntry.getKey(),new ArrayList<>());
                         for(String courseId: coursePrefEntry.getValue()){
-                            if (!courseCategories.get(courseId).getOrDefault(student.getProgram(), "").equalsIgnoreCase(entry.getKey())) continue;
+                            if (courseCategories.containsKey(courseId) && !courseCategories.get(courseId).getOrDefault(student.getProgram(), "").equalsIgnoreCase(entry.getKey())) continue;
                             updatedPref.add(courseId);
                         }
                         coursePrefAfterAllocation.put(coursePrefEntry.getKey(),updatedPref);

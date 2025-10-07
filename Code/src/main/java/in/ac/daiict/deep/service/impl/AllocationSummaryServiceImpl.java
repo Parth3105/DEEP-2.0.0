@@ -36,7 +36,7 @@ public class AllocationSummaryServiceImpl implements AllocationSummaryService {
     @Override
     @Transactional(readOnly = true)
     public List<AllocationSummaryDto> fetchAll() {
-        List<AllocationSummary> allocationStatusList= allocationSummaryRepo.findAll();
+        List<AllocationSummary> allocationStatusList= allocationSummaryRepo.findAll(Sort.by("lastExecutionTime").descending());
         if(allocationStatusList.isEmpty()) return null;
         List<AllocationSummaryDto> allocationSummaryDtoList=new ArrayList<>();
         for(AllocationSummary allocationSummary: allocationStatusList) allocationSummaryDtoList.add(new AllocationSummaryDto(allocationSummary.getProgram(),allocationSummary.getSemester(),allocationSummary.getAllocatedCount(),allocationSummary.getUnallocatedCount()));
