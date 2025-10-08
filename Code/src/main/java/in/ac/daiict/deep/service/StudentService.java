@@ -20,6 +20,7 @@ public interface StudentService {
     StudentDto fetchStudentDto(String sid);
     boolean fetchEnrollmentStatusForStudent(String sid);
     long countEnrolledStudents();
+    long countEnrolledStudentsByProgramAndSemester(String program, int semester);
     void updateEnrollmentStatus(String sid);
     List<UploadStatusDto> fetchStudentDataUploadStatus();
     List<ProgramSemesterDto> fetchDistinctProgramAndSemester();

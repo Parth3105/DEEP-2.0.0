@@ -40,4 +40,9 @@ public class CoursePrefServiceImpl implements CoursePrefService {
     public void insertAll(List<CoursePref> coursePrefList) {
         coursePrefRepo.saveAll(coursePrefList);
     }
+
+    @Override
+    public void deleteBySid(String sid) {
+        coursePrefRepo.deleteBySid(sid);
+    }
 }

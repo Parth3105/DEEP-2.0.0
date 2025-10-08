@@ -10,4 +10,5 @@ public interface CoursePrefService {
     List<CoursePref> fetchCoursePrefByProgramAndSemesterSortedBySlotAndPref(String program, int semester);
     List<CoursePrefDto> fetchStudentCoursePref(String sid);
     void insertAll(List<CoursePref> coursePrefList);
+    void deleteBySid(String sid);
 }

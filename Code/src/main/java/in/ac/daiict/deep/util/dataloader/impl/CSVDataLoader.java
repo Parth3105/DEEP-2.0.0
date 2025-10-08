@@ -31,10 +31,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
@@ -63,9 +60,9 @@ public class CSVDataLoader implements DataLoader {
         this.allocationResultService = allocationResultService;
     }
 
-    private CSVFormat getCsvFormatWriting(Class<? extends Enum<?>> headerClass){
+    private CSVFormat getCsvFormatWriting(String[] headers){
         return CSVFormat.DEFAULT.builder()
-                .setHeader(headerClass)
+                .setHeader(headers)
                 .setSkipHeaderRecord(false)
                 .get();
     }
@@ -293,13 +290,13 @@ public class CSVDataLoader implements DataLoader {
             ByteArrayOutputStream slotPrefCSV = futureSlotPrefCSV.get();
 
             // Add course-pref to zip.
-            ZipEntry coursePrefEntry = new ZipEntry("Course_Preferences.csv");
+            ZipEntry coursePrefEntry = new ZipEntry("Course Preferences "+program+" Sem-"+semester+".csv");
             zipOutputStream.putNextEntry(coursePrefEntry);
             zipOutputStream.write(coursePrefCSV.toByteArray());
             zipOutputStream.closeEntry();
 
             // Add slot-pref to zip
-            ZipEntry slotPrefEntry = new ZipEntry("Slot_Preferences.csv");
+            ZipEntry slotPrefEntry = new ZipEntry("Slot Preferences "+program+" Sem-"+semester+".csv");
             zipOutputStream.putNextEntry(slotPrefEntry);
             zipOutputStream.write(slotPrefCSV.toByteArray());
             zipOutputStream.closeEntry();
@@ -326,7 +323,7 @@ public class CSVDataLoader implements DataLoader {
 
     private ByteArrayOutputStream generateCoursePreferenceCSV(List<CoursePref> coursePrefList) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(CoursePrefHeader.class));
+        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(Arrays.stream(CoursePrefHeader.values()).map(CoursePrefHeader::toString).toArray(String[]::new)));
         int entryCnt=0;
         for (CoursePref coursePref : coursePrefList) {
             EnumMap<CoursePrefHeader,Object> row=new EnumMap<>(CoursePrefHeader.class);
@@ -351,7 +348,7 @@ public class CSVDataLoader implements DataLoader {
 
     private ByteArrayOutputStream generateSlotPreferencesCSV(List<SlotPref> slotPrefList) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(SlotPrefHeader.class));
+        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(Arrays.stream(SlotPrefHeader.values()).map(SlotPrefHeader::toString).toArray(String[]::new)));
         int entryCnt=0;
         for (SlotPref slotPref : slotPrefList) {
             EnumMap<SlotPrefHeader,Object> row=new EnumMap<>(SlotPrefHeader.class);
@@ -377,7 +374,7 @@ public class CSVDataLoader implements DataLoader {
     public ByteArrayOutputStream createResultSheet(Map<String, AllocationStudent> students, Map<String, AllocationCourse> courses, Map<String, Map<String, String>> courseCategories) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(ResultHeader.class));
+            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(ResultHeader.values()).map(ResultHeader::toString).toArray(String[]::new)));
             int entryCnt = 0;
             for (AllocationStudent student : students.values()) {
                 for (String courseID : student.getAllocatedCourses()) {
@@ -418,7 +415,7 @@ public class CSVDataLoader implements DataLoader {
     public ByteArrayOutputStream createSeatSummary(List<CourseOffer> openFor, Map<String, AllocationCourse> courses, Map<String, Map<String, Integer>> availableSeats) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(SeatSummaryHeader.class));
+            CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(SeatSummaryHeader.values()).map(SeatSummaryHeader::toString).toArray(String[]::new)));
             int entryCnt = 0;
             for (CourseOffer of : openFor) {
                 AllocationCourse course = courses.get(of.getCid());
@@ -467,7 +464,7 @@ public class CSVDataLoader implements DataLoader {
                 ZipEntry zipEntry = new ZipEntry(fileName);
                 zipOutputStream.putNextEntry(zipEntry);
 
-                CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zipOutputStream),getCsvFormatWriting(CourseWiseAllocationHeader.class));
+                CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(zipOutputStream),getCsvFormatWriting(Arrays.stream(CourseWiseAllocationHeader.values()).map(CourseWiseAllocationHeader::toString).toArray(String[]::new)));
                 int entryCnt=0;
                 for (AllocationResult allocationResult : allocationResultList) {
                     Student student=studentService.fetchStudentData(allocationResult.getSid());

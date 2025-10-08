@@ -8,5 +8,6 @@ import java.util.List;
 public interface StudentReqService {
     List<StudentReq> fetchStudentReqByProgramAndSemester(String program, int semester);
     void insertAll(List<StudentReq> studentReqList);
+    void deleteBySid(String sid);
     List<StudentReqDto> fetchStudentRequirements(String sid);
 }

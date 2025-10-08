@@ -27,6 +27,7 @@ public interface StudentRepo extends JpaRepository<Student,String>{
 
     long countBySemester(int semester);
     long countByProgramAndSemester(String program, int semester);
+    long countByProgramAndSemesterAndHasEnrolled(String program, int semester, boolean hasEnrolled);
     long countByHasEnrolled(boolean hasEnrolled);
     List<Student> findByProgramAndSemester(String program, int semester);
 

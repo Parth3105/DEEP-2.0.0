@@ -20,4 +20,6 @@ public interface StudentReqRepo extends JpaRepository<StudentReq, StudentReqPK> 
     List<StudentReq> findByProgramAndSemester(@Param("program") String program, @Param("semester") int semester);
 
     boolean existsBySid(String sid);
+
+    void deleteBySid(String sid);
 }

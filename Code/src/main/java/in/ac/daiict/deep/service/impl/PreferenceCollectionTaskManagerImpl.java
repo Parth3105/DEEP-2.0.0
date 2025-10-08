@@ -26,6 +26,7 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
     private final Map<String, Map<Integer,ScheduledFuture<?>>> preferenceCollectionTasks;
     private final TaskScheduler taskScheduler;
     private final EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
+    private long retryCnt;
 
     @Lazy
     @Autowired
@@ -33,6 +34,7 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
         this.preferenceCollectionTasks = new ConcurrentHashMap<>();
         this.taskScheduler = taskScheduler;
         this.enrollmentPhaseDetailsService=enrollmentPhaseDetailsService;
+        this.retryCnt=0;
     }
 
     public void scheduleCollection(String program, int semester, LocalDateTime endDateTime){
@@ -62,9 +64,11 @@ public class PreferenceCollectionTaskManagerImpl implements PreferenceCollection
                 if(preferenceCollectionTasks.get(program).isEmpty()) preferenceCollectionTasks.remove(program);
 
                 System.out.println("Preference Collection ended.");
+                retryCnt=0;
             } catch (Exception e){
-                log.error("Failed to close Preference-Collection Window due to error: {}",e.getMessage(),e);
-                scheduleCollection(program, semester, LocalDateTime.now().plusDays(1));
+                log.error("Failed to close Preference-Collection Window at {} due to error: {}",LocalDateTime.now(),e.getMessage(),e);
+                retryCnt+=1;
+                if(retryCnt<6) scheduleCollection(program, semester, LocalDateTime.now().plusHours(3L *retryCnt));
             }
         }
     }

@@ -30,6 +30,11 @@ public class StudentReqServiceImpl implements StudentReqService {
     }
 
     @Override
+    public void deleteBySid(String sid){
+        studentReqRepo.deleteBySid(sid);
+    }
+
+    @Override
     public List<StudentReqDto> fetchStudentRequirements(String sid) {
         List<StudentReq> studentReqList=studentReqRepo.findBySid(sid);
         if(studentReqList==null || studentReqList.isEmpty()) return null;

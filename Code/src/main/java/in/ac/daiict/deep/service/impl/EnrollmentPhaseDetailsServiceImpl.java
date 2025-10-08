@@ -165,7 +165,7 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
         String allocationState= AllocationStateEnum.PENDING.toString();
         if(allocationSummaryService.checkIfExists(enrollmentPhaseDetails.getProgram(), enrollmentPhaseDetails.getSemester())) allocationState=AllocationStateEnum.ALLOCATED.toString();
         long totalStudents=studentService.countStudentsByProgramAndSemester(enrollmentPhaseDetails.getProgram(),enrollmentPhaseDetails.getSemester());
-        long prefSubmissionCnt=studentService.countEnrolledStudents();
+        long prefSubmissionCnt=studentService.countEnrolledStudentsByProgramAndSemester(enrollmentPhaseDetails.getProgram(),enrollmentPhaseDetails.getSemester());
         return new EnrollmentPhaseDetailsDto(enrollmentPhaseDetails.getProgram(),enrollmentPhaseDetails.getSemester(),enrollmentPhaseDetails.getEnrollmentPhase(),enrollmentPhaseDetails.getCollectionWindowState(),enrollmentPhaseDetails.getEndDate(),enrollmentPhaseDetails.getResultState(),allocationState,totalStudents,prefSubmissionCnt);
     }
 

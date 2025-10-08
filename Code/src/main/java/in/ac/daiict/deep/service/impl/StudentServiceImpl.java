@@ -98,6 +98,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public long countEnrolledStudentsByProgramAndSemester(String program, int semester) {
+        return studentRepo.countByProgramAndSemesterAndHasEnrolled(program,semester,true);
+    }
+
+    @Override
     public void updateEnrollmentStatus(String sid) {
         studentRepo.updateHasEnrolled(sid);
     }

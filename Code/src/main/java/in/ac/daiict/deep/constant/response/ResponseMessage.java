@@ -68,6 +68,7 @@ public class ResponseMessage {
     public static final String RESULTS_NOT_FOUND_STUDENT = "We are unable to find your result. For further assistance, please contact the related authority.";
 
     // Messages related to preference-form submission.
+    public static final String FORM_DETAILS_FETCH_ERROR="We couldn’t load your saved preference details right now. Please try again later.";
     public static final String LATE_SUBMISSION="Preference Collection period has ended. Submissions are no longer accepted.";
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
     public static final String JSON_PARSING_ERROR_FORM_SUBMISSION ="Something went wrong while submitting your form. Please try again.";

@@ -29,8 +29,12 @@ public class HomePageController {
             return StudentTemplate.HOME_PAGE;
         }
 
+        // Enrollment phase details like preference collection status and end-date along with result declaration status.
         EnrollmentPhaseDetailsDto enrollmentPhaseDetailsDto=enrollmentPhaseDetailsService.fetchEnrollmentPhaseDetailsByProgramAndSemester(student.getProgram(),student.getSemester());
         model.addAttribute("homePageDetails",enrollmentPhaseDetailsDto);
+
+        // Passing the status of student's preference form submission.
+        model.addAttribute("isSubmitted",student.isHasEnrolled());
         return StudentTemplate.HOME_PAGE;
     }
 

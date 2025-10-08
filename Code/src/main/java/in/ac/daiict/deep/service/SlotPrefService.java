@@ -10,4 +10,5 @@ public interface SlotPrefService {
     List<SlotPrefDto>  fetchStudentSlotPref(String sid);
     List<SlotPref> fetchSlotByProgramAndSemesterSortedBySidAndPref(String program, int semester);
     void insertAll(List<SlotPref> slotPrefList);
+    void deleteBySid(String sid);
 }

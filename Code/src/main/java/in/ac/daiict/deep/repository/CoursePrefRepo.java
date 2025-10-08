@@ -24,4 +24,6 @@ public interface CoursePrefRepo extends JpaRepository<CoursePref, CoursePrefPK> 
     @Modifying
     @Query("SELECT cp FROM CoursePref cp JOIN Student s on cp.sid=s.sid WHERE s.program=:program AND s.semester=:semester ORDER BY cp.sid, cp.pref ASC")
     List<CoursePref> findByProgramAndSemester(@Param("program") String program, @Param("semester") int semester);
+
+    void deleteBySid(String sid);
 }

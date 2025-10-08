@@ -43,4 +43,9 @@ public class SlotPrefServiceImpl implements SlotPrefService {
     public void insertAll(List<SlotPref> slotPrefList) {
         slotPrefRepo.saveAll(slotPrefList);
     }
+
+    @Override
+    public void deleteBySid(String sid) {
+        slotPrefRepo.deleteBySid(sid);
+    }
 }

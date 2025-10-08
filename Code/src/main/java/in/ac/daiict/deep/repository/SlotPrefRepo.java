@@ -19,4 +19,6 @@ public interface SlotPrefRepo extends JpaRepository<SlotPref, SlotPrefPK> {
     @Modifying
     @Query("SELECT sp FROM SlotPref sp JOIN Student s on sp.sid=s.sid WHERE s.program=:program AND s.semester=:semester ORDER BY sp.sid, sp.pref ASC")
     List<SlotPref> findByProgramAndSemester(@Param("program") String program, @Param("semester") int semester);
+
+    void deleteBySid(String sid);
 }
