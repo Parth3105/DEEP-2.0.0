@@ -22,7 +22,7 @@ public class User implements Serializable {
     @Id
     @Column(length = 12)
     private String username;
-    @Column(length = 500)
+    @Column
     private String password;
     @Column(length = 100)
     private String email;
@@ -31,4 +31,11 @@ public class User implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role="ROLE_STUDENT";
+    }
 }

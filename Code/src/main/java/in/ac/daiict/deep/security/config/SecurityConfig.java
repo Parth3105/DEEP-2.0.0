@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/admin/images/**", "/student/images/**", "/common/js/**",
-                                        "/admin/js/**", "/student/js/**", "/css/**", "/services/**", "/utils/**",CommonEndPoint.FORGOT_PASSWORD,
+                                        "/admin/js/**", "/student/js/**", "/css/**", "/services/**", "/utils/**",CommonEndPoint.REGISTER,CommonEndPoint.FORGOT_PASSWORD,
                                         CommonEndPoint.RESET_PASSWORD, CommonEndPoint.VERIFY_OTP,
                                         CommonEndPoint.RESEND_OTP).permitAll()
                                 .requestMatchers(AdminEndpoint.ADMIN_BASE+"/**").hasRole(Roles.ADMIN)

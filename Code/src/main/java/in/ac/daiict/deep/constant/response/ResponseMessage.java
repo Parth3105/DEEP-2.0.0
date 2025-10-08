@@ -4,6 +4,8 @@ public class ResponseMessage {
 
     /// General Category
     public static final String DB_SAVE_ERROR="Course ID not found in Course data.";
+    public static final String LOGIN_REGISTER_ERROR="We’re unable to process your request at the moment. Please try again shortly.";
+    public static final String INVALID_EMAIL="Only institute email addresses are allowed. Please use your DAU Email-ID";
 
     // Messages related to internal server issues.
     public static final String SUCCESS="Successful!";
@@ -70,6 +72,7 @@ public class ResponseMessage {
     // Messages related to preference-form submission.
     public static final String FORM_DETAILS_FETCH_ERROR="We couldn’t load your saved preference details right now. Please try again later.";
     public static final String LATE_SUBMISSION="Preference Collection period has ended. Submissions are no longer accepted.";
+    public static final String PREFERENCE_SUBMISSION_ERROR="We couldn't save your preference details right now. Please try again later.";
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
     public static final String JSON_PARSING_ERROR_FORM_SUBMISSION ="Something went wrong while submitting your form. Please try again.";
 

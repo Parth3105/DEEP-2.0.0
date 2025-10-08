@@ -66,19 +66,10 @@ public class DBConfig {
 
     public boolean createSchemaAndSwitch(String latestInstanceName, String workingInstance) {
         File dir=new File("./src/main/java/in/ac/daiict/deep/tmp/");
-        if(!dir.exists()) dir.mkdirs();
-        CompletableFuture<Void> instanceMigrationFuture = CompletableFuture.runAsync(() ->
-                instanceNameService.migrateInstances(dir)
-        );
-        CompletableFuture<Void> userMigrationFuture = CompletableFuture.runAsync(() ->
-                userService.migrateUserData(dir)
-        );
-
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(instanceMigrationFuture, userMigrationFuture);
-
+        if(dir.exists()) dir.delete();
+        dir.mkdirs();
         try {
-            combinedFuture.join();
-
+            instanceNameService.migrateInstances(dir);
             String sql = String.format("ALTER SCHEMA %s RENAME TO %s", workingInstance, latestInstanceName);
             jdbcTemplate.execute(sql);
             jdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS " + workingInstance);
@@ -86,9 +77,8 @@ public class DBConfig {
             createEntityManagerFactory(workingInstance);
 
             return true;
-
-        } catch (CompletionException ex) {
-            log.error("Async task to migrate instance/user data failed with error: {}", ex.getCause().getMessage(), ex.getCause());
+        } catch (Exception e) {
+            log.error("Task to create new instance failed with error: {}", e.getCause().getMessage(), e.getCause());
             return false;
         }
     }

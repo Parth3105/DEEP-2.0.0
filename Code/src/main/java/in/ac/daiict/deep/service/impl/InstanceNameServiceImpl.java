@@ -10,10 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,8 +47,9 @@ public class InstanceNameServiceImpl implements InstanceNameService {
     public void migrateInstances(File dir) {
         try {
             File file = new File(dir+"/InstanceNames.ser");
-            if(!file.exists()) file.createNewFile();
-            List<InstanceName> instanceNameList=instanceNameRepo.findAll();
+            if(file.exists()) file.delete();
+            file.createNewFile();
+            List<InstanceName> instanceNameList=instanceNameRepo.findTop30ByOrderByCreatedAtDesc();
             ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream(file));
             outputStream.writeObject(instanceNameList);
             outputStream.flush();
@@ -74,6 +73,8 @@ public class InstanceNameServiceImpl implements InstanceNameService {
             ObjectInputStream inputStream=new ObjectInputStream(new FileInputStream(file));
             List<InstanceName> instanceNameList= (List<InstanceName>) inputStream.readObject();
             int batchSize=100;
+
+            entityManager.clear();
             for(int i=0;i<instanceNameList.size();i++){
                 entityManager.persist(instanceNameList.get(i));
                 if(i%batchSize==0 && i>0){

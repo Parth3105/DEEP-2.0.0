@@ -166,8 +166,14 @@ public class EnrollmentController {
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
 
-        //noinspection unchecked
-        preferenceCollectionService.recordPreferenceDetails(studentId, (List<StudentReq>) preferenceDetailsMap.get(STUDENT_REQUIREMENTS_KEY), (List<CoursePref>) preferenceDetailsMap.get(COURSE_PREFERENCES_KEY), (List<SlotPref>) preferenceDetailsMap.get(SLOT_PREFERENCES_KEY));
+        try{
+            //noinspection unchecked
+            preferenceCollectionService.recordPreferenceDetails(studentId, (List<StudentReq>) preferenceDetailsMap.get(STUDENT_REQUIREMENTS_KEY), (List<CoursePref>) preferenceDetailsMap.get(COURSE_PREFERENCES_KEY), (List<SlotPref>) preferenceDetailsMap.get(SLOT_PREFERENCES_KEY));
+        } catch (Exception e){
+            log.error("Failed to record preferences of student with student-id: {} with error: {}",studentId,e.getMessage(),e);
+            redirectAttributes.addFlashAttribute("preferenceSubmissionError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.PREFERENCE_SUBMISSION_ERROR));
+            return "redirect:"+StudentEndpoint.PREFERENCE_FORM;
+        }
         studentService.updateEnrollmentStatus(studentId);
         return "redirect:" + StudentEndpoint.PREFERENCE_SUMMARY;
     }

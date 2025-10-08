@@ -9,6 +9,7 @@ import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
 import in.ac.daiict.deep.entity.Upload;
+import in.ac.daiict.deep.entity.User;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.config.DBConfig;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -53,19 +54,26 @@ public class AllocationInstanceController {
             return "redirect:"+AdminEndpoint.DASHBOARD;
         }
         if(latestInstanceName !=null) {
+            List<User> adminList=userService.findAdmin();
+
             if(!instanceSetupConfig.createSchemaAndSwitch(latestInstanceName,DBConstants.WORKING_INSTANCE_NAME)){
-                CompletableFuture.runAsync(() -> instanceNameService.deleteInstance(newInstanceName));
+                instanceNameService.deleteInstance(newInstanceName);
                 redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
                 return "redirect:"+AdminEndpoint.DASHBOARD;
             }
             File dir=new File("./src/main/java/in/ac/daiict/deep/tmp/");
-            CompletableFuture<Boolean> insertInstanceNames=CompletableFuture.supplyAsync(() -> instanceNameService.insertFromFile(dir));
-            CompletableFuture<Boolean> insertUsers=CompletableFuture.supplyAsync(() -> userService.insertFromFile(dir));
-            boolean isSuccessInstanceMigration = insertInstanceNames.join();
-            boolean isSuccessUserMigration = insertUsers.join();
-            dir.delete();
+            if(dir.exists()) dir.delete();
+            boolean isInstanceMigrationSuccessful=instanceNameService.insertFromFile(dir);
+            boolean isAdminMigrationSuccessful;
+            try{
+                userService.insertUsers(adminList);
+                isAdminMigrationSuccessful=true;
+            } catch (Exception e){
+                log.error("Failed to migrate admin authentication data with error: {}",e.getMessage(),e);
+                isAdminMigrationSuccessful=false;
+            }
 
-            if (!isSuccessInstanceMigration || !isSuccessUserMigration) {
+            if(!isInstanceMigrationSuccessful || !isAdminMigrationSuccessful) {
                 CompletableFuture.runAsync(() -> instanceNameService.deleteInstance(newInstanceName));
                 redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
                 return "redirect:"+AdminEndpoint.DASHBOARD;
