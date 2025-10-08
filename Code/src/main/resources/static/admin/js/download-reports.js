@@ -11,7 +11,7 @@ const downloadBtns = document.querySelectorAll('.input-download-btn');
 downloader.attach(downloadBtns, (btn) => {
   const fileName = btn.dataset.fileName;
   if (!fileName) {
-    toastManager.printStatusResponse({ status: 'ERROR', message: 'No file specified!' });
+    toastManager.printStatusResponse({ status: status.ERROR, message: 'No file specified!' });
     return null;
   }
   // Construct the download URL

@@ -73,46 +73,49 @@
       <div class="flex flex-col sm:flex-row justify-between items-start lg:items-center gap-4">
         <div class="flex-1">
           <h2 class="text-4xl font-bold text-[#1E3C72] mb-1">Welcome, Admin</h2>
-          <p class="text-[#666666] mb-6 text-sm lg:text-md">Manage student Preference collections, run allocations,
+          <p class="text-[#666666] text-sm lg:text-md">Manage student Preference collections, run allocations,
             and track / Declare results.</p>
 
-          <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-center w-full">
-            <button th:if="${registrationStatus == 'open'}"
-                    class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"
-                    style="background: linear-gradient(to right, #4CAF50, #45A049);">
-              <img th:src="@{/admin/images/tick.svg}" alt="tick Icon" class="inline-block w-4 h-4 mr-2 mb-1">
-              Open for Preference Collection
-            </button>
-            <button th:if="${registrationStatus != 'open' and registrationCloseDate == null}"
-              class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"
-              style="background: linear-gradient(to right, #e74b48, #d63e3e);">
-              <img th:src="@{/admin/images/cross.svg}" alt="cross Icon" class="inline-block w-4 h-4 mr-2 mb-1">
-              Preference Collection Not Started
-            </button>
-            <button th:if="${registrationStatus != 'open' and registrationCloseDate != null}"
-              class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"
-              style="background: linear-gradient(to right, #e74b48, #d63e3e);">
-              <img th:src="@{/admin/images/cross.svg}" alt="cross Icon" class="inline-block w-4 h-4 mr-2 mb-1">
-              Preference Collection Ended
-            </button>
+<!--          <p class="text-[#666666] mb-6 text-sm lg:text-md">Manage student Preference collections, run allocations,-->
+<!--            and track / Declare results.</p>-->
 
-            <form id="declareResultForm" method="POST" th:action="@{/admin/declare-results}" th:csrf="true"
-              style="display: none;"></form>
-            <!-- Case 1: result_status == 'Pending'-->
-            <button th:if="${resultStatus == 'pending'}" onclick="openDeclareRegModal()"
-              th:classappend="${registrationCloseDate == null} ? 'hidden' : ''"
-              class="text-white text-md md:text-md font-bold px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg cursor-pointer"
-              style="background: linear-gradient(to right, #3498db, #2980b9);">
-              Declare Results
-            </button>
+<!--          <div class="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-center w-full">-->
+<!--            <button th:if="${registrationStatus == 'open'}"-->
+<!--                    class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"-->
+<!--                    style="background: linear-gradient(to right, #4CAF50, #45A049);">-->
+<!--              <img th:src="@{/admin/images/tick.svg}" alt="tick Icon" class="inline-block w-4 h-4 mr-2 mb-1">-->
+<!--              Open for Preference Collection-->
+<!--            </button>-->
+<!--            <button th:if="${registrationStatus != 'open' and registrationCloseDate == null}"-->
+<!--              class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"-->
+<!--              style="background: linear-gradient(to right, #e74b48, #d63e3e);">-->
+<!--              <img th:src="@{/admin/images/cross.svg}" alt="cross Icon" class="inline-block w-4 h-4 mr-2 mb-1">-->
+<!--              Preference Collection Not Started-->
+<!--            </button>-->
+<!--            <button th:if="${registrationStatus != 'open' and registrationCloseDate != null}"-->
+<!--              class="text-white text-md md:text-md font-bold align-center px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg"-->
+<!--              style="background: linear-gradient(to right, #e74b48, #d63e3e);">-->
+<!--              <img th:src="@{/admin/images/cross.svg}" alt="cross Icon" class="inline-block w-4 h-4 mr-2 mb-1">-->
+<!--              Preference Collection Ended-->
+<!--            </button>-->
 
-            <!-- Case 2: result_status == 'declared'-->
-            <button th:if="${resultStatus == 'declared'}"
-                    class="text-white text-md md:text-md font-bold px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform shadow-lg bg-gray-400 cursor-not-allowed"
-                    disabled>
-              Results Declared
-            </button>
-          </div>
+<!--            <form id="declareResultForm" method="POST" th:action="@{/admin/declare-results}" th:csrf="true"-->
+<!--              style="display: none;"></form>-->
+<!--            &lt;!&ndash; Case 1: result_status == 'Pending'&ndash;&gt;-->
+<!--            <button th:if="${resultStatus == 'pending'}" onclick="openDeclareRegModal()"-->
+<!--              th:classappend="${registrationCloseDate == null} ? 'hidden' : ''"-->
+<!--              class="text-white text-md md:text-md font-bold px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-101 shadow-lg cursor-pointer"-->
+<!--              style="background: linear-gradient(to right, #3498db, #2980b9);">-->
+<!--              Declare Results-->
+<!--            </button>-->
+
+<!--            &lt;!&ndash; Case 2: result_status == 'declared'&ndash;&gt;-->
+<!--            <button th:if="${resultStatus == 'declared'}"-->
+<!--                    class="text-white text-md md:text-md font-bold px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 transform shadow-lg bg-gray-400 cursor-not-allowed"-->
+<!--                    disabled>-->
+<!--              Results Declared-->
+<!--            </button>-->
+<!--          </div>-->
         </div>
       </div>
     </section>
@@ -145,6 +148,7 @@
 
 
     <!-- Main Table Container -->
+    <div class="text-2xl font-bold text-[#1E3C72] mb-4">Preference Collection Summary</div>
     <div class="mb-6">
       <div class="flex flex-col lg:flex-row gap-6">
         <div id="tableContainer" class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
@@ -420,6 +424,8 @@
   const dashboardRequirement = [[${ dashboardRequirement }]];
   const updateInstanceStatus = [[${ updateInstanceStatus }]];
   const resultStatus = [[${ resultStatus }]];
+  const leftArrow = /*[[@{/admin/images/left-arrow.svg}]]*/ '';
+  const rightArrow = /*[[@{/admin/images/right-arrow.svg}]]*/ '';
 </script>
 
 <script type="module" th:src="@{/utils/general-utility.js}"></script>

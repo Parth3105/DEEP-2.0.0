@@ -8,7 +8,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>DEEP - Run Allocation</title>
     <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
-    <link href="/css/output.css" rel="stylesheet">
+    <link th:href="@{/css/output.css}" rel="stylesheet">
     <!-- <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script> -->
 </head>
 
@@ -62,7 +62,9 @@
                                 </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200 font-medium text-[#16355f]">
+                                <!-- Case 1: When data exists -->
                                 <tr th:each="item, iter : ${allRequiredStatus}"
+                                    th:if="${allRequiredStatus} != null"
                                     th:data-program="${item.program}"
                                     th:data-semester="${item.semester}"
                                     th:data-collectionWindowState="${item.collectionWindowState}"
@@ -70,9 +72,15 @@
 
                                     <td class="px-4 py-3" th:text="${item.program}">Program</td>
                                     <td class="px-4 py-3" th:text="${item.semester}">Semester</td>
-
                                     <td class="px-4 py-3 flex justify-center mt-1">
                                         <input type="checkbox" class="row-selector cursor-pointer scale-125" />
+                                    </td>
+                                </tr>
+
+                                <!-- Case 2: When no data -->
+                                <tr th:if="${allRequiredStatus == null or #lists.isEmpty(allRequiredStatus)}">
+                                    <td colspan="7" class="p-4 font-normal text-center text-gray-500">
+                                        No data available
                                     </td>
                                 </tr>
                                 </tbody>
@@ -211,6 +219,7 @@
     const semester = [[${semester != null ? semester : 5}]];
     const allocationStatusList = [[${allocationSummary}]];
     const registrationStatus = [[${registrationStatus}]];
+    const allocationStatus = [[${allocationStatus}]];
 </script>
 
 <script type="module" th:src="@{/utils/general-utility.js}"></script>

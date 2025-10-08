@@ -1,3 +1,7 @@
+import ToastManager from '/services/ToastManager.js';
+import { categoryLabels } from '/utils/general-utility.js';
+const toastManager = new ToastManager();
+
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("requirements-container");
 
@@ -106,5 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function preventBack() {
     window.history.forward();
 }
+
+window.preventBack = preventBack;
 setTimeout("preventBack()", 0);
 window.onunload = function () { null };

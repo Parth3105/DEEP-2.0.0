@@ -31,7 +31,7 @@ public class AllocationReportServiceImpl implements AllocationReportService {
 
     @Override
     public void deleteReport(AllocationReport allocationReport) {
-        allocationReportRepo.delete(allocationReport);
+        allocationReportRepo.deleteById(new AllocationReportPK(allocationReport.getName(), allocationReport.getProgram() ,allocationReport.getSemester()));
     }
 
     @Override

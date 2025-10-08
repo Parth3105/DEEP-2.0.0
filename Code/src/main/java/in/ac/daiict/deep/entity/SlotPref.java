@@ -24,7 +24,7 @@ public class SlotPref {
     @Id
     private int pref;
 
-    @Pattern(regexp = "^\\d+&", message = "Slot-Preference: Slot should not be blank and must be digit.")
+    @Pattern(regexp = "^\\d+$", message = "Slot-Preference: Slot should not be blank and must be digit.")
     @Column(length = 4)
     private String slot;
 }

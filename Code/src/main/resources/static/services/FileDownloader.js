@@ -9,11 +9,9 @@ export default class FileDownloader {
 
   renderTableFromFragment(fragmentSelector = '#downloadTermDataFragment') {
     const fragment = document.querySelector(fragmentSelector);
-    console.log("fragment", fragment);
     if (!fragment) return;
 
     const container = document.getElementById('downloadTableContainer');
-    console.log("container", container);
     if (!container) return;
 
     const records = fragment.querySelectorAll('.download-allocation-record');
@@ -30,6 +28,19 @@ export default class FileDownloader {
           </thead>
           <tbody class="divide-y divide-gray-200 font-medium text-[#16355f]">
     `;
+
+    if (!records.length) {
+      html += `
+        <tr>
+          <td colspan="4" class="p-4 text-center font-normal text-gray-500">
+            No data available
+          </td>
+        </tr>
+      `;
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+      return;
+    }
 
     records.forEach(record => {
       const program = record.dataset.program;

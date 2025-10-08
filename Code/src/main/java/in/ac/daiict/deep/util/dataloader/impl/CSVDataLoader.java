@@ -34,6 +34,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -204,6 +205,10 @@ public class CSVDataLoader implements DataLoader {
     public ResponseDto getSeatMatrix(InputStream seatMatrix, List<CourseOffering> courseOfferings) {
         try {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(seatMatrix));
+
+            List<Course> courseList=courseService.fetchAllCourses();
+            Set<String> courseIds=courseList.stream().map(Course::getCid).collect(Collectors.toSet());
+
             for (CSVRecord record : csvParser) {
                 String courseID = record.get(SeatMatrixHeader.COURSE_ID.toString()).replaceAll("\\s+","");
                 String program = record.get(SeatMatrixHeader.PROGRAM.toString()).replaceAll("\\s+"," ");
@@ -216,6 +221,12 @@ public class CSVDataLoader implements DataLoader {
                 }
                 if (!NumberUtils.isDigits(seats)) {
                     return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid seats at record " + (record.getRecordNumber()+1) + ": value = '" + seats + "'");
+                }
+
+                // Validate foreign key constraint of courseId.
+                if (!courseIds.contains(courseID)) {
+                    courseOfferings.clear();
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: The course with ID: "+ courseID +" does not exist in the course data. Please verify and correct your data.");
                 }
 
                 // Validate course-offering data before adding.

@@ -115,7 +115,7 @@ public class AllocationSystem {
 //        System.out.println("All Students allocated? " + );
 //        System.out.println("Not allocated in phase-2: " + unmetReqCnt[0]);
 //        System.out.println("--------------------------------------------------------------------------------");
-        return new ResponseDto(ResponseStatus.OK, ResponseMessage.EXECUTION_SUCCESS);
+        return new ResponseDto(ResponseStatus.OK, ResponseMessage.EXECUTION_SUCCESS+" for "+program+" Sem-"+semester);
     }
 
     /**

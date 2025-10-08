@@ -37,7 +37,19 @@ export default class UploadStatusTable {
 
     // Update student table
     if (this.studentContainer) {
-      this.studentContainer.innerHTML = ""; // clear old rows
+      this.studentContainer.innerHTML = "";
+
+      if (!records.length) {
+        const noDataRow = document.createElement("tr");
+        noDataRow.innerHTML = `
+          <td colspan="3" class="p-4 text-center font-normal text-gray-500">
+            No data available
+          </td>
+        `;
+        this.studentContainer.appendChild(noDataRow);
+        return;
+      }
+
       records.forEach(record => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-blue-100 text-sm text-black font-bold";

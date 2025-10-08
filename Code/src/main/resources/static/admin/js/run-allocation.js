@@ -5,6 +5,13 @@ import RunAllocationSummary from '/services/RunAllocationSummary.js';
 
 const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
 const toastManager = new ToastManager();
+
+if(allocationStatus) {
+    allocationStatus.forEach((response) => {
+        toastManager.printStatusResponse(response);
+    });
+}
+
 const allocationSummary = new RunAllocationSummary({ contextPath, toastManager });
 //const executor = new RunAllocationExecutor({ contextPath, toastManager });
 //const runManager = new RunAllocationManager({ contextPath, toastManager });

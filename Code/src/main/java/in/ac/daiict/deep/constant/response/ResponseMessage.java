@@ -3,6 +3,7 @@ package in.ac.daiict.deep.constant.response;
 public class ResponseMessage {
 
     /// General Category
+    public static final String DB_SAVE_ERROR="Course ID not found in Course data.";
 
     // Messages related to internal server issues.
     public static final String SUCCESS="Successful!";
@@ -31,7 +32,6 @@ public class ResponseMessage {
     public static final String ALLOCATION_INSTANCE_NOT_FOUND="No term found to upload data. Please create a new term to continue.";
     public static final String INCOMPATIBLE_FILE_TYPE="The file-type is incompatible. Ensure that the file-type is .csv";
     public static final String UNEXPECTED_CATEGORY="The uploaded file is not recognized. Please use the correct file upload interface.";
-    public static final String DB_SAVE_ERROR="Some entries refer to non-existing course in seat-matrix. Please verify your data.";
     public static final String UPLOAD_FAILURE="Upload failed due to a server error. Please try again later.";
     public static final String UPLOAD_SUCCESS="Data Uploaded Successfully!";
     public static final String EXCEL_PARSING_ERROR="An unexpected error occurred while processing the Excel sheet. Please ensure the data is in the correct format and try again. If the problem persists, please check the logs.";
@@ -48,7 +48,7 @@ public class ResponseMessage {
     public static final String SEMESTER_PARSING_ERROR="Semester should only contains digit. Found: ";
     public static final String COURSE_DATA_NOT_FOUND="Course data is not available.";
     public static final String SEAT_MATRIX_NOT_FOUND ="Seat Matrix is not available";
-    public static final String EXECUTION_SUCCESS ="Execution Successful!";
+    public static final String EXECUTION_SUCCESS ="Execution Successful";
 
     // Messages related to download reports.
     public static final String COURSE_ALLOTMENTS_NOT_FOUND="Allocation process is not completed yet. Please run the allocation to generate course-allotments.";

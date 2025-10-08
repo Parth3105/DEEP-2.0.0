@@ -69,6 +69,12 @@ public class AllocationTaskHandler {
             long unallocatedCount = totalStudents - allocatedCount;
             AllocationSummary allocationSummary =new AllocationSummary(program, semester, (int) allocatedCount, (int) unallocatedCount, LocalDateTime.now());
             allocationSummaryService.insertAllocationSummary(allocationSummary);
+
+            if(allocationResponse.getStatus()!=ResponseStatus.OK){
+                String msg="Allocation Response for: "+program+" Sem-"+semester+"\nReason: "+allocationResponse.getMessage();
+                allocationResponse=new ResponseDto(allocationResponse.getStatus(),msg);
+            }
+
             return allocationResponse;
         } catch (CompletionException ce){
             log.error("Async task to fetch status/summary data failed with error: {}", ce.getCause().getMessage(), ce.getCause());

@@ -39,6 +39,17 @@ export default class DashboardSummaryTable {
 
     this.tableBody.innerHTML = "";
 
+    if (!this.detailsData.length) {
+      this.tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="p-4 text-center font-normal text-gray-500">
+            No data available
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
     this.detailsData.forEach((detail, idx) => {
       // 🔑 keep row index for re-binding
       detail.dataset.rowIndex = idx;
@@ -69,12 +80,15 @@ export default class DashboardSummaryTable {
           <td class="px-4 py-3">${enrollmentPhase}</td>
           <td class="px-4 py-3">${resultState}</td>
           <td class="px-4 py-3">
-            <button class="view-details-btn text-gray-400 hover:text-gray-600 transition-colors" data-row="${idx}">
-              <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"></path>
-              </svg>
+            <button
+              class="view-details-btn text-gray-400 hover:text-gray-600 transition-transform duration-300"
+              data-row="${idx}">
+              <img
+                src="${leftArrow}"
+                alt="arrow icon"
+                data-state="left"
+                class="w-6 h-6 mx-auto transform transition-transform"
+              />
             </button>
           </td>
         </tr>
@@ -84,13 +98,37 @@ export default class DashboardSummaryTable {
   }
 
   attachViewDetailsHandler() {
+    this.currentOpenRow = null;
+
     this.tableBody.addEventListener('click', (event) => {
       const btn = event.target.closest('.view-details-btn');
-      if (!btn || !this.registrationPanel) return;
+      if (!btn) return;
 
       const rowIndex = btn.dataset.row;
       const dataDiv = this.detailsData[rowIndex];
-      this.registrationPanel.showDetails(dataDiv);
+
+      if (!this.registrationPanel) return;
+
+      if (this.currentOpenRow === rowIndex) {
+        this.registrationPanel.hideDetails();
+        this.currentOpenRow = null;
+      } else {
+        this.registrationPanel.showDetails(dataDiv);
+        this.currentOpenRow = rowIndex;
+      }
+
+      const allBtns = this.tableBody.querySelectorAll('.view-details-btn img');
+      allBtns.forEach(img => {
+        img.style.transition = 'transform 1s ease, opacity 0.3s ease';
+
+        if (img.closest('.view-details-btn').dataset.row === this.currentOpenRow) {
+          img.src = rightArrow;
+          img.dataset.state = 'right';
+        } else {
+          img.src = leftArrow;
+          img.dataset.state = 'left';
+        }
+      });
     });
   }
 }

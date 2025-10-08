@@ -58,11 +58,17 @@ public class PreferenceCollectionServiceImpl implements PreferenceCollectionServ
         ConcurrentHashMap<String, List<?>> preferenceDetailsMap=new ConcurrentHashMap<>();
 
         CompletableFuture<Void> fetchingPreviouslySubmittedRequirements=CompletableFuture.supplyAsync(() -> studentReqService.fetchStudentRequirements(sid))
-                .thenAccept((studentReqs) -> preferenceDetailsMap.put(STUDENT_REQUIREMENTS_KEY,studentReqs));
+                .thenAccept((studentReqs) -> {
+                    if(studentReqs!=null) preferenceDetailsMap.put(STUDENT_REQUIREMENTS_KEY,studentReqs);
+                });
         CompletableFuture<Void> fetchingPreviouslySubmittedCoursePref=CompletableFuture.supplyAsync(() -> coursePrefService.fetchStudentCoursePref(sid))
-                .thenAccept((coursePrefs) -> preferenceDetailsMap.put(COURSE_PREFERENCES_KEY,coursePrefs));
+                .thenAccept((coursePrefs) -> {
+                    if(coursePrefs!=null) preferenceDetailsMap.put(COURSE_PREFERENCES_KEY,coursePrefs);
+                });
         CompletableFuture<Void> fetchingPreviouslySubmittedSlotPref=CompletableFuture.supplyAsync(() -> slotPrefService.fetchStudentSlotPref(sid))
-                .thenAccept((slotPrefs) -> preferenceDetailsMap.put(SLOT_PREFERENCES_KEY,slotPrefs));
+                .thenAccept((slotPrefs) -> {
+                    if(slotPrefs!=null) preferenceDetailsMap.put(SLOT_PREFERENCES_KEY,slotPrefs);
+                });
 
         try {
             CompletableFuture.allOf(fetchingPreviouslySubmittedRequirements, fetchingPreviouslySubmittedCoursePref, fetchingPreviouslySubmittedSlotPref).join();

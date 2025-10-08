@@ -24,7 +24,7 @@ public class CoursePref {
     private String sid;
 
     @Id
-    @Pattern(regexp = "^\\d+&", message = "Course-Preference: Slot should not be blank and must be digit.")
+    @Pattern(regexp = "^\\d+$", message = "Course-Preference: Slot should not be blank and must be digit.")
     @Column(length = 4)
     private String slot;
 

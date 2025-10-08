@@ -21,7 +21,7 @@ if(internalServerError) {
 }
 
 if(updateInstanceError) {
-    toastManager.printStatusResponse(instanceCreationError)
+    toastManager.printStatusResponse(updateInstanceError)
 }
 
 window.registrationPanel = registrationPanel;

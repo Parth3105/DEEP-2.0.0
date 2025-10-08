@@ -13,58 +13,78 @@ export default class RegistrationPanel {
     });
   }
 
+  hideDetails() {
+     this.panel.classList.add('hidden');
+  }
+
   showDetails(dataDiv) {
-    if (!dataDiv) return;
-    this.dataDiv = dataDiv;
+      if (!dataDiv) return;
+      this.dataDiv = dataDiv;
 
-    // Normalize status
-    const state = (dataDiv.dataset.collectionwindowstate || '').toLowerCase();
-    const isOpen = state === 'open';
-    const endDate = dataDiv.dataset.enddate || null;
+      // Normalize status
+      const state = (dataDiv.dataset.collectionwindowstate || '').toLowerCase();
+      const isOpen = state === 'open';
+      const hasOpened = state !== 'yet to open';
+      const endDate = dataDiv.dataset.enddate || null;
+      const resultState = dataDiv.dataset.resultstate;
 
-    this.panel.classList.remove('hidden');
+      console.log(resultState);
 
-    this.contentDiv.innerHTML = `
-      <label class="inline-flex items-center mb-6">
-        <input type="checkbox" id="toggleRegistration" class="sr-only" ${isOpen ? 'checked' : ''}>
-        <input type="checkbox" id="toggleRegistration" class="sr-only">
-        <div class="relative w-14 h-7 bg-gray-200 rounded-full">
-          <div id="knob" class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full toggle-knob"></div>
+      this.panel.classList.remove('hidden');
+
+      // Render content
+      this.contentDiv.innerHTML = `
+        <label class="inline-flex items-center mb-6">
+          <input type="checkbox" id="toggleRegistration" class="sr-only peer">
+          <div class="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+        </label>
+
+        <h3 class="text-xl font-bold text-[#1E3C72] mb-1">Begin/End Preference Collection</h3>
+        <p class="text-xs text-gray-600 mb-4 text-center">Manually toggle Preference Collection window</p>
+
+        <div class="flex flex-col space-y-2 justify-center items-center text-sm font-semibold text-[#1E3C72]">
+          ${endDate
+            ? (isOpen
+                ? `<div>Preference Collection Ends on: ${endDate}</div>`
+                : `<div>Preference Collection Ended</div>`)
+            : ''}
+
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-3 items-center justify-center">
+            ${hasOpened ? `
+              <button onclick="window.registrationPanel.openExtendModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Extend Period</button>
+              <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Move to Next Phase</button>
+              <button onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
+            ` : ''}
+          </div>
         </div>
-      </label>
+      `;
 
-      <h3 class="text-xl font-bold text-[#1E3C72] mb-1">Begin/End Preference Collection</h3>
-      <p class="text-xs text-gray-600 mb-4 text-center">Manually toggle Preference Collection window</p>
+      // Get the toggle element
+      const toggle = this.contentDiv.querySelector('#toggleRegistration');
+      toggle.checked = isOpen;
+      const label = toggle.closest('label');
 
-      <div class="flex flex-col space-y-2 justify-center items-center text-sm font-semibold text-[#1E3C72]">
-        <div th:if="${endDate != null}">${state == 'open' ? `Preference Collection Ends on: ${endDate}` : 'Preference Collection Ended'}</div>
-
-        <div class="flex flex-col sm:flex-row lg:flex-col gap-3 items-center justify-center">
-          ${isOpen ? `
-            <button onclick="window.registrationPanel.openExtendModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Extend Period</button>
-            <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Move to Next Phase</button>
-            <button onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
-          ` : ''}
-        </div>
-      </div>
-    `;
-
-    const toggle = this.contentDiv.querySelector('#toggleRegistration');
-    toggle.checked = isOpen;
+      if (resultState === 'Declared') {
+        toggle.disabled = true;
+        label.classList.add('opacity-50', 'cursor-not-allowed');
+        label.classList.remove('cursor-pointer');
+      } else {
+        toggle.disabled = false;
+        label.classList.remove('opacity-50', 'cursor-not-allowed');
+        label.classList.add('cursor-pointer');
+      }
   }
 
   handleToggle(toggle) {
     if (!this.dataDiv) return;
 
-    const wasChecked = !toggle.checked;
-
-    if (!wasChecked) {
+    if (toggle.checked) {
+      // opening
       document.getElementById("registrationModal").classList.remove("hidden");
     } else {
+      // closing
       document.getElementById("closeRegModal").classList.remove("hidden");
     }
-
-    toggle.checked = wasChecked;
   }
 
   handleOpenRegistration(event) {
@@ -125,7 +145,8 @@ export default class RegistrationPanel {
         this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
       })
       .finally(() => {
-        window.dashboardTable.refresh().then(() => {
+      this.closeNewRegistrationModal();
+          window.dashboardTable.refresh().then(() => {
           // Find latest matching dataDiv by program+semester instead of relying only on index
           const program = this.dataDiv.dataset.program;
           const semester = this.dataDiv.dataset.semester;
@@ -137,8 +158,6 @@ export default class RegistrationPanel {
             this.dataDiv = updatedDiv;
             this.showDetails(updatedDiv);
           }
-
-          this.closeNewRegistrationModal();
         });
       });
   }
