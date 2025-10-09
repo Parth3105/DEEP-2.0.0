@@ -2,7 +2,8 @@ import { status } from '../../utils/general-utility.js'
 import ToastManager from '../../services/ToastManager.js';
 import RunAllocationSummary from '../../services/RunAllocationSummary.js';
 
-const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+
 const toastManager = new ToastManager();
 
 if(allocationStatus) {

@@ -101,7 +101,7 @@
               <img th:src="@{/student/images/white-book.svg}" alt="book Icon" class="w-12 h-12">
             </div>
 
-            <span th:if="${isSubmitted == false}">
+            <span th:if="${isSubmitted == null || isSubmitted == false}">
               <h3 class="font-bold text-black text-lg mb-1">Begin Selection</h3>
             </span>
             <span th:if="${isSubmitted}">

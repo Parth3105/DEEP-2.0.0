@@ -1,6 +1,8 @@
 import FileDownloader from '../../services/FileDownloader.js';
 import ToastManager from '../../services/ToastManager.js';
 
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+
 const toastManager = new ToastManager();
 const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
 

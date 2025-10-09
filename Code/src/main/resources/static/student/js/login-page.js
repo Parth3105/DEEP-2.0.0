@@ -8,7 +8,7 @@ if(userAlreadyExists) {
 document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('error')) {
-        toastManager.printStatusResponse({ status: status.ERROR,  message: ""Invalid username or password. Please make sure you have registered." });
+        toastManager.printStatusResponse({ status: status.ERROR,  message: "Invalid username or password. Please make sure you have registered." });
     }
 
     // Session expired response

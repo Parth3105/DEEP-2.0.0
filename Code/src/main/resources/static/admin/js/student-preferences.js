@@ -1,6 +1,8 @@
 import ToastManager from '../../services/ToastManager.js';
 const toastManager = new ToastManager();
 
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+
 if(renderResponse) {
     toastManager.printStatusResponse(renderResponse)
 }

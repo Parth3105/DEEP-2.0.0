@@ -2,6 +2,8 @@ import FileUploader from "../../services/FileUploader.js";
 import StatusLog from "../../services/StatusLog.js";
 import UploadStatusTable from "../../services/UploadStatusTable.js";
 
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+
 // Shared log + table
 new StatusLog("statusLogContainer");
 

@@ -145,7 +145,7 @@ function showButtonLoader(button, text = 'Loading') {
     if (!button.dataset.originalText) button.dataset.originalText = button.innerHTML;
 
     const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
-    button.innerHTML = `${text} <img src=`${contextPath}admin/images/tube-spinner-Loader.svg` alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>`;
+    button.innerHTML = `${text} <img src="${contextPath}admin/images/tube-spinner-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>`;
     button.disabled = true;
     button.classList.add('opacity-50', 'cursor-not-allowed');
 }

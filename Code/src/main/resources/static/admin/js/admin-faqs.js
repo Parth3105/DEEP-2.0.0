@@ -1,5 +1,6 @@
 import { adminFAQs } from "../../utils/general-utility.js";
 
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
 const container = document.getElementById('faqContainer');
 
 if (!adminFAQs || adminFAQs.length === 0) {
