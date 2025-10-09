@@ -36,7 +36,7 @@ export default class RunAllocationSummary {
       <tr>
         <td colspan="4" class="px-4 py-6 text-center text-gray-700 font-medium">
           Loading
-          <img src="/admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
+          <img src=`${contextPath}admin/images/fade-stagger-circles-Loader.svg` alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
         </td>
       </tr>
     `;

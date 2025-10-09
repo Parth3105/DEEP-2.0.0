@@ -2,6 +2,8 @@ import ToastManager from '../../services/ToastManager.js';
 import DashboardSummaryTable from '../../services/DashboardSummaryTable.js';
 import RegistrationPanel from '../../services/RegistrationPanel.js';
 
+window.contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+
 const toastManager = new ToastManager();
 window.registrationPanel = new RegistrationPanel({
     panelId: 'detailsPanel',

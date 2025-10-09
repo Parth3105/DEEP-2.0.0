@@ -14,12 +14,11 @@ export default class RegistrationPanel {
   }
 
   showLoading() {
-    console.log(this.contentDiv);
     if (!this.contentDiv) return;
 
     this.contentDiv.innerHTML = `
       <div id="loader" class="flex flex-col items-center justify-center p-2">
-        Loading <img src="/admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
+        Loading <img src=`${contextPath}admin/images/fade-stagger-circles-Loader.svg` alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
       </div>
     `;
 
