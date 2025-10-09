@@ -19,7 +19,7 @@ export default class RegistrationPanel {
 
     this.contentDiv.innerHTML = `
       <div id="loader" class="flex flex-col items-center justify-center p-2">
-        Loading <img src="../admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
+        Loading <img src="/admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
       </div>
     `;
 

@@ -144,7 +144,7 @@ function showButtonLoader(button, text = 'Loading') {
     if (!button) return;
     if (!button.dataset.originalText) button.dataset.originalText = button.innerHTML;
 
-    button.innerHTML = `${text} <img src="../admin/images/tube-spinner-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>`;
+    button.innerHTML = `${text} <img src="/admin/images/tube-spinner-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>`;
     button.disabled = true;
     button.classList.add('opacity-50', 'cursor-not-allowed');
 }
