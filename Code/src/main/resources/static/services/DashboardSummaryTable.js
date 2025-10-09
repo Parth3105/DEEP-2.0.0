@@ -5,14 +5,31 @@ export default class DashboardSummaryTable {
     this.detailsData = [];
     this.registrationPanel = detailsPanel || null;
 
-    this.refresh();
     this.attachViewDetailsHandler();
+    this.refresh();
+  }
+
+  showLoading() {
+    this.tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="p-4 text-center text-gray-500 font-medium">
+          Loading <span class="animate-pulse">...</span>
+        </td>
+      </tr>
+    `;
+  }
+
+  hideLoading() {
+    this.tableBody.innerHTML = '';
   }
 
   refresh() {
     const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    // Show loading row
+    this.showLoading();
 
     // 🔑 Return promise so caller can chain
     return fetch(`${contextPath}admin/admin-dashboard/refresh-details`, {
@@ -32,6 +49,8 @@ export default class DashboardSummaryTable {
   }
 
   populateFromFragment(fragmentHtml) {
+    this.hideLoading();
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(fragmentHtml, "text/html");
     const details = doc.querySelectorAll(`#${this.fragmentContainerId} > div`);
