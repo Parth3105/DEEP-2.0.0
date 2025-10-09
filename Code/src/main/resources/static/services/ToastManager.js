@@ -1,4 +1,4 @@
-import { status, statusColors } from '/utils/general-utility.js';
+import { status, statusColors } from '../../utils/general-utility.js';
 
 export default class ToastManager {
   constructor() {

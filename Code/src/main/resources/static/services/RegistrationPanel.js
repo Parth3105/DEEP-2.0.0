@@ -20,6 +20,7 @@ export default class RegistrationPanel {
   showDetails(dataDiv) {
       if (!dataDiv) return;
       this.dataDiv = dataDiv;
+      console.log(this.dataDiv);
 
       // Normalize status
       const state = (dataDiv.dataset.collectionwindowstate || '').toLowerCase();
@@ -27,6 +28,7 @@ export default class RegistrationPanel {
       const hasOpened = state !== 'yet to open';
       const endDate = dataDiv.dataset.enddate || null;
       const resultState = dataDiv.dataset.resultstate;
+      const declareDisabled = isOpen || dataDiv.dataset.allocationstate != 'Allocated';
 
       this.panel.classList.remove('hidden');
 
@@ -51,7 +53,12 @@ export default class RegistrationPanel {
             ${hasOpened ? `
               <button onclick="window.registrationPanel.openExtendModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Extend Period</button>
               <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Move to Next Phase</button>
-              <button th:disabled="${isOpen || !isAllocated}" onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
+              <button ${declareDisabled ? 'disabled' : ''}
+                  onclick="window.registrationPanel.openDeclareRegModal()"
+                  type="button"
+                  class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white ${declareDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} rounded-lg">
+                  Declare Results
+                </button>
             ` : ''}
           </div>
         </div>

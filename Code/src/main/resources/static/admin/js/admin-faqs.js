@@ -1,4 +1,4 @@
-import { adminFAQs } from "/utils/general-utility.js";
+import { adminFAQs } from "../../utils/general-utility.js";
 
 const container = document.getElementById('faqContainer');
 

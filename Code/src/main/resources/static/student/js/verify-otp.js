@@ -1,5 +1,5 @@
-import ToastManager from '/services/ToastManager.js';
-import { status } from '/utils/general-utility.js';
+import ToastManager from '../../services/ToastManager.js';
+import { status } from '../../utils/general-utility.js';
 const toastManager = new ToastManager();
 
 if(otpVerificationResponse) {

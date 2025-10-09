@@ -1,4 +1,4 @@
-import PreferenceManager from '/services/PreferenceManager.js';
+import PreferenceManager from '../../services/PreferenceManager.js';
 
 const instance = new PreferenceManager({
   instituteRequirements,

@@ -1,8 +1,6 @@
-import { status } from '/utils/general-utility.js'
-import ToastManager from '/services/ToastManager.js';
-//import RunAllocationManager from '/services/RunAllocationManager.js';
-import RunAllocationSummary from '/services/RunAllocationSummary.js';
-//import RunAllocationExecutor from '/services/RunAllocationExecutor.js';
+import { status } from '../../utils/general-utility.js'
+import ToastManager from '../../services/ToastManager.js';
+import RunAllocationSummary from '../../services/RunAllocationSummary.js';
 
 const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
 const toastManager = new ToastManager();

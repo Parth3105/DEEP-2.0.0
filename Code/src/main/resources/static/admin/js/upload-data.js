@@ -1,7 +1,6 @@
-// Init for all sections
-import FileUploader from "/services/FileUploader.js";
-import StatusLog from "/services/StatusLog.js";
-import UploadStatusTable from "/services/UploadStatusTable.js";
+import FileUploader from "../../services/FileUploader.js";
+import StatusLog from "../../services/StatusLog.js";
+import UploadStatusTable from "../../services/UploadStatusTable.js";
 
 // Shared log + table
 new StatusLog("statusLogContainer");

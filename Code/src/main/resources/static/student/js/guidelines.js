@@ -1,4 +1,4 @@
-import { guidelines } from "/utils/general-utility.js";
+import { guidelines } from "../../utils/general-utility.js";
 
 const guidelineContainer = document.getElementById("guidelineTimeline");
 

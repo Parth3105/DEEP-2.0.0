@@ -1,5 +1,5 @@
-import ToastManager from '/services/ToastManager.js';
-import { categoryLabels } from '/utils/general-utility.js';
+import ToastManager from '../../services/ToastManager.js';
+import { categoryLabels } from '../../utils/general-utility.js';
 const toastManager = new ToastManager();
 
 if(renderResponse) {

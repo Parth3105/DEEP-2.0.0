@@ -1,6 +1,6 @@
-import ToastManager from '/services/ToastManager.js';
-import DashboardSummaryTable from '/services/DashboardSummaryTable.js';
-import RegistrationPanel from '/services/RegistrationPanel.js';
+import ToastManager from '../../services/ToastManager.js';
+import DashboardSummaryTable from '../../services/DashboardSummaryTable.js';
+import RegistrationPanel from '../../services/RegistrationPanel.js';
 
 const toastManager = new ToastManager();
 window.registrationPanel = new RegistrationPanel({
