@@ -7,6 +7,7 @@ import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.dto.EnrollmentPhaseDetailsDto;
 import in.ac.daiict.deep.dto.ResponseDto;
+import in.ac.daiict.deep.service.AllocationSummaryService;
 import in.ac.daiict.deep.service.CourseOfferingService;
 import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.InstituteReqService;
@@ -33,6 +34,7 @@ public class DashboardController {
     private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
     private InstituteReqService instituteReqService;
     private CourseOfferingService courseOfferingService;
+    private AllocationSummaryService allocationSummaryService;
 
     @PostMapping(AdminEndpoint.BEGIN_COLLECTION)
     public String startPreferenceCollection(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("close-date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate closeDate, Model model){
@@ -90,7 +92,18 @@ public class DashboardController {
 
     @PostMapping(AdminEndpoint.DECLARE_RESULTS)
     public String declareResults(@RequestParam("program") String program, @RequestParam("semester") int semester, Model model){
-        ResponseDto responseDto=enrollmentPhaseDetailsService.updateOnDeclaringResults(program,semester);
+        CompletableFuture<String> collectionWindowStateFuture = CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchCollectionWindowState(program, semester));
+        CompletableFuture<Boolean> allocationStateFuture = CompletableFuture.supplyAsync(() -> allocationSummaryService.checkIfExists(program, semester));
+
+        String collectionWindowState = collectionWindowStateFuture.join();
+        boolean allocationState = allocationStateFuture.join();
+
+        ResponseDto responseDto;
+        // If collection-window is closed and allocation is complete then only allow to declare results.
+        if(collectionWindowState.equals(CollectionWindowStateEnum.CLOSED.toString()) && allocationState) responseDto=enrollmentPhaseDetailsService.updateOnDeclaringResults(program,semester);
+        else if(!allocationState) responseDto=new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION);
+        else responseDto=new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.RESULT_DECLARATION_FORBIDDEN_ON_WINDOW_OPEN);
+
         model.addAttribute("preferenceCollectionWindowStatus",responseDto);
         return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }

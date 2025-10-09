@@ -22,6 +22,10 @@ if(internalServerError) {
     toastManager.printStatusResponse(internalServerError);
 }
 
+if(formDetailsFetchingError) {
+    toastManager.printStatusResponse(formDetailsFetchingError);
+}
+
 if(!homePageDetails) {
     toastManager.printStatusResponse({ status: status.ERROR, message: "Your details are not found! Please contact admin."});
 }

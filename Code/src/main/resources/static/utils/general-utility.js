@@ -17,7 +17,7 @@ export const statusColors = {
     200: "bg-green-600",
     204: "bg-yellow-400",
     299: "bg-yellow-400",
-    400: "bg-yellow-400",
+    400: "bg-red-600",
     401: "bg-red-600",
     403: "bg-red-600",
     404: "bg-red-600",
@@ -39,58 +39,58 @@ export const categoryLabels = {
 
 export const studentFAQs = [
   {
-    question: "Can I edit my preferences after submission?",
-    answer: "No, you cannot edit the preferences once submitted."
-  },
-  {
-    question: "Can I appeal or request a change in my allocation once submission?",
-    answer: "No changes are allowed through the system. If you believe there's an error, contact your administrator directly."
-  },
-  {
     question: "Can I leave the preference form partially filled?",
     answer: "Yes, but the preference data will be lost if you leave the website."
-  },
-  {
-    question: "Will submitting early improve my chances of allocation?",
-    answer: "No, allocation is based on your ranked preferences and system rules, not submission time — as long as it's before the deadline."
   },
   {
     question: "At which time on the due date does the submission period end?",
     answer: "The submission period ends at 11:59 PM on the due date. For Example, if the due date is 2025-01-01, then the submission period will end at 2025-01-01 11:59 PM."
   },
   {
+    question: "Will submitting early improve my chances of allocation?",
+    answer: "No, allocation is based on your ranked preferences and system rules, not submission time — as long as it's before the deadline."
+  },
+  {
+    question: "Can I edit my preferences after submission?",
+    answer: "Yes, you can edit your preferences after submission until the deadline. However, make sure to submit the edited response again — if you don’t resubmit after making changes, your previously submitted response will be considered final."
+  },
+  {
     question: "What if I didn’t get any allocation?",
-    answer: "If you were not allocated any option, it means your choices were full or invalid. Contact your admin to see if there’s a waiting list or next round."
+    answer: "If you were not allocated any option, it means your choices were full or invalid. Contact concerned authorities for the same."
   },
   {
     question: "Is the allocation final?",
     answer: "Yes. Once declared, the results are final unless the admin announces a correction or reallocation."
+  },
+  {
+    question: "Can I appeal or request a change in my allocation once courses are allocated?",
+    answer: "No changes are allowed through the system. If you believe there's an error, contact the concerned authorities."
   }
 ];
 
 export const adminFAQs = [
   {
-    question: "Will previous instance data be preserved?",
-    answer: "Yes, previous instance data is preserved in the Database, unless explicitly deleted."
+    question: "Will previous Term-Data be preserved?",
+    answer: "Yes, previous Term-Data data is preserved in the Database, unless explicitly deleted."
   },
   {
-    question: "In what format the data needs to be uploaded?",
-    answer: "All the data needs to be uploaded strictly in Excel (.xlsx) format."
+    question: "Can I rename or edit Term-Details after creating it?",
+    answer: "No, you can't rename Term-Details. You can edit by reuploading the data."
   },
   {
-    question: "Can I rename or edit an instance after creating it?",
-    answer: "No, you can't rename an instance. You can edit by reuploading the data."
-  },
-  {
-    question: "Will updating the instance append the reuploaded data?",
+    question: "Will updating the Term-Details append the reuploaded data?",
     answer: "In case of student data, yes — the reuploaded unique student data will be appended and the previous one remains unchanged. For other data, the previous content will be replaced. Reuploading one dataset may affect another, and such cases will be flagged when required."
   },
   {
-    question: "Can I export the list of students submitted preferences?",
-    answer: "Yes, you can download students' submitted preferences semester-wise in a report format (e.g., Excel) from the \"View Preferences\" section."
+    question: "In what format the data needs to be uploaded?",
+    answer: "All the data needs to be uploaded strictly in CSV (.csv) format."
   },
   {
-    question: "Will students be notified automatically after running the allocation algorithm?",
+    question: "Can I export the list of students submitted preferences?",
+    answer: "Yes, you can download students' submitted preferences semester-wise in a report format ( CSV ) from the \"Download Reports\" section."
+  },
+  {
+    question: "Will students be notified automatically after executing the allocation algorithm?",
     answer: "No. Results are only visible to students once you declare them. Once declared, you cannot run the allocation algorithm again."
   },
   {
@@ -125,8 +125,8 @@ export const guidelines = [
     description: "If you forget to submit, your preferences will not be recorded, even if you filled them."
   },
   {
-    title: "Once submitted, no changes are allowed.",
-    description: "You will not be able to edit your preferences after final submission, so be sure everything is correct."
+    title: "Once submitted, You are allowed to edit your response until deadline.",
+    description: "You will be able to edit your preferences after submission, but be sure to submit the edited response."
   }
 ];
 

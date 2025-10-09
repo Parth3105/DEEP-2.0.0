@@ -34,8 +34,13 @@ public class LoginController {
     public String renderRegisterPage(HttpSession session){
         return CommonTemplate.REGISTER_PAGE;
     }
+
     @PostMapping(CommonEndPoint.REGISTER)
     public String registerUser(@RequestParam("username") String username, @RequestParam("userEmail") String userEmail, RedirectAttributes redirectAttributes, HttpSession session){
+        if(userService.findUser(username)!=null){
+            redirectAttributes.addFlashAttribute("userAlreadyExists",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.USER_ALREADY_EXISTS));
+            return "redirect:"+CommonEndPoint.LOGIN;
+        }
         if(!userEmail.endsWith("@dau.ac.in")){
             redirectAttributes.addFlashAttribute("invalidEmail",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INVALID_EMAIL));
             return "redirect:"+CommonEndPoint.REGISTER;

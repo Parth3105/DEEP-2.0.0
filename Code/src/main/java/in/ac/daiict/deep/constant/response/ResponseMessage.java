@@ -6,6 +6,7 @@ public class ResponseMessage {
     public static final String DB_SAVE_ERROR="Course ID not found in Course data.";
     public static final String LOGIN_REGISTER_ERROR="We’re unable to process your request at the moment. Please try again shortly.";
     public static final String INVALID_EMAIL="Only institute email addresses are allowed. Please use your DAU Email-ID";
+    public static final String USER_ALREADY_EXISTS="Registration failed! A user with this email/ID already exists. Please log in.";
 
     // Messages related to internal server issues.
     public static final String SUCCESS="Successful!";
@@ -29,6 +30,7 @@ public class ResponseMessage {
     public static final String CANNOT_EXTEND_PERIOD="Cannot Extend. Ensure that the Collection window is open.";
     public static final String COLLECTION_START_FORBIDDEN_AFTER_RESULT="Preference collection window cannot be started after result declaration.";
     public static final String RESULT_DECLARATION_FORBIDDEN_BEFORE_ALLOCATION="Allocation Results cannot be declared until allocation is completed.";
+    public static final String RESULT_DECLARATION_FORBIDDEN_ON_WINDOW_OPEN="Allocation results cannot be declared until the preference-collection window is closed.";
 
     // Messages related to upload data.
     public static final String ALLOCATION_INSTANCE_NOT_FOUND="No term found to upload data. Please create a new term to continue.";

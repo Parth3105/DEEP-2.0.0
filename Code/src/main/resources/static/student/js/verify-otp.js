@@ -1,5 +1,9 @@
+import ToastManager from '/services/ToastManager.js';
+import { status } from '/utils/general-utility.js';
+const toastManager = new ToastManager();
+
 if(otpVerificationResponse) {
-    printStatusResponse(otpVerificationResponse);
+    toastManager.printStatusResponse(otpVerificationResponse);
 }
 
 // Timer functionality
@@ -234,6 +238,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     updateCombinedOtp();
     if (combinedOtpInput.value.length !== 6) {
         e.preventDefault();
-        showToast('Please enter complete 6-digit OTP',statusColors.ERROR);
+        toastManager.printStatusResponse({ status: status.ERROR, message: 'Please enter complete 6-digit OTP' });
     }
 });

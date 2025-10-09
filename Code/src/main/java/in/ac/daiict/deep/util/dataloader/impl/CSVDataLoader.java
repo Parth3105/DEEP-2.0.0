@@ -465,6 +465,7 @@ public class CSVDataLoader implements DataLoader {
         // fetch all courses.
         List<Course> courses=courseService.fetchAllCourses();
 
+        if(courses.isEmpty()) return new ByteArrayOutputStream(0);
         for (Course course : courses) {
             List<AllocationResult> allocationResultList = allocationResultService.fetchCourseWiseAllocation(course.getCid());
             if(allocationResultList.isEmpty()) return new ByteArrayOutputStream(0);

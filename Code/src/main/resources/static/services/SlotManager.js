@@ -1,18 +1,22 @@
 export default class SlotManager {
-  constructor(toastManager) {
+  constructor(toastManager, preferenceFormDetails = null) {
     this.toastManager = toastManager;
-    this.selectedCoursesBySlot = {}; // holds selected courses grouped by slot
-    this.skippedSlots = {};          // whether a slot is skipped
-    this.currentSlot = '';           // currently active slot
+    this.preferenceFormDetails = preferenceFormDetails;
+    this.selectedCoursesBySlot = {};
+    this.skippedSlots = {};
+    this.currentSlot = '';
+    window.slotManager = this; // expose globally for onclick buttons
   }
 
   initialize() {
+    // Initialize slots and skippedSlots
     document.querySelectorAll('.slot[data-slot]').forEach(slotBtn => {
       const slot = slotBtn.getAttribute('data-slot');
       this.skippedSlots[slot] = false;
       slotBtn.addEventListener('click', () => this.showSlotCourses(slot));
     });
 
+    // Course button click handlers
     document.querySelectorAll('.course-btn').forEach(courseBtn => {
       courseBtn.addEventListener('click', (event) => {
         const btn = event.currentTarget;
@@ -21,21 +25,70 @@ export default class SlotManager {
         const name = btn.getAttribute('data-name');
         const program = btn.getAttribute('data-program');
         const category = btn.getAttribute('data-category');
-        const credits = parseInt(btn.getAttribute('data-credits'));
+        const credits = parseInt(btn.getAttribute('data-credits')) || 0;
         this.addCourse({ cid, slot, name, program, category, credits });
       });
     });
 
+    // Show first slot
     const firstSlot = document.querySelector('.slot[data-slot]');
     if (firstSlot) this.showSlotCourses(firstSlot.getAttribute('data-slot'));
-    window.slotManager = this;
+
+    // Populate values if editing a submission
+    this.populateFromPreferenceForm();
+  }
+
+  populateFromPreferenceForm() {
+    if (!this.preferenceFormDetails.coursePreferences || !this.preferenceFormDetails.slotPreferences) return;
+
+    if (this.preferenceFormDetails.coursePreferences) {
+      this.preferenceFormDetails.coursePreferences.forEach(pref => {
+        const { cid, slot } = pref;
+
+        // Lookup course details from DOM
+        const courseBtn = document.querySelector(`.course-btn[data-cid="${cid}"][data-slot="${slot}"]`);
+        if (!courseBtn) return; // skip if button not found
+
+        const name = courseBtn.getAttribute('data-name') || '';
+        const program = courseBtn.getAttribute('data-program') || '';
+        const category = courseBtn.getAttribute('data-category') || '';
+        const credits = parseInt(courseBtn.getAttribute('data-credits')) || 0;
+
+        this.addCourse({ cid, slot, name, program, category, credits });
+      });
+    }
+
+    if (this.preferenceFormDetails.coursePreferences) {
+        const allSlots = document.querySelectorAll('.slot[data-slot]');
+        allSlots.forEach(slotBtn => {
+          const slot = slotBtn.getAttribute('data-slot');
+          if (!this.selectedCoursesBySlot[slot] || this.selectedCoursesBySlot[slot].length === 0) {
+            this.skippedSlots[slot] = true;
+          }
+        });
+    }
+
+    if (this.preferenceFormDetails.coursePreferences) {
+        const checkbox = document.getElementById("noSlotCourseCheckbox");
+        if (checkbox) checkbox.checked = this.skippedSlots[this.currentSlot] === true;
+    }
+
+    if (this.preferenceFormDetails.slotPreferences) {
+      this.preferenceFormDetails.slotPreferences.forEach(pref => {
+        // pref.slot = slot number, pref.pref = preference order
+        const input = document.querySelector(`.slot-preference-input[data-slot="${pref.pref}"]`);
+        if (input) input.value = pref.slot;
+      });
+    }
+
+    this.updateSelectedCoursesDisplay();
+    this.updateCourseVisibility();
   }
 
   handleNoSlotCourseCheckbox(checkbox) {
     const slot = this.currentSlot;
     this.skippedSlots[slot] = checkbox.checked;
 
-    // Clear selected courses if user opted for none
     if (checkbox.checked) {
       this.selectedCoursesBySlot[slot] = [];
       this.updateSelectedCoursesDisplay();
@@ -50,37 +103,33 @@ export default class SlotManager {
     const currentCourses = document.querySelectorAll(`#slot-${this.currentSlot} .course-row`);
     const selectedInCurrent = this.selectedCoursesBySlot[this.currentSlot] || [];
     const totalInCurrent = currentCourses.length;
-
     const isCurrentSkipped = this.skippedSlots[this.currentSlot] === true;
 
-    // Prevent switching if current slot not completed or skipped
-    if (selectedInCurrent.length !== totalInCurrent && !isCurrentSkipped && this.currentSlot) {
+    if (this.currentSlot && selectedInCurrent.length !== totalInCurrent && !isCurrentSkipped) {
       this.toastManager.printStatusResponse({
         status: "WARNING",
-        message: `Please select all courses or confirm you dont want any from Slot ${this.currentSlot}.`
+        message: `Please select all courses or confirm you don't want any from Slot ${this.currentSlot}.`
       });
       return;
     }
 
-    // Switch slot
     this.currentSlot = slot;
 
-    // Show only selected slot’s courses
+    // Show only current slot courses
     document.querySelectorAll('.slot-courses').forEach(el => el.classList.add('hidden'));
     const slotElement = document.getElementById('slot-' + slot);
     if (slotElement) slotElement.classList.remove('hidden');
 
-    // Update button highlight
+    // Update slot button highlights
     document.querySelectorAll("#slotContainer .slot").forEach(s => {
       s.classList.remove("bg-blue-500");
       s.classList.add("bg-cyan-300");
     });
-
     const selectedBtn = document.querySelector(`.slot[data-slot="${slot}"]`);
     selectedBtn?.classList.remove("bg-cyan-300");
     selectedBtn?.classList.add("bg-blue-500");
 
-    // Restore skip checkbox state
+    // Update skip checkbox
     const checkbox = document.getElementById("noSlotCourseCheckbox");
     if (checkbox) checkbox.checked = this.skippedSlots[slot] === true;
 
@@ -112,7 +161,6 @@ export default class SlotManager {
     }
 
     this.selectedCoursesBySlot[slot].push({ cid, slot, name, program, category, credits });
-
     this.updateSelectedCoursesDisplay();
     this.updateCourseVisibility();
   }
@@ -120,7 +168,6 @@ export default class SlotManager {
   removeCourse(cid) {
     const coursesInSlot = this.selectedCoursesBySlot[this.currentSlot] || [];
     this.selectedCoursesBySlot[this.currentSlot] = coursesInSlot.filter(course => course.cid !== cid);
-
     this.updateSelectedCoursesDisplay();
     this.updateCourseVisibility();
   }
@@ -135,10 +182,9 @@ export default class SlotManager {
 
   updateSelectedCoursesDisplay() {
     const selectedCoursesContainer = document.getElementById('selectedCourses');
-    const courses = this.selectedCoursesBySlot[this.currentSlot] || [];
-
     if (!selectedCoursesContainer) return;
 
+    const courses = this.selectedCoursesBySlot[this.currentSlot] || [];
     if (courses.length === 0) {
       selectedCoursesContainer.innerHTML = '<div class="h-4"></div>';
       return;
@@ -172,10 +218,8 @@ export default class SlotManager {
     document.querySelectorAll('.course-row').forEach(courseRow => {
       const courseId = courseRow.getAttribute('data-course-id');
       const slot = courseRow.getAttribute('data-slot');
-
       const selectedInSlot = this.selectedCoursesBySlot[slot] || [];
       const isSelected = selectedInSlot.some(course => course.cid === courseId);
-
       courseRow.style.display = (slot === this.currentSlot && !isSelected) ? 'grid' : 'none';
     });
   }

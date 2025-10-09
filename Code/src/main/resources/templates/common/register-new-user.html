@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="context-path" th:content="@{/}" />
+    <title>DEEP - Register User</title>
+    <link rel="icon" th:href="@{/admin/images/DEEP Logo.png}" type="image/png">
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+</head>
+<body class="relative min-h-screen" style="background: linear-gradient(to bottom, #FFFFFF, #D4DFED);">
+
+<!-- Toast Display -->
+<div th:replace="~{common/toast-display::toast-display}"></div>
+
+<div class="mx-auto">
+    <!-- Header -->
+    <div th:replace="~{common/student-navbar::student-authenticate-navbar}"></div>
+</div>
+
+<main class="flex items-center justify-center min-h-[calc(100vh-60px)] p-5">
+    <div class="w-full max-w-5xl bg-8EB4FF rounded-4xl shadow-2xl overflow-hidden">
+        <div class="flex flex-col sm:flex-row min-h-[600px]">
+            <!-- Left Side - forgot Password Form -->
+            <div class="flex-5 p-8 lg:p-12 flex flex-col justify-center">
+                <div class="max-w-sm mx-auto w-full">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Register Yourself</h2>
+                    <p class="text-gray-600 text-xs mb-8">Please enter your student ID</p>
+
+                    <form class="space-y-6" th:action="@{/register}" method="post" onsubmit="appendEmail()">
+                        <!-- Student ID Input -->
+                        <div class="flex relative gap-2 mb-5">
+                            <input
+                                    type="number"
+                                    name="username"
+                                    id="floating_username"
+                                    placeholder=" "
+                                    autocomplete="off"
+                                    maxlength="9"
+                                    pattern="\d{9}"
+                                    required
+                                    class="peer block w-full pr-28 rounded-lg border border-black bg-transparent px-4 pt-4 pb-4 text-sm text-black font-semibold
+               focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
+               [&::-webkit-outer-spin-button]:appearance-none
+               [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <!-- Fixed domain -->
+                            <label
+                                    for="floating_username"
+                                    class="absolute left-4 top-2 z-10 origin-[0] -translate-y-5 scale-75 transform text-sm font-semibold text-black transition-all duration-300
+                                          bg-8EB4FF px-1
+                                          peer-placeholder-shown:top-4 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100
+                                          peer-focus:top-1 peer-focus:-translate-y-[15px] peer-focus:scale-75 peer-focus:text-blue-600"
+                                                    >
+                                Student ID
+                            </label>
+                            <span class="flex-1 bg-blue-400 rounded-lg font-medium border border-black px-4 py-2 text-sm flex items-center cursor-not-allowed">
+                                @dau.ac.in
+                            </span>
+                        </div>
+
+                        <!-- Hidden field for full email -->
+                        <input type="hidden" name="userEmail" id="userEmail" />
+
+                        <!-- Submit Button -->
+                        <button
+                                type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer flex justify-center items-center"
+                                id="sendOtpButton"
+                        >
+                            <span>Send OTP Request</span>
+                            <svg id="spinner" class="hidden animate-spin ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                 viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Back to Login -->
+                        <div class="text-center">
+                            <a th:href="@{/login}" class="text-blue-600 hover:text-blue-700 font-semibold underline transition-colors duration-300">
+                                Back to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Side - Security Illustration -->
+            <div class="hidden sm:flex relative flex-3 bg-login-gradient p-8 lg:p-12 flex items-center justify-center relative overflow-hidden">
+                <img th:src="@{/student/images/forgot-password.svg}" alt="login img" class="relative scale-125 sm:scale-120 transition-transform duration-500">
+            </div>
+        </div>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    const invalidEmail = [[${ invalidEmail }]];
+</script>
+
+<script type="module" th:src="@{/utils/general-utility.js}"></script>
+<script type="module" th:src="@{/student/js/register-new-user.js}"></script>
+</body>
+</html>

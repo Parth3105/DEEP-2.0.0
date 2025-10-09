@@ -28,8 +28,6 @@ export default class RegistrationPanel {
       const endDate = dataDiv.dataset.enddate || null;
       const resultState = dataDiv.dataset.resultstate;
 
-      console.log(resultState);
-
       this.panel.classList.remove('hidden');
 
       // Render content
@@ -53,7 +51,7 @@ export default class RegistrationPanel {
             ${hasOpened ? `
               <button onclick="window.registrationPanel.openExtendModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Extend Period</button>
               <button type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Move to Next Phase</button>
-              <button onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
+              <button th:disabled="${isOpen || !isAllocated}" onclick="window.registrationPanel.openDeclareRegModal()" type="button" class="ml-4 px-3 py-2 text-sm rounded-lg bg-[#1E3C72] text-white cursor-pointer">Declare Results</button>
             ` : ''}
           </div>
         </div>

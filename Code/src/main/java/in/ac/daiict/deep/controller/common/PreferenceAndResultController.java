@@ -49,6 +49,10 @@ public class PreferenceAndResultController {
     public String loadMyAllocationResult(Model model, RedirectAttributes redirectAttributes) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Student student=studentService.fetchStudentData(userDetails.getUsername());
+        if(student==null){
+            redirectAttributes.addFlashAttribute("renderResponse",new ResponseDto(ResponseStatus.NOT_FOUND,ResponseMessage.USER_NOT_FOUND));
+            return "redirect:"+StudentEndpoint.HOME_PAGE;
+        }
         if(!enrollmentPhaseDetailsService.fetchResultState(student.getProgram(),student.getSemester()).equalsIgnoreCase(ResultStateEnum.DECLARED.toString())){
             redirectAttributes.addFlashAttribute("renderResponse", new ResponseDto(ResponseStatus.NOT_FOUND, ResponseMessage.RESULTS_NOT_DECLARED));
             return "redirect:"+StudentEndpoint.HOME_PAGE;

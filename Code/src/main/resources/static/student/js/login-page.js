@@ -1,6 +1,10 @@
 import ToastManager from '/services/ToastManager.js';
 const toastManager = new ToastManager();
 
+if(userAlreadyExists) {
+    toastManager.printStatusResponse(userAlreadyExists);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('error')) {

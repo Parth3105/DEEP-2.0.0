@@ -1,3 +1,4 @@
+import { status } from '/utils/general-utility.js'
 import ToastManager from '/services/ToastManager.js';
 //import RunAllocationManager from '/services/RunAllocationManager.js';
 import RunAllocationSummary from '/services/RunAllocationSummary.js';
@@ -73,7 +74,7 @@ document.getElementById('executeBtn').addEventListener('click', function(event) 
     });
 
     if (Object.keys(executeFilter).length === 0) {
-        alert('Please select at least one entry');
+        toastManager.printStatusResponse({ status: status.ERROR, message: 'Please select at least one entry' });
         return;
     }
 

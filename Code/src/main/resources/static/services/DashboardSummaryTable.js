@@ -62,6 +62,8 @@ export default class DashboardSummaryTable {
       const enrollmentPhase = detail.dataset.enrollmentphase;
       const resultState = detail.dataset.resultstate;
 
+      window.isAllocated = allocationState == 'Allocated';
+
       let allocationBadge = "";
       if (allocationState.toLowerCase() === "allocated") {
         allocationBadge = `<span class="px-3 py-1 font-medium bg-green-100 text-green-800 rounded-xl">Allocated</span>`;

@@ -19,8 +19,8 @@
         <!-- Desktop Nav -->
         <nav class="hidden lg:flex items-center gap-2 md:gap-4 lg:gap-8">
             <a th:href="@{/admin/admin-dashboard}" class="text-xs lg:text-sm text080049 hover:text-indigo-600 font-medium transition duration-300">Dashboard</a>
-            <a th:href="@{/admin/student-preferences}" class="text-xs lg:text-sm text080049 hover:text-indigo-600 font-medium transition duration-300">Students Preferences</a>
-            <a th:href="@{/admin/allocation-results}" class="text-xs lg:text-sm text-080049 hover:text-indigo-600 font-medium transition duration-300">Allocation Result</a>
+            <a th:href="@{/admin/run-allocation}" class="text-xs lg:text-sm text080049 hover:text-indigo-600 font-medium transition duration-300">Run Allocation</a>
+            <a th:href="@{/admin/download-reports}" class="text-xs lg:text-sm text-080049 hover:text-indigo-600 font-medium transition duration-300">Download Reports</a>
             <a th:href="@{/admin/faqs}" class="text-xs lg:text-sm text-080049 hover:text-indigo-600 font-medium transition duration-300">FAQs</a>
             <form method="post" th:action="@{/logout}" style="display: inline;">
                 <!-- CSRF token will be automatically added by Spring Security if using Thymeleaf -->
@@ -36,8 +36,8 @@
     <!-- Mobile Nav (Dropdown) -->
     <div id="menu" class="lg:hidden hidden absolute right-8 top-15 mt-2 bg-white rounded-lg shadow-lg p-4 w-56 z-50 animate-fade-in">
         <a th:href="@{/admin/admin-dashboard}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">Dashboard</a>
-        <a th:href="@{/admin/student-preferences}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">Students Preferences</a>
-        <a th:href="@{/admin/allocation-results}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">Allocation Result</a>
+        <a th:href="@{/admin/run-allocation}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">Run Allocation</a>
+        <a th:href="@{/admin/download-reports}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">Download Reports</a>
         <a th:href="@{/admin/faqs}" class="block text-080049 text-base font-medium py-1 hover:text-indigo-600 transition duration-200">FAQs</a>
         <form method="post" th:action="@{/logout}" style="display: inline;">
             <!-- CSRF token will be automatically added by Spring Security if using Thymeleaf -->

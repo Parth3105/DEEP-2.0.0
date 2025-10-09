@@ -10,8 +10,8 @@ class PreferenceManager {
     this.semester = config.semester;
     this.program = config.program;
     this.toast = new ToastManager();
-    this.requirements = new RequirementManager(config.instituteRequirements, this.toast);
-    this.slots = new SlotManager(this.toast);
+    this.requirements = new RequirementManager(config.instituteRequirements, this.toast, config.preferenceFormDetails);
+    this.slots = new SlotManager(this.toast, config.preferenceFormDetails);
     this.validator = new PreferenceValidator(this.toast);
     this.formSteps = new FormStepManager(this.toast, this.slots);
     this.submission = new SubmissionManager({
