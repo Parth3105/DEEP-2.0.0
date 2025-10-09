@@ -15,6 +15,7 @@ import in.ac.daiict.deep.entity.StudentReq;
 import in.ac.daiict.deep.security.auth.CustomUserDetails;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.dto.ResponseDto;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class EnrollmentController {
     private Validator validator;
 
     @GetMapping(StudentEndpoint.PREFERENCE_FORM)
-    public String renderEnrollmentForm(Model model, RedirectAttributes redirectAttributes) {
+    public String renderEnrollmentForm(Model model, RedirectAttributes redirectAttributes, HttpSession httpSession) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         // Send the semester & program of students and institute requirements.
@@ -96,11 +97,19 @@ public class EnrollmentController {
             return "redirect:" + StudentEndpoint.HOME_PAGE;
         }
         if(redirectAttributes.containsAttribute("formDetailsFetchingError")) return "redirect:"+StudentEndpoint.HOME_PAGE;
+
+        httpSession.setAttribute("preferenceFillingSessionStart",true);
         return StudentTemplate.ENROLLMENT_FORM_PAGE;
     }
 
     @PostMapping(StudentEndpoint.SUBMIT_PREFERENCE)
-    public String loadSubmittedPreferences(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("studentRequirements") String studentRequirements, @RequestParam("coursePreferences") String coursePreferences, @RequestParam("slotPreferences") String slotPreferences, RedirectAttributes redirectAttributes) {
+    public String loadSubmittedPreferences(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("studentRequirements") String studentRequirements, @RequestParam("coursePreferences") String coursePreferences, @RequestParam("slotPreferences") String slotPreferences, RedirectAttributes redirectAttributes, HttpSession httpSession) {
+        if(httpSession.getAttribute("preferenceFillingSessionStart")==null){
+            redirectAttributes.addFlashAttribute("formSessionExpired",new ResponseDto(ResponseStatus.SESSION_TIMEOUT,ResponseMessage.FORM_FILLING_SESSION_TIMEOUT));
+            return "redirect:"+StudentEndpoint.HOME_PAGE;
+        }
+        httpSession.removeAttribute("preferenceFillingSessionStart");
+
         if(studentRequirements ==null || coursePreferences ==null || slotPreferences ==null){
             redirectAttributes.addFlashAttribute("preferenceMissing",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.PREFERENCE_MISSING));
             return "redirect:" + StudentEndpoint.HOME_PAGE;
@@ -175,6 +184,7 @@ public class EnrollmentController {
             return "redirect:"+StudentEndpoint.PREFERENCE_FORM;
         }
         studentService.updateEnrollmentStatus(studentId);
+
         return "redirect:" + StudentEndpoint.PREFERENCE_SUMMARY;
     }
 

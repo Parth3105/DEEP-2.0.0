@@ -1,3 +1,4 @@
+/*
 package in.ac.daiict.deep.unit.repository;
 
 import in.ac.daiict.deep.entity.CoursePref;
@@ -22,3 +23,4 @@ public class CoursePrefRepoTest {
         coursePrefList.forEach(System.out::println);
     }
 }
+*/

@@ -222,7 +222,7 @@
             <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <img th:src="@{/student/images/clock.svg}" alt="clock Icon" class="w-8 h-8 text-blue-600">
             </div>
-            <h3 class="text-xl md:text-base lg:text-xl font-bold text-gray-800 mb-2">Submit Before Due Date</h3>
+            <h3 class="text-xl md:text-base lg:text-xl font-bold text-gray-800 mb-2">Submit / Edit Before Due Date</h3>
             <p class="text-gray-600 text-xs lg:text-sm">Complete your submission within the time limit</p>
           </div>
 
@@ -253,6 +253,7 @@
     let preferenceMissing = /*[[${preferenceMissing}]]*/ null
     let internalServerError = /*[[${internalServerError}]]*/ null
     let formDetailsFetchingError = /*[[${formDetailsFetchingError}]]*/ null
+    let formSessionExpired = /*[[${formSessionExpired}]]*/ null
   /*]]>*/
 </script>
 

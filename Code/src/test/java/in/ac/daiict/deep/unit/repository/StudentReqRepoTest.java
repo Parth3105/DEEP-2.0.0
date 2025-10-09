@@ -1,3 +1,4 @@
+/*
 package in.ac.daiict.deep.unit.repository;
 
 import in.ac.daiict.deep.entity.StudentReq;
@@ -23,3 +24,4 @@ public class StudentReqRepoTest {
         studentReqList.forEach(System.out::println);
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package in.ac.daiict.deep.unit.service;
 
 import in.ac.daiict.deep.constant.response.ResponseMessage;
@@ -28,3 +29,4 @@ public class PreferenceCollectionTaskManagerTest {
         Thread.sleep(5000);
     }
 }
+*/

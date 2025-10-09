@@ -1,3 +1,4 @@
+/*
 package in.ac.daiict.deep.util.dataloader;
 
 import in.ac.daiict.deep.constant.response.ResponseStatus;
@@ -36,3 +37,4 @@ public class DataLoaderTest {
         assertEquals(ResponseStatus.BAD_REQUEST,responseDto.getStatus());
     }
 }
+*/

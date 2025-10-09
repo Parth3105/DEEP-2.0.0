@@ -42,5 +42,6 @@ public class Student {
         this.name = name;
         this.program = program;
         this.semester = semester;
+        this.hasEnrolled=false;
     }
 }

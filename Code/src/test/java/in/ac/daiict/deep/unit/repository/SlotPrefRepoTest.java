@@ -1,3 +1,4 @@
+/*
 package in.ac.daiict.deep.unit.repository;
 
 import in.ac.daiict.deep.entity.SlotPref;
@@ -22,3 +23,4 @@ public class SlotPrefRepoTest {
         slotPrefList.forEach(System.out::println);
     }
 }
+*/

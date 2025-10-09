@@ -50,18 +50,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void migrateUserData(File dir) {
-        try {
-            File file=new File(dir+"/UsersMigration.ser");
-            if(!file.exists()) file.createNewFile();
-            List<User> userList=userRepo.findAll();
-            ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream(file));
-            outputStream.writeObject(userList);
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException ioe) {
-            log.error("I/O operation to upload/parse student-data failed: {}", ioe.getMessage(), ioe);
-        }
+    public void migrateAdminCredentials(File dir) throws IOException {
+        File file=new File(dir+"/UsersMigration.ser");
+        if(!file.exists()) file.createNewFile();
+        List<User> userList=userRepo.findUserByRole("ROLE_ADMIN");
+        ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream(file));
+        outputStream.writeObject(userList);
+        outputStream.flush();
+        outputStream.close();
     }
 
     @Transactional
@@ -73,6 +69,8 @@ public class UserServiceImpl implements UserService {
             ObjectInputStream inputStream=new ObjectInputStream(new FileInputStream(file));
             List<InstanceName> userList= (List<InstanceName>) inputStream.readObject();
             int batchSize=100;
+
+            entityManager.clear();
             for(int i=0;i<userList.size();i++){
                 entityManager.persist(userList.get(i));
                 if(i%batchSize==0 && i>0){
@@ -85,9 +83,8 @@ public class UserServiceImpl implements UserService {
             inputStream.close();
             file.delete();
             return true;
-        } catch (IOException | ClassNotFoundException ioe) {
-            log.error("I/O operation to upload/parse student-data failed: {}", ioe.getMessage(), ioe);
-            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

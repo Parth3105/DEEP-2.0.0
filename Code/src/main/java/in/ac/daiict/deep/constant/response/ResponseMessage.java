@@ -77,6 +77,7 @@ public class ResponseMessage {
     public static final String PREFERENCE_SUBMISSION_ERROR="We couldn't save your preference details right now. Please try again later.";
     public static final String PREFERENCE_MISSING="Preferences expected from user, but missing.";
     public static final String JSON_PARSING_ERROR_FORM_SUBMISSION ="Something went wrong while submitting your form. Please try again.";
+    public static final String FORM_FILLING_SESSION_TIMEOUT="Your previous session has ended or the form has already been submitted. Please start a new submission if needed.";
 
 //    public static String getUploadSuccessMessage() {
 //        return "You're all set! " + UPLOAD_COUNT + " file(s) have been successfully uploaded and saved.";

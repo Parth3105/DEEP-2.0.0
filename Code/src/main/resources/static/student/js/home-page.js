@@ -30,6 +30,10 @@ if(!homePageDetails) {
     toastManager.printStatusResponse({ status: status.ERROR, message: "Your details are not found! Please contact admin."});
 }
 
+if(formSessionExpired) {
+    toastManager.printStatusResponse(formSessionExpired);
+}
+
 const openBtn = document.getElementById('openModalBtn');
 const modal = document.getElementById('modal');
 const backdrop = document.getElementById('modalBackdrop');

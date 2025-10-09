@@ -1,9 +1,9 @@
 package in.ac.daiict.deep.service;
 
 import in.ac.daiict.deep.entity.User;
-import in.ac.daiict.deep.dto.ResponseDto;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -11,6 +11,6 @@ public interface UserService {
     List<User> findAdmin();
     void insertUsers(List<User> userList);
     void resetPassword(String username, String email, String password);
-    void migrateUserData(File dir);
+    void migrateAdminCredentials(File dir) throws IOException;
     boolean insertFromFile(File dir);
 }

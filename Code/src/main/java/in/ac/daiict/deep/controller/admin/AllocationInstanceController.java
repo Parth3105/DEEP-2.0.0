@@ -1,5 +1,6 @@
 package in.ac.daiict.deep.controller.admin;
 
+import in.ac.daiict.deep.config.AppConfig;
 import in.ac.daiict.deep.constant.database.DBConstants;
 import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
@@ -37,47 +38,84 @@ public class AllocationInstanceController {
     private CourseOfferingService courseOfferingService;
     private UploadService uploadService;
     private InstanceNameService instanceNameService;
-    private DBConfig instanceSetupConfig;
     private UserService userService;
+
+    private DBConfig instanceSetupConfig;
+    private AppConfig appConfig;
 
     @PostMapping(AdminEndpoint.CREATE_ALLOCATION_INSTANCE)
     public String initiateSetup(@RequestParam String season, @RequestParam String Year, @RequestParam String version, RedirectAttributes redirectAttributes){
+        /// Latest instance name is the instance name for the current stored work and the current schema-name is altered with this name.
+        /// A new schema is going to be created for the new Term/Instance.
         String latestInstanceName=instanceNameService.fetchLatestInstance();
+
+        /// New instance name is the instance name for the new Term on which the allocation work shall begin.
         String newInstanceName=(season+"_"+Year+"_"+version).toLowerCase();
+
+        /// Check if the new instance-name is not duplicate of already existing one.
         if(instanceNameService.checkIfNewInstanceExists(newInstanceName)){
             redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.CONFLICT, ResponseMessage.TERM_ALREADY_EXISTS));
             return "redirect:"+AdminEndpoint.DASHBOARD;
         }
+
+        /// Insert new instance in the instance_names table.
         boolean canCreate=instanceNameService.insertNewInstance(newInstanceName);
         if(!canCreate){
             redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
             return "redirect:"+AdminEndpoint.DASHBOARD;
         }
-        if(latestInstanceName !=null) {
-            List<User> adminList=userService.findAdmin();
 
-            if(!instanceSetupConfig.createSchemaAndSwitch(latestInstanceName,DBConstants.WORKING_INSTANCE_NAME)){
+        /// If the application is deployed and used first time => No latest instance (latestInstanceName==null) => Can't alter schema and nothing to migrate => Don't disturb the flow.
+        /// else Latest instance exists (latestInstanceName!=null) => Need to migrate top-30 instance names to avoid duplicate schema issues => Necessary Migration of admin credentials.
+        if(latestInstanceName!=null) {
+            /// Directory to keep the temporary serialized files to maintain the instance-names and admin-credentials.
+            File dir=new File(appConfig.getPath()+"/tmp");
+            if(dir.exists()) dir.delete();
+            dir.mkdirs();
+
+            try{
+                /// Retrieve instance-names and all admin-credentials in a serialized file.
+                CompletableFuture<Void> futureInstanceMigrationTask=CompletableFuture.runAsync(() -> {
+                    try {
+                        instanceNameService.migrateInstances(dir);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                CompletableFuture<Void> futureCredentialsMigrationTask=CompletableFuture.runAsync(() -> {
+                    try {
+                        userService.migrateAdminCredentials(dir);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                CompletableFuture.allOf(futureInstanceMigrationTask,futureCredentialsMigrationTask).join();
+
+                /// Alter the current schema-name with the decided instance-name on its creation.
+                /// Create a new schema for new Term/Instance.
+                instanceSetupConfig.createSchemaAndSwitch(latestInstanceName,DBConstants.WORKING_INSTANCE_NAME);
+
+                /// After the creation of the new schema migrate/insert the instance-names and admin-credentials from file to DB (new schema).
+                CompletableFuture<Boolean> futureInstanceInsertion=CompletableFuture.supplyAsync(() -> instanceNameService.insertFromFile(dir));
+                CompletableFuture<Boolean> futureCredentialsInsertion=CompletableFuture.supplyAsync(() -> userService.insertFromFile(dir));
+
+                boolean isInstanceMigrationSuccessful=futureInstanceInsertion.join();
+                boolean isAdminMigrationSuccessful=futureCredentialsInsertion.join();
+                if(!isInstanceMigrationSuccessful || !isAdminMigrationSuccessful) {
+                    instanceNameService.deleteInstance(newInstanceName);
+                    redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
+                    if(dir.exists()) dir.delete();
+                    return "redirect:"+AdminEndpoint.DASHBOARD;
+                }
+            } catch(Exception e){
+                log.error("Task to create new instance failed with error: {}", e.getCause().getMessage(), e.getCause());
                 instanceNameService.deleteInstance(newInstanceName);
                 redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
+                if(dir.exists()) dir.delete();
                 return "redirect:"+AdminEndpoint.DASHBOARD;
-            }
-            File dir=new File("./src/main/java/in/ac/daiict/deep/tmp/");
-            if(dir.exists()) dir.delete();
-            boolean isInstanceMigrationSuccessful=instanceNameService.insertFromFile(dir);
-            boolean isAdminMigrationSuccessful;
-            try{
-                userService.insertUsers(adminList);
-                isAdminMigrationSuccessful=true;
-            } catch (Exception e){
-                log.error("Failed to migrate admin authentication data with error: {}",e.getMessage(),e);
-                isAdminMigrationSuccessful=false;
             }
 
-            if(!isInstanceMigrationSuccessful || !isAdminMigrationSuccessful) {
-                CompletableFuture.runAsync(() -> instanceNameService.deleteInstance(newInstanceName));
-                redirectAttributes.addFlashAttribute("instanceCreationError",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-                return "redirect:"+AdminEndpoint.DASHBOARD;
-            }
+            dir.delete();
         }
         return "redirect:"+AdminEndpoint.UPLOAD_DATA_PAGE;
     }

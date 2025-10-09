@@ -44,19 +44,15 @@ public class InstanceNameServiceImpl implements InstanceNameService {
     }
 
     @Override
-    public void migrateInstances(File dir) {
-        try {
-            File file = new File(dir+"/InstanceNames.ser");
-            if(file.exists()) file.delete();
-            file.createNewFile();
-            List<InstanceName> instanceNameList=instanceNameRepo.findTop30ByOrderByCreatedAtDesc();
-            ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream(file));
-            outputStream.writeObject(instanceNameList);
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException ioe) {
-            log.error("I/O operation to upload/parse student-data failed: {}", ioe.getMessage(), ioe);
-        }
+    public void migrateInstances(File dir) throws IOException {
+        File file = new File(dir+"/InstanceNames.ser");
+        if(file.exists()) file.delete();
+        file.createNewFile();
+        List<InstanceName> instanceNameList=instanceNameRepo.findTop30ByOrderByCreatedAtDesc();
+        ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream(file));
+        outputStream.writeObject(instanceNameList);
+        outputStream.flush();
+        outputStream.close();
     }
 
     @Override
@@ -87,9 +83,8 @@ public class InstanceNameServiceImpl implements InstanceNameService {
             inputStream.close();
             file.delete();
             return true;
-        } catch (IOException | ClassNotFoundException ioe) {
-            log.error("I/O operation to upload/parse student-data failed: {}", ioe.getMessage(), ioe);
-            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
