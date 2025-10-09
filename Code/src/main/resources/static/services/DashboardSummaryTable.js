@@ -12,8 +12,8 @@ export default class DashboardSummaryTable {
   showLoading() {
     this.tableBody.innerHTML = `
       <tr>
-        <td colspan="7" class="p-4 text-center text-gray-500 font-medium">
-          Loading <span class="animate-pulse">...</span>
+        <td colspan="7" class="p-4 text-center text-black font-medium">
+          Loading <img src="../admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
         </td>
       </tr>
     `;

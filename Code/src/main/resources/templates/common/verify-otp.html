@@ -28,7 +28,7 @@
           <p class="text-center text-gray-600 text-xs mb-1">We have sent an OTP to your DAU E-mail.</p>
           <p class="text-center text-gray-600 text-xs mb-8">Check Your E-mail and Get Started!</p>
 
-          <form class="space-y-6" th:action="@{/verify-otp}" method="post">
+          <form class="space-y-6" th:action="@{/verify-otp}" onsubmit="handleSubmit(event)" method="post">
             <!-- Hidden Username Input -->
             <input type="hidden" name="username" value="test_user" />
 
@@ -100,6 +100,7 @@
             <!-- Verify Button -->
             <button
                     type="submit"
+                    id="verifyBtn"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer"
             >
               Verify OTP

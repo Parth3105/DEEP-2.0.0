@@ -6,6 +6,13 @@ if(otpVerificationResponse) {
     toastManager.printStatusResponse(otpVerificationResponse);
 }
 
+function handleSubmit(event) {
+    event.preventDefault();
+    const button = document.getElementById("verifyBtn");
+    showButtonLoader(button);
+    event.target.submit();
+}
+
 // Timer functionality
 let countdownTimer;
 let timeLeft;
@@ -241,3 +248,5 @@ document.querySelector('form').addEventListener('submit', function(e) {
         toastManager.printStatusResponse({ status: status.ERROR, message: 'Please enter complete 6-digit OTP' });
     }
 });
+
+window.handleSubmit = handleSubmit;

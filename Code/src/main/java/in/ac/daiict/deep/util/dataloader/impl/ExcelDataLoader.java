@@ -24,10 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -203,8 +200,8 @@ public class ExcelDataLoader implements DataLoader {
             Iterator<Row> courseOfferIterator = offerSheet.iterator();
             CourseOfferSheetHeader offerHeader = new CourseOfferSheetHeader(offerSheet.getRow(offerSheet.getFirstRowNum()));
 
-            List<Course> courseList=courseService.fetchAllCourses();
-            Set<String> courseIds=courseList.stream().map(Course::getCid).collect(Collectors.toSet());
+            List<String> courseList=courseService.fetchAllCourseId();
+            Set<String> courseIds=new HashSet<>(courseList);
 
             courseOfferIterator.next();
             while (courseOfferIterator.hasNext()) {

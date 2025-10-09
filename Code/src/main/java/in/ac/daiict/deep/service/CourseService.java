@@ -13,6 +13,8 @@ public interface CourseService {
 
     List<Course> fetchAllCourses();
 
+    List<String> fetchAllCourseId();
+
     List<CourseDto> fetchAllCourseDtos();
 
     void deleteAll();

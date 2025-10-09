@@ -100,7 +100,14 @@
             <div class="flex flex-col items-center justify-center mb-4">
               <img th:src="@{/student/images/white-book.svg}" alt="book Icon" class="w-12 h-12">
             </div>
-            <h3 class="font-bold text-black text-lg mb-1">Begin Selection</h3>
+
+            <span th:if="${isSubmitted == false}">
+              <h3 class="font-bold text-black text-lg mb-1">Begin Selection</h3>
+            </span>
+            <span th:if="${isSubmitted}">
+              <h3 class="font-bold text-black text-lg mb-1">Edit Selection</h3>
+            </span>
+
             <p class="text-xs text-black opacity-90">Submit your Preferences</p>
           </button>
 
@@ -254,6 +261,7 @@
     let internalServerError = /*[[${internalServerError}]]*/ null
     let formDetailsFetchingError = /*[[${formDetailsFetchingError}]]*/ null
     let formSessionExpired = /*[[${formSessionExpired}]]*/ null
+    let isSubmitted = /*[[${isSubmitted}]]*/ null
   /*]]>*/
 </script>
 

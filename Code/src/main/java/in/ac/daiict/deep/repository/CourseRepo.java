@@ -17,4 +17,7 @@ public interface CourseRepo extends JpaRepository<Course,String> {
     void deleteAll();
     @Query("SELECT new in.ac.daiict.deep.dto.AvailableCourseDto(course.slot,course.cid,course.name,offer.program,offer.category,course.credits) FROM Course course JOIN CourseOffering offer ON course.cid=offer.cid WHERE program=:program AND semester=:semester ORDER BY course.slot, offer.category ASC")
     List<AvailableCourseDto> fetchAvailableCourses(@Param("program") String program, @Param("semester") int semester);
+
+    @Query("SELECT c.cid FROM Course c")
+    List<String> fetchAllCid();
 }

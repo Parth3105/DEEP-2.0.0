@@ -2,14 +2,19 @@ import ToastManager from '../../services/ToastManager.js';
 const toastManager = new ToastManager();
 
 function validatePasswords() {
+    const button = document.getElementById("resetBtn");
+    showButtonLoader(button);
+
     const password = document.getElementById('floating_password').value;
     const confirmPassword = document.getElementById('floating_confirm_password').value;
 
     if (password !== confirmPassword) {
       toastManager.printStatusResponse({ status: status.ERROR, message: "Passwords do not match! Please verify it." });
+      hideButtonLoader(button);
       return false;
     }
 
+    hideButtonLoader(button);
     return true;
 }
 
