@@ -6,15 +6,74 @@ export default class RunAllocationManager {
     this.tableContainer = document.getElementById('runAllocationTableContainer');
     if (!this.tableContainer) {
       console.error('Table container not found!');
+      return;
     }
+
+    // Render table skeleton with persistent header
+    this.renderTableSkeleton();
+    this.tableBody = document.getElementById('runAllocationTableBody');
 
     this.refresh();
   }
 
-  // Refresh fragment from server
+  /**
+   * Render table skeleton (persistent header)
+   */
+  renderTableSkeleton() {
+    this.tableContainer.innerHTML = `
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs lg:text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-700 text-white">
+              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                Program
+              </th>
+              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                Semester
+              </th>
+              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody id="runAllocationTableBody" class="divide-y divide-gray-200 font-medium text-[#16355f]">
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  /**
+   * Show loading inside the tbody (header stays visible)
+   */
+  showLoading() {
+    this.tableBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="p-4 text-center text-gray-600 font-medium">
+          Loading
+          <img src="../admin/images/fade-stagger-circles-Loader.svg"
+               alt="Loading Icon"
+               class="inline-block w-6 h-6 ml-2 animate-spin"/>
+        </td>
+      </tr>
+    `;
+  }
+
+  /**
+   * Clear loader
+   */
+  hideLoading() {
+    this.tableBody.innerHTML = '';
+  }
+
+  /**
+   * Refresh fragment from server
+   */
   async refresh() {
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    this.showLoading();
 
     try {
       const res = await fetch(`${this.contextPath}admin/upload-data/refresh-status`, {
@@ -23,8 +82,8 @@ export default class RunAllocationManager {
       });
 
       if (!res.ok) throw new Error(`Failed to refresh: ${res.status}`);
-      const fragmentHtml = await res.text();
 
+      const fragmentHtml = await res.text();
       this.populateFromFragment(fragmentHtml);
 
     } catch (err) {
@@ -33,17 +92,35 @@ export default class RunAllocationManager {
         status: 'ERROR',
         message: 'Failed to refresh run allocation data'
       });
+      this.tableBody.innerHTML = `
+        <tr>
+          <td colspan="3" class="p-4 text-center text-red-500 font-medium">
+            Failed to load data
+          </td>
+        </tr>
+      `;
     }
   }
 
-  // Populate table from fragment
+  /**
+   * Populate table from fragment (tbody only)
+   */
   populateFromFragment(fragmentHtml) {
+    this.hideLoading();
+
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = fragmentHtml;
 
     const records = tempDiv.querySelectorAll('.upload-record');
+
     if (!records.length) {
-      this.tableContainer.innerHTML = '<p class="text-center text-gray-500">No data available</p>';
+      this.tableBody.innerHTML = `
+        <tr>
+          <td colspan="3" class="p-4 text-center text-gray-500">
+            No data available
+          </td>
+        </tr>
+      `;
       return;
     }
 
@@ -63,21 +140,6 @@ export default class RunAllocationManager {
       `;
     });
 
-    this.tableContainer.innerHTML = `
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs lg:text-sm">
-          <thead>
-            <tr class="bg-slate-700 text-white">
-              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Program</th>
-              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Semester</th>
-              <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 font-medium text-[#16355f]">
-            ${html}
-          </tbody>
-        </table>
-      </div>
-    `;
+    this.tableBody.innerHTML = html;
   }
 }

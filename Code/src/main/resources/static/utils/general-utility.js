@@ -140,5 +140,24 @@ function HandleAdminRoute(url) {
     window.location.href = `${contextPath}admin/${url}`;
 }
 
+function showButtonLoader(button, text = 'Loading') {
+    if (!button) return;
+    if (!button.dataset.originalText) button.dataset.originalText = button.innerHTML;
+
+    button.innerHTML = `${text} <img src="../admin/images/tube-spinner-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>`;
+    button.disabled = true;
+    button.classList.add('opacity-50', 'cursor-not-allowed');
+}
+
+function hideButtonLoader(button) {
+    if (!button || !button.dataset.originalText) return;
+
+    button.innerHTML = button.dataset.originalText;
+    button.disabled = false;
+    button.classList.remove('opacity-50', 'cursor-not-allowed');
+}
+
 window.HandleStudentRoute = HandleStudentRoute;
 window.HandleAdminRoute = HandleAdminRoute;
+window.showButtonLoader = showButtonLoader;
+window.hideButtonLoader = hideButtonLoader;

@@ -13,6 +13,24 @@ export default class RegistrationPanel {
     });
   }
 
+  showLoading() {
+    console.log(this.contentDiv);
+    if (!this.contentDiv) return;
+
+    this.contentDiv.innerHTML = `
+      <div id="loader" class="flex flex-col items-center justify-center p-2">
+        Loading <img src="../admin/images/fade-stagger-circles-Loader.svg" alt="Loading Icon" class="inline-block w-6 h-6 ml-2"/>
+      </div>
+    `;
+
+    this.panel.classList.remove('hidden');
+  }
+
+  hideLoading() {
+    const loader = this.contentDiv.querySelector('#loader');
+    if (loader) loader.remove();
+  }
+
   hideDetails() {
      this.panel.classList.add('hidden');
   }
@@ -20,7 +38,6 @@ export default class RegistrationPanel {
   showDetails(dataDiv) {
       if (!dataDiv) return;
       this.dataDiv = dataDiv;
-      console.log(this.dataDiv);
 
       // Normalize status
       const state = (dataDiv.dataset.collectionwindowstate || '').toLowerCase();
@@ -28,7 +45,7 @@ export default class RegistrationPanel {
       const hasOpened = state !== 'yet to open';
       const endDate = dataDiv.dataset.enddate || null;
       const resultState = dataDiv.dataset.resultstate;
-      const declareDisabled = isOpen || dataDiv.dataset.allocationstate != 'Allocated';
+      const declareDisabled = isOpen || dataDiv.dataset.allocationstate != 'Allocated' || resultState == 'Declared';
 
       this.panel.classList.remove('hidden');
 
@@ -94,10 +111,14 @@ export default class RegistrationPanel {
 
   handleOpenRegistration(event) {
     event.preventDefault();
+    const submitBtn = document.querySelector('#registrationModal button[type="submit"]');
+    showButtonLoader(submitBtn);
+
     const dateInput = document.getElementById("registration-datepicker");
     const rawValue = dateInput.value.trim();
 
     if (!rawValue) {
+      hideButtonLoader(submitBtn);
       this.toastManager?.printStatusResponse({
         status: 'WARNING',
         message: "Please select a close date."
@@ -107,6 +128,7 @@ export default class RegistrationPanel {
 
     const [month, day, year] = rawValue.split('/');
     if (!month || !day || !year) {
+      hideButtonLoader(submitBtn);
       this.toastManager?.printStatusResponse({
         status: 'ERROR',
         message: "Invalid date format. Use MM/DD/YYYY."
@@ -150,7 +172,9 @@ export default class RegistrationPanel {
         this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
       })
       .finally(() => {
-      this.closeNewRegistrationModal();
+          hideButtonLoader(submitBtn);
+          this.closeNewRegistrationModal();
+          this.showLoading();
           window.dashboardTable.refresh().then(() => {
           // Find latest matching dataDiv by program+semester instead of relying only on index
           const program = this.dataDiv.dataset.program;
@@ -163,12 +187,17 @@ export default class RegistrationPanel {
             this.dataDiv = updatedDiv;
             this.showDetails(updatedDiv);
           }
-        });
+
+          this.hideLoading();
+          });
       });
   }
 
   handleEndRegistration(event) {
     event.preventDefault();
+    const submitBtn = document.querySelector('#closeRegModal button[type="submit"]');
+    showButtonLoader(submitBtn);
+
     const program = this.dataDiv.dataset.program || '';
     const semester = this.dataDiv.dataset.semester || '';
 
@@ -185,6 +214,9 @@ export default class RegistrationPanel {
         this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
       })
       .finally(() => {
+        hideButtonLoader(submitBtn);
+        this.showLoading();
+        this.closeRegModal();
         window.dashboardTable.refresh().then(() => {
           // Find latest matching dataDiv by program+semester instead of relying only on index
           const program = this.dataDiv.dataset.program;
@@ -198,17 +230,21 @@ export default class RegistrationPanel {
             this.showDetails(updatedDiv);
           }
 
-          this.closeRegModal();
+          this.hideLoading();
         });
       });
   }
 
   handleExtendRegistration(event) {
     event.preventDefault();
+    const submitBtn = document.querySelector('#extendModal button[type="submit"]');
+    showButtonLoader(submitBtn);
+
     const dateInput = document.getElementById("extend-datepicker");
     const rawValue = dateInput.value.trim();
 
     if (!rawValue) {
+      hideButtonLoader(submitBtn);
       this.toastManager?.printStatusResponse({
         status: 'WARNING',
         message: "Please select a close date."
@@ -218,6 +254,7 @@ export default class RegistrationPanel {
 
     const [month, day, year] = rawValue.split('/');
     if (!month || !day || !year) {
+      hideButtonLoader(submitBtn);
       this.toastManager?.printStatusResponse({
         status: 'ERROR',
         message: "Invalid date format. Use MM/DD/YYYY."
@@ -261,6 +298,9 @@ export default class RegistrationPanel {
         this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
       })
       .finally(() => {
+        hideButtonLoader(submitBtn);
+        this.showLoading();
+        this.closeExtendModal();
         window.dashboardTable.refresh().then(() => {
           // Find latest matching dataDiv by program+semester instead of relying only on index
           const program = this.dataDiv.dataset.program;
@@ -274,13 +314,16 @@ export default class RegistrationPanel {
             this.showDetails(updatedDiv);
           }
 
-          this.closeExtendModal();
+          this.hideLoading();
         });
       });
   }
 
   handleDeclareResult(event) {
       event.preventDefault();
+      const submitBtn = document.querySelector('#DeclareRegModal button[type="submit"]');
+      showButtonLoader(submitBtn);
+
       const program = this.dataDiv.dataset.program || '';
       const semester = this.dataDiv.dataset.semester || '';
 
@@ -297,6 +340,9 @@ export default class RegistrationPanel {
           this.toastManager?.printStatusResponse({ status: 'ERROR', message: 'Network error.' });
         })
         .finally(() => {
+          hideButtonLoader(submitBtn);
+          this.showLoading();
+          this.closeDeclareRegModal();
           window.dashboardTable.refresh().then(() => {
             // Find latest matching dataDiv by program+semester instead of relying only on index
             const program = this.dataDiv.dataset.program;
@@ -310,7 +356,7 @@ export default class RegistrationPanel {
               this.showDetails(updatedDiv);
             }
 
-            this.closeDeclareRegModal();
+            this.hideLoading();
           });
 
           document.querySelectorAll('.toast-data').forEach(el => {

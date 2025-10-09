@@ -50,6 +50,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<String> fetchAllCourseId() {
+        return courseRepo.fetchAllCid();
+    }
+
+    @Override
     public void deleteAll() {
         courseRepo.deleteAll();
     }

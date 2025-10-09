@@ -24,13 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function handleLoginSubmit(event) {
     const button = document.getElementById('signInBtn');
-    const spinner = document.getElementById('spinner');
-    const signInText = document.getElementById('signInText');
-
-    // Show spinner and disable button
-    spinner.classList.remove('hidden');
-    signInText.textContent = 'Signing In…';
-    button.disabled = true;
+    showButtonLoader(button, 'Signing in');
 }
 
 function togglePasswordVisibility() {

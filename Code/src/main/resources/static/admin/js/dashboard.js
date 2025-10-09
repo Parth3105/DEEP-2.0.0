@@ -12,6 +12,11 @@ window.dashboardTable = new DashboardSummaryTable({
   fragmentContainerId: 'phaseSummaryFragment'
 });
 
+document.getElementById('createForm').addEventListener('submit', function(event) {
+  const button = document.getElementById('submitBtn');
+  showButtonLoader(button);
+});
+
 if(instanceCreationError) {
     toastManager.printStatusResponse(instanceCreationError)
 }

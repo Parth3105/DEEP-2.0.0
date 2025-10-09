@@ -16,6 +16,9 @@ export default class SubmissionManager {
   }
 
   confirmSubmit() {
+    const confirmBtn = document.getElementById('submitButton');
+    showButtonLoader(confirmBtn, 'Submitting');
+
     document.getElementById('confirmModal').classList.add('hidden');
     document.body.classList.remove('backdrop-blur-md', 'overflow-hidden');
 
@@ -25,7 +28,6 @@ export default class SubmissionManager {
     document.getElementById('slotPreferences').value = JSON.stringify(this.collectPreferences());
     document.getElementById('semester').value = this.semester;
     document.getElementById('program').value = this.program;
-
     document.getElementById('myForm').submit();
   }
 
