@@ -34,6 +34,8 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -61,13 +63,14 @@ public class CSVDataLoader implements DataLoader {
         this.allocationResultService = allocationResultService;
     }
 
-    private CSVFormat getCsvFormatWriting(String[] headers){
+    private CSVFormat getCsvFormatWriting(String[] headers) {
         return CSVFormat.DEFAULT.builder()
                 .setHeader(headers)
                 .setSkipHeaderRecord(false)
                 .get();
     }
-    private CSVFormat getCsvFormatReading(){
+
+    private CSVFormat getCsvFormatReading() {
         return CSVFormat.DEFAULT.builder()
                 .setIgnoreHeaderCase(true)
                 .setTrim(true)
@@ -81,29 +84,29 @@ public class CSVDataLoader implements DataLoader {
      */
     public ResponseDto getStudentData(InputStream studentData, List<Student> students) {
         try {
-            CSVParser csvParser= getCsvFormatReading().parse(new InputStreamReader(studentData));
-            for(CSVRecord record: csvParser){
-                String studentID=record.get(StudentHeader.STUDENT_ID.toString());
-                String studentName = record.get(StudentHeader.NAME.toString()).replaceAll("\\s+"," ");
-                String program = record.get(StudentHeader.PROGRAM.toString()).replaceAll("\\s+"," ");
+            CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(studentData));
+            for (CSVRecord record : csvParser) {
+                String studentID = record.get(StudentHeader.STUDENT_ID.toString());
+                String studentName = record.get(StudentHeader.NAME.toString()).replaceAll("\\s+", " ");
+                String program = record.get(StudentHeader.PROGRAM.toString()).replaceAll("\\s+", " ");
                 String semester = record.get(StudentHeader.SEMESTER.toString());
 
-                if(!NumberUtils.isDigits(studentID)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-id at record " + (record.getRecordNumber()+1) + ": value = '" + studentID + "'");
+                if (!NumberUtils.isDigits(studentID)) {
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Student Data: Invalid student-id at record " + (record.getRecordNumber() + 1) + ": value = '" + studentID + "'");
                 }
-                if(!studentName.matches("^[A-Za-z .]+$")){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid student-name at record " + (record.getRecordNumber()+1) + ": value = '" + studentName + "'");
+                if (!studentName.matches("^[A-Za-z .]+$")) {
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Student Data: Invalid student-name at record " + (record.getRecordNumber() + 1) + ": value = '" + studentName + "'");
                 }
-                if(!NumberUtils.isDigits(semester)){
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,"Student Data: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '"+ semester + "'");
+                if (!NumberUtils.isDigits(semester)) {
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Student Data: Invalid semester at record " + (record.getRecordNumber() + 1) + ": value = '" + semester + "'");
                 }
 
                 // Validate student data before adding.
-                Student student=new Student(studentID, studentName, program, Integer.parseInt(semester));
+                Student student = new Student(studentID, studentName, program, Integer.parseInt(semester));
                 Set<ConstraintViolation<Student>> violations = validator.validate(student);
-                if(!violations.isEmpty()){
-                    List<String> violationMessages=violations.stream().map(ConstraintViolation::getMessage).toList();
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,violationMessages);
+                if (!violations.isEmpty()) {
+                    List<String> violationMessages = violations.stream().map(ConstraintViolation::getMessage).toList();
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, violationMessages);
                 }
 
                 // No violations then add the student.
@@ -112,8 +115,8 @@ public class CSVDataLoader implements DataLoader {
             return new ResponseDto(ResponseStatus.OK, "Student Data: Uploaded Successfully!");
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
-            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Student Data: "+ResponseMessage.INTERNAL_SERVER_ERROR);
-        } catch (IllegalArgumentException iae){
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Student Data: " + ResponseMessage.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException iae) {
             log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
             return new ResponseDto(ResponseStatus.BAD_REQUEST, "Student Data: " + iae.getMessage());
         }
@@ -126,16 +129,18 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(courseData));
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(CourseHeader.COURSE_ID.toString()).replaceAll("\\s+","");;
-                String courseName = record.get(CourseHeader.NAME.toString()).replaceAll("\\s+"," ");;
+                String courseID = record.get(CourseHeader.COURSE_ID.toString()).replaceAll("\\s+", "");
+                ;
+                String courseName = record.get(CourseHeader.NAME.toString()).replaceAll("\\s+", " ");
+                ;
                 String credits = record.get(CourseHeader.CREDITS.toString());
                 String slot = record.get(CourseHeader.SLOT.toString());
 
                 if (!NumberUtils.isDigits(credits)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid credits at record " + (record.getRecordNumber()+1) + ": value = '" + credits + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid credits at record " + (record.getRecordNumber() + 1) + ": value = '" + credits + "'");
                 }
                 if (!NumberUtils.isDigits(slot)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid slot at record " + (record.getRecordNumber()+1) + ": value = '" + slot + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: Invalid slot at record " + (record.getRecordNumber() + 1) + ": value = '" + slot + "'");
                 }
 
                 // Validate course data before adding.
@@ -153,7 +158,7 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Course Data: " + ResponseMessage.INTERNAL_SERVER_ERROR);
-        } catch (IllegalArgumentException iae){
+        } catch (IllegalArgumentException iae) {
             log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
             return new ResponseDto(ResponseStatus.BAD_REQUEST, "Course Data: " + iae.getMessage());
         }
@@ -166,24 +171,26 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(instReqData));
             for (CSVRecord record : csvParser) {
-                String program = record.get(InstituteReqHeader.PROGRAM.toString()).replaceAll("\\s+"," ");;
+                String program = record.get(InstituteReqHeader.PROGRAM.toString()).replaceAll("\\s+", " ");
+                ;
                 String semester = record.get(InstituteReqHeader.SEMESTER.toString());
-                String category = record.get(InstituteReqHeader.CATEGORY.toString()).replaceAll("\\s+"," ");;
+                String category = record.get(InstituteReqHeader.CATEGORY.toString()).replaceAll("\\s+", " ");
+                ;
                 String count = record.get(InstituteReqHeader.COUNT.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '" + semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid semester at record " + (record.getRecordNumber() + 1) + ": value = '" + semester + "'");
                 }
                 if (!NumberUtils.isDigits(count)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid count at record " + (record.getRecordNumber()+1) + ": value = '" + count + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: Invalid count at record " + (record.getRecordNumber() + 1) + ": value = '" + count + "'");
                 }
 
                 // Validate institute-requirement data before adding.
-                InstituteReq instituteReq=new InstituteReq(program, Integer.parseInt(semester), category, Integer.parseInt(count));
+                InstituteReq instituteReq = new InstituteReq(program, Integer.parseInt(semester), category, Integer.parseInt(count));
                 Set<ConstraintViolation<InstituteReq>> violations = validator.validate(instituteReq);
-                if(!violations.isEmpty()){
-                    List<String> violationMessages=violations.stream().map(ConstraintViolation::getMessage).toList();
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,violationMessages);
+                if (!violations.isEmpty()) {
+                    List<String> violationMessages = violations.stream().map(ConstraintViolation::getMessage).toList();
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, violationMessages);
                 }
 
                 // No violations then add the institute-requirement.
@@ -193,7 +200,7 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Institute requirement: " + ResponseMessage.INTERNAL_SERVER_ERROR);
-        } catch (IllegalArgumentException iae){
+        } catch (IllegalArgumentException iae) {
             log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
             return new ResponseDto(ResponseStatus.BAD_REQUEST, "Institute Requirement: " + iae.getMessage());
         }
@@ -206,35 +213,35 @@ public class CSVDataLoader implements DataLoader {
         try {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(seatMatrix));
 
-            List<Course> courseList=courseService.fetchAllCourses();
-            Set<String> courseIds=courseList.stream().map(Course::getCid).collect(Collectors.toSet());
+            List<Course> courseList = courseService.fetchAllCourses();
+            Set<String> courseIds = courseList.stream().map(Course::getCid).collect(Collectors.toSet());
 
             for (CSVRecord record : csvParser) {
-                String courseID = record.get(SeatMatrixHeader.COURSE_ID.toString()).replaceAll("\\s+","");
-                String program = record.get(SeatMatrixHeader.PROGRAM.toString()).replaceAll("\\s+"," ");
+                String courseID = record.get(SeatMatrixHeader.COURSE_ID.toString()).replaceAll("\\s+", "");
+                String program = record.get(SeatMatrixHeader.PROGRAM.toString()).replaceAll("\\s+", " ");
                 String semester = record.get(SeatMatrixHeader.SEMESTER.toString());
-                String category = record.get(SeatMatrixHeader.CATEGORY.toString()).replaceAll("\\s+"," ");
+                String category = record.get(SeatMatrixHeader.CATEGORY.toString()).replaceAll("\\s+", " ");
                 String seats = record.get(SeatMatrixHeader.SEATS.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid semester at record " + (record.getRecordNumber()+1) + ": value = '" + semester + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid semester at record " + (record.getRecordNumber() + 1) + ": value = '" + semester + "'");
                 }
                 if (!NumberUtils.isDigits(seats)) {
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid seats at record " + (record.getRecordNumber()+1) + ": value = '" + seats + "'");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: Invalid seats at record " + (record.getRecordNumber() + 1) + ": value = '" + seats + "'");
                 }
 
                 // Validate foreign key constraint of courseId.
                 if (!courseIds.contains(courseID)) {
                     courseOfferings.clear();
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: The course with ID: "+ courseID +" does not exist in the course data. Please verify and correct your data.");
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: The course with ID: " + courseID + " does not exist in the course data. Please verify and correct your data.");
                 }
 
                 // Validate course-offering data before adding.
-                CourseOffering courseOffering=new CourseOffering(program, courseID, Integer.parseInt(semester), category, Integer.parseInt(seats));
+                CourseOffering courseOffering = new CourseOffering(program, courseID, Integer.parseInt(semester), category, Integer.parseInt(seats));
                 Set<ConstraintViolation<CourseOffering>> violations = validator.validate(courseOffering);
-                if(!violations.isEmpty()){
-                    List<String> violationMessages=violations.stream().map(ConstraintViolation::getMessage).toList();
-                    return new ResponseDto(ResponseStatus.BAD_REQUEST,violationMessages);
+                if (!violations.isEmpty()) {
+                    List<String> violationMessages = violations.stream().map(ConstraintViolation::getMessage).toList();
+                    return new ResponseDto(ResponseStatus.BAD_REQUEST, violationMessages);
                 }
 
                 // No violations then add the course-offer.
@@ -244,7 +251,7 @@ public class CSVDataLoader implements DataLoader {
         } catch (IOException ioe) {
             log.error("I/O operation to parse student-data failed: {}", ioe.getMessage(), ioe);
             return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR, "Institute requirement: " + ResponseMessage.INTERNAL_SERVER_ERROR);
-        } catch (IllegalArgumentException iae){
+        } catch (IllegalArgumentException iae) {
             log.error("I/O operation to parse student-data failed: {}", iae.getMessage(), iae);
             return new ResponseDto(ResponseStatus.BAD_REQUEST, "Seat Matrix: " + iae.getMessage());
         }
@@ -252,31 +259,31 @@ public class CSVDataLoader implements DataLoader {
 
     @Override
     public ByteArrayOutputStream createStudentPrefSheet(String program, int semester) {
-        CompletableFuture<List<CoursePref>> fetchingCoursePref = CompletableFuture.supplyAsync(() -> coursePrefService.fetchCoursePrefByProgramAndSemesterSortedBySlotAndPref(program,semester));
-        CompletableFuture<List<SlotPref>> fetchingSlotPref = CompletableFuture.supplyAsync(() -> slotPrefService.fetchSlotByProgramAndSemesterSortedBySidAndPref(program,semester));
+        CompletableFuture<List<CoursePref>> fetchingCoursePref = CompletableFuture.supplyAsync(() -> coursePrefService.fetchCoursePrefByProgramAndSemesterSortedBySlotAndPref(program, semester));
+        CompletableFuture<List<SlotPref>> fetchingSlotPref = CompletableFuture.supplyAsync(() -> slotPrefService.fetchSlotByProgramAndSemesterSortedBySidAndPref(program, semester));
 
         List<CoursePref> coursePrefList;
         List<SlotPref> slotPrefList;
         try {
             CompletableFuture.allOf(fetchingCoursePref, fetchingSlotPref).join();
-            coursePrefList=fetchingCoursePref.get();
-            slotPrefList=fetchingSlotPref.get();
+            coursePrefList = fetchingCoursePref.get();
+            slotPrefList = fetchingSlotPref.get();
         } catch (ExecutionException | InterruptedException e) {
-            if(e instanceof InterruptedException){
+            if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt(); // Restore interrupt
                 log.warn("Thread was interrupted while waiting for allocation results", e);
-            }
-            else log.error("Async task to fetch allocation result failed with error: {}", e.getCause().getMessage(), e.getCause());
+            } else
+                log.error("Async task to fetch allocation result failed with error: {}", e.getCause().getMessage(), e.getCause());
             return null;
         }
 
-        if(coursePrefList.isEmpty() || slotPrefList.isEmpty()) return null;
+        if (coursePrefList.isEmpty() || slotPrefList.isEmpty()) return null;
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ZipOutputStream zipOutputStream=new ZipOutputStream(byteArrayOutputStream);
+        ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
         // Generate CSV for course-preferences.
-        CompletableFuture<ByteArrayOutputStream> futureCoursePrefCSV=CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<ByteArrayOutputStream> futureCoursePrefCSV = CompletableFuture.supplyAsync(() -> {
             try {
                 return generateCoursePreferenceCSV(coursePrefList);
             } catch (IOException ioe) {
@@ -286,7 +293,7 @@ public class CSVDataLoader implements DataLoader {
         });
 
         // Generate CSV for slot-preferences.
-        CompletableFuture<ByteArrayOutputStream> futureSlotPrefCSV=CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<ByteArrayOutputStream> futureSlotPrefCSV = CompletableFuture.supplyAsync(() -> {
             try {
                 return generateSlotPreferencesCSV(slotPrefList);
             } catch (IOException ioe) {
@@ -301,22 +308,22 @@ public class CSVDataLoader implements DataLoader {
             ByteArrayOutputStream slotPrefCSV = futureSlotPrefCSV.get();
 
             // Add course-pref to zip.
-            ZipEntry coursePrefEntry = new ZipEntry("Course Preferences "+program+" Sem-"+semester+".csv");
+            ZipEntry coursePrefEntry = new ZipEntry("Course Preferences " + program + " Sem-" + semester + ".csv");
             zipOutputStream.putNextEntry(coursePrefEntry);
             zipOutputStream.write(coursePrefCSV.toByteArray());
             zipOutputStream.closeEntry();
 
             // Add slot-pref to zip
-            ZipEntry slotPrefEntry = new ZipEntry("Slot Preferences "+program+" Sem-"+semester+".csv");
+            ZipEntry slotPrefEntry = new ZipEntry("Slot Preferences " + program + " Sem-" + semester + ".csv");
             zipOutputStream.putNextEntry(slotPrefEntry);
             zipOutputStream.write(slotPrefCSV.toByteArray());
             zipOutputStream.closeEntry();
         } catch (ExecutionException | InterruptedException e) {
-            if(e instanceof InterruptedException){
+            if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt(); // Restore interrupt
                 log.warn("Thread was interrupted while waiting for the generated CSV of slot/course preferences", e);
-            }
-            else log.error("Async task to generate CSV for slot/course preferences failed with error: {}", e.getCause().getMessage(), e.getCause());
+            } else
+                log.error("Async task to generate CSV for slot/course preferences failed with error: {}", e.getCause().getMessage(), e.getCause());
             return null;
         } catch (IOException ioe) {
             log.error("I/O operation to generate the zip file of student-preferences failed: {}", ioe.getMessage(), ioe);
@@ -333,24 +340,24 @@ public class CSVDataLoader implements DataLoader {
     }
 
     private ByteArrayOutputStream generateCoursePreferenceCSV(List<CoursePref> coursePrefList) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(Arrays.stream(CoursePrefHeader.values()).map(CoursePrefHeader::toString).toArray(String[]::new)));
-        int entryCnt=0;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(CoursePrefHeader.values()).map(CoursePrefHeader::toString).toArray(String[]::new)));
+        int entryCnt = 0;
         for (CoursePref coursePref : coursePrefList) {
-            EnumMap<CoursePrefHeader,Object> row=new EnumMap<>(CoursePrefHeader.class);
-            row.put(CoursePrefHeader.STUDENT_ID,coursePref.getSid());
-            row.put(CoursePrefHeader.SLOT,coursePref.getSlot());
-            row.put(CoursePrefHeader.COURSE_ID,coursePref.getCid());
-            row.put(CoursePrefHeader.PREFERENCE_INDEX,coursePref.getPref());
+            EnumMap<CoursePrefHeader, Object> row = new EnumMap<>(CoursePrefHeader.class);
+            row.put(CoursePrefHeader.STUDENT_ID, coursePref.getSid());
+            row.put(CoursePrefHeader.SLOT, coursePref.getSlot());
+            row.put(CoursePrefHeader.COURSE_ID, coursePref.getCid());
+            row.put(CoursePrefHeader.PREFERENCE_INDEX, coursePref.getPref());
 
-            for(CoursePrefHeader header: CoursePrefHeader.values()){
+            for (CoursePrefHeader header : CoursePrefHeader.values()) {
                 csvPrinter.print(row.get(header));
             }
             csvPrinter.println();
             entryCnt++;
-            if(entryCnt>100){
+            if (entryCnt > 100) {
                 csvPrinter.flush();
-                entryCnt=0;
+                entryCnt = 0;
             }
         }
         csvPrinter.flush();
@@ -358,23 +365,23 @@ public class CSVDataLoader implements DataLoader {
     }
 
     private ByteArrayOutputStream generateSlotPreferencesCSV(List<SlotPref> slotPrefList) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
-        CSVPrinter csvPrinter=new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream),getCsvFormatWriting(Arrays.stream(SlotPrefHeader.values()).map(SlotPrefHeader::toString).toArray(String[]::new)));
-        int entryCnt=0;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(SlotPrefHeader.values()).map(SlotPrefHeader::toString).toArray(String[]::new)));
+        int entryCnt = 0;
         for (SlotPref slotPref : slotPrefList) {
-            EnumMap<SlotPrefHeader,Object> row=new EnumMap<>(SlotPrefHeader.class);
-            row.put(SlotPrefHeader.STUDENT_ID,slotPref.getSid());
-            row.put(SlotPrefHeader.SLOT_NO,slotPref.getSlot());
-            row.put(SlotPrefHeader.PREFERENCE_INDEX,slotPref.getPref());
+            EnumMap<SlotPrefHeader, Object> row = new EnumMap<>(SlotPrefHeader.class);
+            row.put(SlotPrefHeader.STUDENT_ID, slotPref.getSid());
+            row.put(SlotPrefHeader.SLOT_NO, slotPref.getSlot());
+            row.put(SlotPrefHeader.PREFERENCE_INDEX, slotPref.getPref());
 
-            for(SlotPrefHeader header: SlotPrefHeader.values()){
+            for (SlotPrefHeader header : SlotPrefHeader.values()) {
                 csvPrinter.print(row.get(header));
             }
             csvPrinter.println();
             entryCnt++;
-            if(entryCnt>100){
+            if (entryCnt > 100) {
                 csvPrinter.flush();
-                entryCnt=0;
+                entryCnt = 0;
             }
         }
         csvPrinter.flush();
@@ -383,8 +390,7 @@ public class CSVDataLoader implements DataLoader {
 
     @Override
     public ByteArrayOutputStream createResultSheet(Map<String, AllocationStudent> students, Map<String, AllocationCourse> courses, Map<String, Map<String, String>> courseCategories) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(ResultHeader.values()).map(ResultHeader::toString).toArray(String[]::new)));
             int entryCnt = 0;
             for (AllocationStudent student : students.values()) {
@@ -424,8 +430,7 @@ public class CSVDataLoader implements DataLoader {
 
     @Override
     public ByteArrayOutputStream createSeatSummary(List<CourseOffer> openFor, Map<String, AllocationCourse> courses, Map<String, Map<String, Integer>> availableSeats) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(byteArrayOutputStream), getCsvFormatWriting(Arrays.stream(SeatSummaryHeader.values()).map(SeatSummaryHeader::toString).toArray(String[]::new)));
             int entryCnt = 0;
             for (CourseOffer of : openFor) {
@@ -456,7 +461,7 @@ public class CSVDataLoader implements DataLoader {
         }
     }
 
-    @Override
+    /*@Override
     public ByteArrayOutputStream createCourseWiseAllocation() {
         // set up for zip creation
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -468,7 +473,7 @@ public class CSVDataLoader implements DataLoader {
         if(courses.isEmpty()) return new ByteArrayOutputStream(0);
         for (Course course : courses) {
             List<AllocationResult> allocationResultList = allocationResultService.fetchCourseWiseAllocation(course.getCid());
-            if(allocationResultList.isEmpty()) return new ByteArrayOutputStream(0);
+//            if(allocationResultList.isEmpty()) return new ByteArrayOutputStream(0);
             try{
                 String fileName=course.getCid() + "_Students.csv";
 
@@ -509,5 +514,109 @@ public class CSVDataLoader implements DataLoader {
             return null;
         }
         return byteArrayOutputStream;
+    }
+*/
+
+    @Override
+    public ByteArrayOutputStream createCourseWiseAllocation() {
+        ExecutorService executorService = Executors.newFixedThreadPool(10, csvPrep -> new Thread(csvPrep, "courseWiseAllocation_csvGeneratorThread"));
+        try (
+                // set up for zip creation
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+        ) {
+            // fetch all courses.
+            List<Course> courses = courseService.fetchAllCourses();
+
+            if (courses.isEmpty()) return new ByteArrayOutputStream(0);
+
+            int assignedTaskCnt = 0;
+            final int parallelTaskThreshold = 10;
+            List<CompletableFuture<ByteArrayOutputStream>> futureCSVPrepTaskList = new ArrayList<>();
+            for (Course course : courses) {
+                futureCSVPrepTaskList.add(CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return prepareCSVFileForCourse(course.getCid());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                },executorService));
+                assignedTaskCnt++;
+
+                if (assignedTaskCnt % parallelTaskThreshold == 0) {
+                    try {
+                        processParallelTaskResults(futureCSVPrepTaskList, assignedTaskCnt, courses, zipOutputStream);
+                        futureCSVPrepTaskList.clear();
+                    } catch (Exception e) {
+                        executorService.shutdown();
+                        return null;
+                    }
+                }
+            }
+            if (!futureCSVPrepTaskList.isEmpty()) {
+                try {
+                    processParallelTaskResults(futureCSVPrepTaskList, assignedTaskCnt, courses, zipOutputStream);
+                    futureCSVPrepTaskList.clear();
+                } catch (Exception e) {
+                    executorService.shutdown();
+                    return null;
+                }
+            }
+            return byteArrayOutputStream;
+        } catch (IOException ioe) {
+            log.error("I/O error occurred while closing the zip file for course-wise allocation: {}", ioe.getMessage(), ioe);
+            return null;
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    private void processParallelTaskResults(List<CompletableFuture<ByteArrayOutputStream>> futureCSVPrepTaskList, int assignedTaskCnt, List<Course> courses, ZipOutputStream zipOutputStream) {
+        try {
+            CompletableFuture.allOf(futureCSVPrepTaskList.toArray(new CompletableFuture[0])).join();
+            int parallelTaskThreshold=futureCSVPrepTaskList.size();
+            int courseInd = assignedTaskCnt - parallelTaskThreshold;
+            for (CompletableFuture<ByteArrayOutputStream> futureCSVPrepTask : futureCSVPrepTaskList) {
+                String fileName = courses.get(courseInd).getCid() + "_Students.csv";
+                addToZip(zipOutputStream, futureCSVPrepTask.get(), fileName);
+                courseInd++;
+            }
+        } catch (Exception e) {
+            log.error("Failed to prepare CSV-sheets for course-wise allocation with error: {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ByteArrayOutputStream prepareCSVFileForCourse(String courseId) throws IOException {
+        List<AllocationResult> allocationResultList = allocationResultService.fetchCourseWiseAllocation(courseId);
+        ByteArrayOutputStream csvWriter = new ByteArrayOutputStream();
+        CSVPrinter csvPrinter = new CSVPrinter(new OutputStreamWriter(csvWriter), getCsvFormatWriting(Arrays.stream(CourseWiseAllocationHeader.values()).map(CourseWiseAllocationHeader::toString).toArray(String[]::new)));
+        int entryCnt = 0;
+        for (AllocationResult allocationResult : allocationResultList) {
+            Student student = studentService.fetchStudentData(allocationResult.getSid());
+            EnumMap<CourseWiseAllocationHeader, Object> row = new EnumMap<>(CourseWiseAllocationHeader.class);
+            row.put(CourseWiseAllocationHeader.STUDENT_ID, student.getSid());
+            row.put(CourseWiseAllocationHeader.NAME, student.getName());
+
+            for (CourseWiseAllocationHeader header : CourseWiseAllocationHeader.values()) {
+                csvPrinter.print(row.get(header));
+            }
+            csvPrinter.println();
+            entryCnt++;
+            if (entryCnt > 100) {
+                csvPrinter.flush();
+                entryCnt = 0;
+            }
+        }
+        csvPrinter.flush();
+        return csvWriter;
+    }
+
+    private void addToZip(ZipOutputStream zipOutputStream, ByteArrayOutputStream fileWriter, String fileName) throws IOException {
+        // Creating entry for next zip entry of the next course.
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOutputStream.putNextEntry(zipEntry);
+        zipOutputStream.write(fileWriter.toByteArray());
+        zipOutputStream.closeEntry();
     }
 }
