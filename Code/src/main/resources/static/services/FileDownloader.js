@@ -7,6 +7,10 @@ export default class FileDownloader {
     this.container = document.getElementById('downloadTableContainer');
     if (!this.container) {
       console.error("downloadTableContainer not found");
+      this.toastManager?.printStatusResponse({
+        status: this.status.ERROR,
+        message: 'downloadTableContainer not found',
+      });
       return;
     }
 
@@ -39,7 +43,7 @@ export default class FileDownloader {
       <tr>
         <td colspan="4" class="p-4 text-center text-black font-medium">
           Loading
-          <img src="../admin/images/fade-stagger-circles-Loader.svg"
+          <img src="${contextPath}admin/images/fade-stagger-circles-Loader.svg"
                alt="Loading Icon"
                class="inline-block w-6 h-6 ml-2" />
         </td>
@@ -118,7 +122,7 @@ export default class FileDownloader {
               <button type="button"
                 class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] text-white px-3 py-2 rounded-lg font-medium flex items-center cursor-pointer"
                 data-program="${program}" data-semester="${semester}" data-type="allocation-result">
-                <img src="/admin/images/excel-file.svg" alt="Excel Icon" class="w-5 h-5 mr-2">
+                <img src="${contextPath}admin/images/zip-file.svg" alt="zip Icon" class="w-5 h-5 mr-2">
                 Download ZIP
               </button>
             </div>
@@ -128,7 +132,7 @@ export default class FileDownloader {
               <button type="button"
                 class="input-download-btn bg-gradient-to-r from-[#27AE60] to-[#2ECC71] text-white px-3 py-2 rounded-lg font-medium flex items-center cursor-pointer"
                 data-program="${program}" data-semester="${semester}" data-type="student-preferences">
-                <img src="/admin/images/excel-file.svg" alt="Excel Icon" class="w-5 h-5 mr-2">
+                <img src="${contextPath}admin/images/zip-file.svg" alt="zip Icon" class="w-5 h-5 mr-2">
                 Download ZIP
               </button>
             </div>
