@@ -17,7 +17,6 @@ public class SeatSummaryServiceImpl implements SeatSummaryService {
     @Override
     @Transactional
     public void insertAll(List<SeatSummary> seatSummaryList) {
-        deleteAll();
         seatSummaryRepo.saveAll(seatSummaryList);
     }
 

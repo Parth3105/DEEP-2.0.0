@@ -27,7 +27,6 @@ public class CourseOfferingServiceImpl implements CourseOfferingService {
     @Override
     @Transactional
     public ResponseDto insertAll(byte[] courseOfferData) {
-//        deleteAll();
         List<CourseOffering> courseOffers=new ArrayList<>();
         ResponseDto status=dataLoader.getSeatMatrix(new ByteArrayInputStream(courseOfferData),courseOffers);
         if(status.getStatus()!= ResponseStatus.OK) return status;

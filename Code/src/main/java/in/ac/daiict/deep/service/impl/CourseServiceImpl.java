@@ -29,7 +29,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public ResponseDto insertAll(byte[] courseData) {
-//        deleteAll();
         List<Course> courses=new ArrayList<>();
         ResponseDto status=dataLoader.getCourseData(new ByteArrayInputStream(courseData),courses);
         if(status.getStatus()!= ResponseStatus.OK) return status;

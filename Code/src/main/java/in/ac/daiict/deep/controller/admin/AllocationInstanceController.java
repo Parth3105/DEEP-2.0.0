@@ -151,11 +151,8 @@ public class AllocationInstanceController {
         String fileName=null;
         switch (category){
             case UploadConstants.STUDENT_DATA -> {
-                status=uploadService.insert(new Upload(UploadFileNames.STUDENT_DATA,fileData));
-                if(status.getStatus()==ResponseStatus.OK){
-                    status=studentService.insertAll(fileData);
-                    CompletableFuture.runAsync(() -> enrollmentPhaseDetailsService.updateEnrollmentPhaseDetails());
-                }
+                status=studentService.insertAll(fileData);
+                CompletableFuture.runAsync(() -> enrollmentPhaseDetailsService.updateEnrollmentPhaseDetails());
             }
             case UploadConstants.COURSE_DATA -> {
                 status=uploadService.insert(new Upload(UploadFileNames.COURSE_DATA,fileData));

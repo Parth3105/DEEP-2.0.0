@@ -28,7 +28,6 @@ public class InstituteReqServiceImpl implements InstituteReqService {
     @Override
     @Transactional
     public ResponseDto insertAll(byte[] instituteReqData) {
-//        deleteAll();
         List<InstituteReq> instituteReqs=new ArrayList<>();
         ResponseDto status=dataLoader.getInstituteRequirements(new ByteArrayInputStream(instituteReqData),instituteReqs);
         if(status.getStatus()!= ResponseStatus.OK) return status;
