@@ -14,6 +14,46 @@ if(allocationStatus) {
 
 const allocationSummary = new RunAllocationSummary({ contextPath, toastManager });
 
+async function refresh() {
+  const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+  try {
+    // POST to backend to refresh data
+    await fetch(`${contextPath}admin/refresh-phase-details`, {
+      method: "POST",
+      headers: { [csrfHeader]: csrfToken }
+    });
+
+    window.location.reload();
+  } catch (err) {
+    console.error("Refresh failed:", err);
+  }
+}
+
+// Handle reload button click
+const reloadButton = document.getElementById('reloadSummaryBtn');
+
+if (reloadButton) {
+  reloadButton.addEventListener('click', async () => {
+    const img = reloadButton.querySelector('img');
+    if (!img) return;
+
+    // Disable multiple clicks while refreshing
+    img.classList.add('animate-spin', 'opacity-60', 'cursor-not-allowed');
+    reloadButton.style.pointerEvents = 'none';
+
+    try {
+      await refresh();
+    } finally {
+      // Restore state (in case reload didn’t happen yet)
+      img.classList.remove('animate-spin', 'opacity-60', 'cursor-not-allowed');
+      reloadButton.style.pointerEvents = 'auto';
+    }
+  });
+}
+
 const updateSeatBtn = document.getElementById("updateSeatBtn");
 const seatMatrixContainer = document.getElementById("seatMatrixContainer");
 const seatMatrixUpload = document.getElementById("seatMatrixUpload");
@@ -130,6 +170,7 @@ function openCloseRegModal() {
     document.getElementById("closeRegModal").classList.remove("hidden");
 }
 
+window.refresh = refresh;
 window.openCloseRegModal = openCloseRegModal;
 window.closeCloseRegModal = closeCloseRegModal;
 window.handleExecuteConfirmation = handleExecuteConfirmation;

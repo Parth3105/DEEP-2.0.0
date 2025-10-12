@@ -65,6 +65,25 @@ export default class FileDownloader {
     if (this.tableBody) this.tableBody.innerHTML = '';
   }
 
+  refresh() {
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      // Show loading row
+      this.showLoading();
+
+      // First do POST to refresh backend
+      return fetch(`${contextPath}admin/refresh-phase-details`, {
+        method: "POST",
+        headers: { [csrfHeader]: csrfToken }
+      })
+        .then(res => res.text())
+        .then(() => {
+          return this.refreshFragment();
+        })
+        .catch(err => console.error("Refresh failed:", err));
+    }
+
   async refreshFragment() {
     try {
       this.showLoading();
