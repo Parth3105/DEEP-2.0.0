@@ -1,6 +1,5 @@
 package in.ac.daiict.deep.service.impl;
 
-import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.dto.ResponseDto;
 import in.ac.daiict.deep.service.PreferenceCollectionTaskManager;
 import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
@@ -10,12 +9,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;

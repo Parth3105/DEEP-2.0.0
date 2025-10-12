@@ -44,9 +44,6 @@ public class EnrollmentController {
     private StudentService studentService;
     private CourseService courseService;
     private InstituteReqService instituteReqService;
-    private StudentReqService studentReqService;
-    private CoursePrefService coursePrefService;
-    private SlotPrefService slotPrefService;
     private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
     private PreferenceCollectionService preferenceCollectionService;
 

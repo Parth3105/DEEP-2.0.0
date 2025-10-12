@@ -2,7 +2,6 @@ package in.ac.daiict.deep.repository;
 
 import in.ac.daiict.deep.constant.database.DBConstants;
 import in.ac.daiict.deep.dto.ProgramSemesterDto;
-import in.ac.daiict.deep.dto.StudentDto;
 import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Student;
 import jakarta.transaction.Transactional;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface StudentRepo extends JpaRepository<Student,String>{
     @Override

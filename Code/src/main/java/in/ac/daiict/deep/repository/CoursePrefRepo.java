@@ -2,9 +2,7 @@ package in.ac.daiict.deep.repository;
 
 import in.ac.daiict.deep.dto.CoursePrefDto;
 import in.ac.daiict.deep.entity.CoursePref;
-import in.ac.daiict.deep.entity.SlotPref;
 import in.ac.daiict.deep.entity.compositekeys.CoursePrefPK;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

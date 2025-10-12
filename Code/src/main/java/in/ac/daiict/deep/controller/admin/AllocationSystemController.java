@@ -9,8 +9,6 @@ import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.template.FragmentTemplate;
-import in.ac.daiict.deep.service.AllocationSummaryService;
-import in.ac.daiict.deep.service.StudentService;
 import in.ac.daiict.deep.dto.ResponseDto;
 import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.util.allocation.AllocationTaskHandler;
@@ -33,29 +31,13 @@ import java.util.concurrent.CompletionException;
 @AllArgsConstructor
 public class AllocationSystemController {
     private AllocationTaskHandler allocationTaskHandler;
-    private StudentService studentService;
     private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
-    private AllocationSummaryService allocationSummaryService;
 
     @GetMapping(AdminEndpoint.RUN_ALLOCATION_PAGE)
     public String renderRunAllocationPage(Model model){
         // Logic to send all enrollment-phase details containing all required statuses.
         CompletableFuture<Void> statusFetchFuture=CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchEnrollmentPhaseDetailsByResultState(ResultStateEnum.PENDING.toString()))
                 .thenAccept(registrationStatus -> model.addAttribute("allRequiredStatus",registrationStatus));
-
-/*
-        // Logic to send the available program & semester.
-        CompletableFuture<Void> futureFetchProgramAndSemDetails= CompletableFuture.supplyAsync(() -> studentService.fetchDistinctProgramAndSemester())
-                .thenAccept(studentDtoList -> model.addAttribute("ProgramAndSem",studentDtoList));
-
-        // Logic to send allocation summary
-        CompletableFuture<Void> allStatusFetchFuture=CompletableFuture.supplyAsync(() -> allocationSummaryService.fetchAll())
-                .thenAccept(allocationStatusDtoList -> model.addAttribute("allocationStatus",allocationStatusDtoList));
-
-        // Logic to send result declaration status for thymeleaf to manipulate execution button.
-        CompletableFuture<Void> resultStatusFetchFuture=CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsService.fetchResultStatus())
-                .thenAccept(resultStatus -> model.addAttribute("resultStatus",resultStatus));
-*/
 
         try{
             statusFetchFuture.join();
@@ -65,12 +47,6 @@ public class AllocationSystemController {
         }
 
         return AdminTemplate.RUN_ALLOCATION_PAGE;
-    }
-
-    @GetMapping(AdminEndpoint.REFRESH_ALLOCATION_SUMMARY)
-    public String refreshAllocationSummary(Model model){
-        model.addAttribute("allocationSummary",allocationSummaryService.fetchAll());
-        return FragmentTemplate.ALLOCATION_SUMMARY_FRAGMENT;
     }
 
     @PostMapping(AdminEndpoint.EXECUTE_ALLOCATION)

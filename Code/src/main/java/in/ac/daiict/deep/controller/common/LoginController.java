@@ -149,7 +149,7 @@ public class LoginController {
         ResponseDto resetResponse;
         try{
             userService.resetPassword(username,email,password);
-            resetResponse=new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
+            resetResponse=new ResponseDto(ResponseStatus.OK,"Registered Successfully!");
         } catch (Exception e){
             log.error("Failed to register the user with email: {} with error: {}",email,e.getMessage(),e);
             resetResponse=new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.LOGIN_REGISTER_ERROR);

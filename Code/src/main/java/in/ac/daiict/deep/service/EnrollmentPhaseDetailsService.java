@@ -21,8 +21,4 @@ public interface EnrollmentPhaseDetailsService {
     List<EnrollmentPhaseDetailsDto> fetchDashboardDetails();
     List<EnrollmentPhaseDetails> fetchDetailsWithOpenCollectionWindow();
     List<ProgramSemesterDto> fetchAllProgramAndSemester();
-/*
-    EnrollmentPhaseDetailsDto fetchAllStatus();
-    RegistrationCloseDate fetchRegistrationCloseDate();
-*/
 }

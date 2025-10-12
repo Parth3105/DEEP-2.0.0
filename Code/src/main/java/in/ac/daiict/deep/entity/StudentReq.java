@@ -3,7 +3,6 @@ package in.ac.daiict.deep.entity;
 import in.ac.daiict.deep.constant.database.DBConstants;
 import in.ac.daiict.deep.entity.compositekeys.StudentReqPK;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -111,10 +111,10 @@
     <div class="mb-6">
       <div class="flex flex-col lg:flex-row gap-6">
         <div id="tableContainer" class="flex-100 transition-width w-full bg-blue-100 rounded-2xl shadow-lg overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-xs lg:text-sm">
-              <thead class="sticky top-0 z-10">
-              <tr class="bg-slate-700 text-white">
+          <div class="overflow-x-auto max-h-[384px]">
+            <table class="w-full text-xs lg:text-sm table-auto">
+              <thead class="sticky top-0 z-10 bg-slate-700 text-white">
+              <tr>
                 <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Program</th>
                 <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Semester</th>
                 <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">Preference Submitted</th>
@@ -124,15 +124,10 @@
                 <th class="px-4 py-3 text-left font-medium bg-gradient-to-r from-[#1E3C72] to-[#2A5298]">View Details</th>
               </tr>
               </thead>
+              <tbody id="phaseSummaryTableBody" class="divide-y divide-gray-200 font-medium text-[#16355f]">
+              <!-- JS will populate rows here -->
+              </tbody>
             </table>
-
-            <div class="max-h-[332px] overflow-y-auto">
-              <table class="w-full text-xs lg:text-sm">
-                <tbody id="phaseSummaryTableBody" class="divide-y divide-gray-200 font-medium text-[#16355f]">
-                  <!-- JS will populate rows here -->
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
 

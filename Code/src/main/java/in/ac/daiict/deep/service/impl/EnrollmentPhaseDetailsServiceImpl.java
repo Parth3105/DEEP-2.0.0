@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,19 +39,31 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
     private StudentService studentService;
     private ModelMapper modelMapper;
 
+    @Transactional
     @Override
     public void updateEnrollmentPhaseDetails() {
         CompletableFuture<List<ProgramSemesterDto>> futureFetchStudentDistinctProgramAndSemester=CompletableFuture.supplyAsync(() -> studentService.fetchDistinctProgramAndSemester());
         CompletableFuture<List<ProgramSemesterDto>> futureFetchEnrollmentPhaseDetailsProgramAndSemester=CompletableFuture.supplyAsync(() -> enrollmentPhaseDetailsRepo.findAllProgramAndSemester());
 
         Set<ProgramSemesterDto> distinctProgramSemester=new HashSet<>(futureFetchStudentDistinctProgramAndSemester.join());
-        List<ProgramSemesterDto> presentProgramSemester=futureFetchEnrollmentPhaseDetailsProgramAndSemester.join();
+        Set<ProgramSemesterDto> presentProgramSemester=new HashSet<>(futureFetchEnrollmentPhaseDetailsProgramAndSemester.join());
 
-        for(ProgramSemesterDto programSemester: presentProgramSemester) distinctProgramSemester.remove(programSemester);
+        Set<ProgramSemesterDto> toAddNotPresent=new HashSet<>(distinctProgramSemester);
+        Set<ProgramSemesterDto> toRemoveDeletedProgramSemester=new HashSet<>(presentProgramSemester);
 
-        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsList=new ArrayList<>();
-        for(ProgramSemesterDto programSemester: distinctProgramSemester) enrollmentPhaseDetailsList.add(new EnrollmentPhaseDetails(programSemester.getProgram(), programSemester.getSemester(),EnrollmentPhaseEnum.MAIN.toString(),CollectionWindowStateEnum.YET_TO_OPEN.toString(), null,ResultStateEnum.PENDING.toString()));
-        enrollmentPhaseDetailsRepo.saveAll(enrollmentPhaseDetailsList);
+        // New_Program&Semester=Distinct_Program&Semester-Already_Present_Program&Semester.
+        for(ProgramSemesterDto programSemester: presentProgramSemester) toAddNotPresent.remove(programSemester);
+
+        // Old_Deleted/Updated_Program&Semester=Already_Present_Program&Semester-Distinct_Program&Semester
+        for(ProgramSemesterDto programSemester: distinctProgramSemester) toRemoveDeletedProgramSemester.remove(programSemester);
+
+        List<EnrollmentPhaseDetails> enrollmentPhaseDetailsAdditionList=new ArrayList<>();
+        for(ProgramSemesterDto programSemester: toAddNotPresent) enrollmentPhaseDetailsAdditionList.add(new EnrollmentPhaseDetails(programSemester.getProgram(), programSemester.getSemester(),EnrollmentPhaseEnum.MAIN.toString(),CollectionWindowStateEnum.YET_TO_OPEN.toString(), null,ResultStateEnum.PENDING.toString()));
+        enrollmentPhaseDetailsRepo.saveAll(enrollmentPhaseDetailsAdditionList);
+
+        List<EnrollmentPhaseDetailsPK> enrollmentPhaseDetailsDeletionList=new ArrayList<>();
+        for(ProgramSemesterDto programSemester: toRemoveDeletedProgramSemester) enrollmentPhaseDetailsDeletionList.add(new EnrollmentPhaseDetailsPK(programSemester.getProgram(), programSemester.getSemester()));
+        enrollmentPhaseDetailsRepo.deleteAllById(enrollmentPhaseDetailsDeletionList);
     }
 
     @Override
@@ -144,21 +157,21 @@ public class EnrollmentPhaseDetailsServiceImpl implements EnrollmentPhaseDetails
             futureEnrollmentPhaseDetailsPreparation.add(futureEnrollmentPhaseDetailsDto);
         }
 
-        CompletableFuture.allOf(futureEnrollmentPhaseDetailsPreparation.toArray(new CompletableFuture[0])).join();
-
-        List<EnrollmentPhaseDetailsDto> enrollmentPhaseDetailsDtoList=new ArrayList<>();
         try {
+            CompletableFuture.allOf(futureEnrollmentPhaseDetailsPreparation.toArray(new CompletableFuture[0])).join();
+            List<EnrollmentPhaseDetailsDto> enrollmentPhaseDetailsDtoList=new ArrayList<>();
             for (CompletableFuture<EnrollmentPhaseDetailsDto> futureEnrollmentPhaseDetailsDto : futureEnrollmentPhaseDetailsPreparation) enrollmentPhaseDetailsDtoList.add(futureEnrollmentPhaseDetailsDto.get());
+            return enrollmentPhaseDetailsDtoList;
         } catch (InterruptedException | ExecutionException e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt(); // Restore interrupt
                 log.warn("Thread was interrupted while waiting enrollment phase details.", e);
-            } else
-                log.error("Async task to fetch/prepare enrollment phase details failed with error: {}", e.getCause().getMessage(), e.getCause());
-
+            } else log.error("Async task to fetch/prepare enrollment phase details failed with error: {}", e.getCause().getMessage(), e.getCause());
+            return null;
+        } catch (Exception e) {
+            log.error("Async task to fetch/prepare enrollment phase details failed with error: {}", e.getCause().getMessage(), e.getCause());
             return null;
         }
-        return enrollmentPhaseDetailsDtoList;
     }
 
     private EnrollmentPhaseDetailsDto prepareEnrollmentPhaseDetail(EnrollmentPhaseDetails enrollmentPhaseDetails){

@@ -1,9 +1,5 @@
 package in.ac.daiict.deep.service.impl;
 
-import in.ac.daiict.deep.constant.endpoints.StudentEndpoint;
-import in.ac.daiict.deep.constant.response.ResponseMessage;
-import in.ac.daiict.deep.constant.response.ResponseStatus;
-import in.ac.daiict.deep.dto.ResponseDto;
 import in.ac.daiict.deep.entity.CoursePref;
 import in.ac.daiict.deep.entity.SlotPref;
 import in.ac.daiict.deep.entity.StudentReq;

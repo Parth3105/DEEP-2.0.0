@@ -106,12 +106,6 @@ public class DashboardController {
         return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
 
-    @PostMapping(AdminEndpoint.REFRESH_ENROLLMENT_PHASE_DETAILS)
-    public String refreshEnrollmentPhaseDetails(){
-        enrollmentPhaseDetailsService.updateEnrollmentPhaseDetails();
-        return FragmentTemplate.ENROLLMENT_PHASE_DETAILS;
-    }
-
     @GetMapping(AdminEndpoint.FETCH_ENROLLMENT_DETAILS)
     public String fetchEnrollmentPhaseDetails(Model model){
         List<EnrollmentPhaseDetailsDto> enrollmentPhaseDetailsDtoList=enrollmentPhaseDetailsService.fetchDashboardDetails();

@@ -1,7 +1,6 @@
 package in.ac.daiict.deep.controller.admin;
 
 import in.ac.daiict.deep.constant.downloads.AllocationReportNames;
-import in.ac.daiict.deep.constant.template.FragmentTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadConstants;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
 import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
@@ -9,15 +8,12 @@ import in.ac.daiict.deep.constant.response.ResponseMessage;
 import in.ac.daiict.deep.constant.response.ResponseStatus;
 import in.ac.daiict.deep.entity.Upload;
 import in.ac.daiict.deep.service.AllocationReportService;
-import in.ac.daiict.deep.service.AllocationSummaryService;
-import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.UploadService;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,8 +26,6 @@ import java.io.*;
 public class DownloadController {
     private AllocationReportService allocationReportService;
     private UploadService uploadService;
-    private AllocationSummaryService allocationSummaryService;
-    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
 
     private DataLoader dataLoader;
 
@@ -59,13 +53,6 @@ public class DownloadController {
             log.error("I/O operation to download file failed: {}", ioe.getMessage(), ioe);
             httpServletResponse.setStatus(ResponseStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @GetMapping(AdminEndpoint.REFRESH_TERM_DETAILS)
-    public String refreshTermData(Model model){
-        model.addAttribute("downloadTermDetails",enrollmentPhaseDetailsService.fetchAllProgramAndSemester());
-        System.out.println(enrollmentPhaseDetailsService.fetchAllProgramAndSemester());
-        return FragmentTemplate.DOWNLOAD_TERM_DATA_FRAGMENT;
     }
 
     @GetMapping(AdminEndpoint.DOWNLOAD_ALLOCATION_RESULT)

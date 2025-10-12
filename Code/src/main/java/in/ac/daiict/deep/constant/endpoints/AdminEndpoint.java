@@ -11,7 +11,6 @@ public class AdminEndpoint {
     public static final String EXTEND_COLLECTION_PERIOD =ADMIN_BASE+"/extend-period";
     public static final String END_COLLECTION =ADMIN_BASE+"/end-collection";
     public static final String DECLARE_RESULTS=ADMIN_BASE+"/declare-results";
-    public static final String REFRESH_ENROLLMENT_PHASE_DETAILS=ADMIN_BASE+"/admin-dashboard/refresh-details";
     public static final String FETCH_ENROLLMENT_DETAILS=ADMIN_BASE+"/admin-dashboard/enrollment-phase-details";
 
     /// Endpoint related to instance creation.
@@ -20,13 +19,10 @@ public class AdminEndpoint {
     /// Endpoints related to upload data.
     public static final String UPLOAD_DATA_PAGE=ADMIN_BASE+"/upload-data";
     public static final String UPLOAD_DATA=ADMIN_BASE+"/upload-data/{category}";
-    public static final String REFRESH_UPLOAD_STATUS=ADMIN_BASE+"/upload-data/refresh-status";
 
     /// Endpoints related to execute allocation.
     public static final String RUN_ALLOCATION_PAGE=ADMIN_BASE+"/run-allocation";
-//    public static final String EXECUTE_ALLOCATION=ADMIN_BASE+"/execute-allocation/{semester}";
     public static final String EXECUTE_ALLOCATION=ADMIN_BASE+"/run-allocation/execute";
-    public static final String REFRESH_ALLOCATION_SUMMARY=ADMIN_BASE+"/run-allocation/refresh-summary";
 
     /// Endpoints related to download reports.
     public static final String DOWNLOAD_REPORTS=ADMIN_BASE+"/download-reports";
@@ -34,7 +30,6 @@ public class AdminEndpoint {
     public static final String DOWNLOAD_ALLOCATION_RESULT =ADMIN_BASE+"/download-reports/allocation-result";
     public static final String DOWNLOAD_UPLOADED_REPORT=ADMIN_BASE+"/download-reports/{name}";
     public static final String DOWNLOAD_STUDENT_PREFERENCES=ADMIN_BASE+"/download-reports/student-preferences";
-    public static final String REFRESH_TERM_DETAILS=ADMIN_BASE+"/download-reports/refresh-data";
 
     /// Endpoints related to view student-preferences.
     public static final String STUDENT_PREFERENCE=ADMIN_BASE+"/student-preferences";
@@ -46,4 +41,11 @@ public class AdminEndpoint {
 
     /// Endpoints related to FAQs.
     public static final String FAQ=ADMIN_BASE+"/faqs";
+
+    /// Endpoints related to Data-refresh on different pages.
+    public static final String REFRESH_ENROLLMENT_PHASE_DETAILS=ADMIN_BASE+"/refresh-phase-details";
+    public static final String REFRESH_UPLOAD_STATUS=ADMIN_BASE+"/upload-data/refresh-status";
+    public static final String REFRESH_ALLOCATION_SUMMARY=ADMIN_BASE+"/run-allocation/refresh-summary";
+    public static final String REFRESH_TERM_DETAILS=ADMIN_BASE+"/download-reports/refresh-data";
+
 }

@@ -12,7 +12,7 @@ public class InstituteReqPK {
     private int semester;
     private String category;
 
-    /**
+    /*
      * Work of lombok @EqualsAndHashCode (below is a sample)
      */
     /*@Override

@@ -7,7 +7,6 @@ import in.ac.daiict.deep.dto.StudentDto;
 import in.ac.daiict.deep.dto.UploadStatusDto;
 import in.ac.daiict.deep.entity.Student;
 import in.ac.daiict.deep.repository.StudentRepo;
-import in.ac.daiict.deep.service.EnrollmentPhaseDetailsService;
 import in.ac.daiict.deep.service.StudentService;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -34,8 +33,6 @@ public class StudentServiceImpl implements StudentService {
         ResponseDto status=dataLoader.getStudentData(new ByteArrayInputStream(studentData),students);
         if(status.getStatus() != ResponseStatus.OK) return status;
         studentRepo.saveAll(students);
-
-
         return new ResponseDto(ResponseStatus.OK,"Student Data: "+ ResponseMessage.UPLOAD_SUCCESS);
     }
 

@@ -10,7 +10,6 @@ import in.ac.daiict.deep.constant.endpoints.AdminEndpoint;
 import in.ac.daiict.deep.constant.template.AdminTemplate;
 import in.ac.daiict.deep.constant.uploads.UploadFileNames;
 import in.ac.daiict.deep.entity.Upload;
-import in.ac.daiict.deep.entity.User;
 import in.ac.daiict.deep.service.*;
 import in.ac.daiict.deep.config.DBConfig;
 import in.ac.daiict.deep.dto.ResponseDto;
@@ -26,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 @Controller
 @AllArgsConstructor
@@ -39,6 +37,7 @@ public class AllocationInstanceController {
     private UploadService uploadService;
     private InstanceNameService instanceNameService;
     private UserService userService;
+    private EnrollmentPhaseDetailsService enrollmentPhaseDetailsService;
 
     private DBConfig instanceSetupConfig;
     private AppConfig appConfig;
@@ -129,33 +128,15 @@ public class AllocationInstanceController {
         return AdminTemplate.UPLOAD_DATA_PAGE;
     }
 
-    @GetMapping(AdminEndpoint.REFRESH_UPLOAD_STATUS)
-    public String refreshUploadStatus(Model model){
-        CompletableFuture<Void> futureUploadStatusDtoList=CompletableFuture.supplyAsync(() -> studentService.fetchStudentDataUploadStatus())
-                .thenAccept(uploadStatusDtoList ->  model.addAttribute("studentCountTable",uploadStatusDtoList));
-
-        CompletableFuture<Void> futureCourseCnt=CompletableFuture.supplyAsync(() -> courseService.fetchCourseCnt())
-                .thenAccept(courseCnt -> model.addAttribute("courseCount",courseCnt));
-
-        try{
-            CompletableFuture.allOf(futureUploadStatusDtoList,futureCourseCnt).join();
-        }
-        catch (CompletionException ce){
-            log.error("Async task to upload all data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
-            model.addAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-        }
-        return FragmentTemplate.UPLOAD_STATUS_FRAGMENT;
-    }
-
     @PostMapping(AdminEndpoint.UPLOAD_DATA)
     public String saveUploadedFiles(@PathVariable("category") String category, @RequestParam("upload-data") MultipartFile file, Model model){
         if(file.isEmpty()){
-            model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            model.addAttribute("noFileDetected",new ResponseDto(ResponseStatus.BAD_REQUEST,category.toUpperCase()+": "+ResponseMessage.INCOMPATIBLE_FILE_TYPE));
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT;
         }
         if(!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".csv")){
-            model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.INCOMPATIBLE_FILE_TYPE));
-            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            model.addAttribute("unexpectedFileType",new ResponseDto(ResponseStatus.BAD_REQUEST,category.toUpperCase()+": "+ResponseMessage.INCOMPATIBLE_FILE_TYPE));
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT;
         }
         ResponseDto status=null;
         byte[] fileData;
@@ -163,14 +144,18 @@ public class AllocationInstanceController {
             fileData=file.getBytes();
         } catch (IOException ioe){
             log.error("I/O operation to upload/parse {} failed: {}", category, ioe.getMessage(), ioe);
-            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+            model.addAttribute("uploadStatus",new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,category.toUpperCase()+": "+ResponseMessage.UPLOAD_FAILURE));
+            return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT;
         }
 
         String fileName=null;
         switch (category){
             case UploadConstants.STUDENT_DATA -> {
                 status=uploadService.insert(new Upload(UploadFileNames.STUDENT_DATA,fileData));
-                if(status.getStatus()==ResponseStatus.OK) status=studentService.insertAll(fileData);
+                if(status.getStatus()==ResponseStatus.OK){
+                    status=studentService.insertAll(fileData);
+                    CompletableFuture.runAsync(() -> enrollmentPhaseDetailsService.updateEnrollmentPhaseDetails());
+                }
             }
             case UploadConstants.COURSE_DATA -> {
                 status=uploadService.insert(new Upload(UploadFileNames.COURSE_DATA,fileData));
@@ -188,106 +173,6 @@ public class AllocationInstanceController {
         }
 
         model.addAttribute("uploadStatus",status);
-        return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT; // fragments :: uploadStatus instead of model or any other way that helps avoid reloading the whole page.
+        return FragmentTemplate.UPLOAD_STATUS_LOGS_FRAGMENT;
     }
-
-//    @PostMapping(AdminEndpoint.SUBMIT_DATA)
-//    public String saveUploadedFiles(@RequestParam(UploadConstants.STUDENT_DATA) MultipartFile studentData , @RequestParam(UploadConstants.COURSE_DATA) MultipartFile courseData, @RequestParam(UploadConstants.INST_REQ_DATA) MultipartFile instReqData, @RequestParam(UploadConstants.SEAT_MATRIX) MultipartFile courseOfferingData, RedirectAttributes redirectAttributes){
-//        AtomicReference<ResponseDto> errorStatus=new AtomicReference<>(null);
-//        AtomicReference<ResponseDto> warningStatus=new AtomicReference<>(null);
-//        AtomicInteger cnt=new AtomicInteger(0);
-//
-//        // Upload Student Data.
-//        CompletableFuture<Void> uploadStudentData=CompletableFuture.runAsync(()->{
-//            if(!studentData.isEmpty()){
-//                try {
-//                    ResponseDto status = studentService.insertAll(studentData.getBytes());
-//                    if(status.getStatus()!= ResponseStatus.OK) errorStatus.set(status);
-//                    else cnt.set(cnt.get()+1);
-//                } catch (IOException ioe) {
-//                    log.error("I/O operation to upload/parse student-data failed: {}", ioe.getMessage(), ioe);
-//                    redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//                }
-//            }
-//        });
-//
-//        // Upload Course Data and Course Offering Data.
-//        CompletableFuture<Void> uploadCourseAndOfferingData=CompletableFuture.runAsync(() -> {
-//            boolean offersUploadedOnce=courseOfferingService.existsAnyOffer();
-//            boolean isCoursesUploaded=false;
-//            boolean isOffersUploaded=false;
-//            if(!courseData.isEmpty()){
-//                try {
-//                    ResponseDto status = courseService.insertAll(courseData.getBytes());
-//                    if(status.getStatus()!= ResponseStatus.OK) errorStatus.set(status);
-//                    else {
-//                        cnt.set(cnt.get() + 1);
-//                        isCoursesUploaded = true;
-//                    }
-//                } catch (IOException ioe) {
-//                    log.error("I/O operation to upload/parse course-data failed: {}", ioe.getMessage(), ioe);
-//                    redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//                }
-//            }
-//            if(!courseOfferingData.isEmpty()){
-//                try {
-//                    ResponseDto status = courseOfferingService.insertAll(courseOfferingData.getBytes());
-//                    if(status.getStatus()!= ResponseStatus.OK) errorStatus.set(status);
-//                    else {
-//                        cnt.set(cnt.get() + 1);
-//                        isOffersUploaded = true;
-//                    }
-//                } catch (IOException ioe) {
-//                    log.error("I/O operation to upload/parse course-offerings failed: {}", ioe.getMessage(), ioe);
-//                    redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//                }
-//            }
-//            if(isCoursesUploaded && !isOffersUploaded && offersUploadedOnce) warningStatus.set(new ResponseDto(ResponseStatus.WARNING, ResponseMessage.UPLOAD_OFFERS));
-//        });
-//
-//        // Upload Institute Requirements.
-//        CompletableFuture<Void> uploadInstReqData=CompletableFuture.runAsync(() -> {
-//            if(!instReqData.isEmpty()){
-//                try {
-//                    ResponseDto status = instituteReqService.insertAll(instReqData.getBytes());
-//                    if(status.getStatus()!= ResponseStatus.OK) errorStatus.set(status);
-//                    else cnt.set(cnt.get()+1);
-//                } catch (IOException ioe) {
-//                    log.error("I/O operation to upload/parse institute-requirements failed: {}", ioe.getMessage(), ioe);
-//                    redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//                }
-//            }
-//        });
-//
-//        // Saving uploaded Files.
-//        CompletableFuture.runAsync(() -> {
-//            List<Upload> uploads=new ArrayList<>();
-//            try {
-//                if (!studentData.isEmpty()) uploads.add(new Upload(UploadFileNames.STUDENT_DATA, studentData.getBytes()));
-//                if(!courseData.isEmpty()) uploads.add(new Upload(UploadFileNames.COURSE_DATA,courseData.getBytes()));
-//                if(!courseOfferingData.isEmpty()) uploads.add(new Upload(UploadFileNames.SEAT_MATRIX,courseOfferingData.getBytes()));
-//                if(!instReqData.isEmpty()) uploads.add(new Upload(UploadFileNames.INST_REQ_DATA,instReqData.getBytes()));
-//                if(!uploads.isEmpty()) uploadService.insertAll(uploads);
-//            } catch (IOException ioe) {
-//                log.error("I/O operation to save uploaded files failed: {}", ioe.getMessage(), ioe);
-//                redirectAttributes.addFlashAttribute("uploadError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//            }
-//        });
-//
-//        try {
-//            CompletableFuture.allOf(uploadCourseAndOfferingData, uploadInstReqData, uploadStudentData).join();
-//        }catch (CompletionException ce){
-//            log.error("Async task to upload all data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
-//            redirectAttributes.addFlashAttribute("internalServerError", new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,ResponseMessage.INTERNAL_SERVER_ERROR));
-//        }
-//        if(errorStatus.get()!=null) redirectAttributes.addFlashAttribute("uploadError",errorStatus.get());
-//        else if(warningStatus.get()!=null) redirectAttributes.addFlashAttribute("uploadWarning",warningStatus.get());
-//        if(cnt.get()>0) {
-//            ResponseMessage.UPLOAD_COUNT=cnt.get();
-//            redirectAttributes.addFlashAttribute("uploadSuccess", new ResponseDto(ResponseStatus.OK, ResponseMessage.getUploadSuccessMessage()));
-//        }
-//
-//        return "redirect:"+AdminEndpoint.UPDATE_INSTANCE;
-//    }
-
 }

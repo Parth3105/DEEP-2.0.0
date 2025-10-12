@@ -11,8 +11,6 @@ import in.ac.daiict.deep.util.allocation.model.CourseOffer;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.CoursePrefHeader;
 import in.ac.daiict.deep.util.dataloader.DataLoader;
 import in.ac.daiict.deep.util.dataloader.csvHeaders.*;
-import in.ac.daiict.deep.util.dataloader.excelHeaders.ResultSheetHeader;
-import in.ac.daiict.deep.util.dataloader.excelHeaders.SeatSummarySheetHeader;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +18,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -130,9 +124,7 @@ public class CSVDataLoader implements DataLoader {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(courseData));
             for (CSVRecord record : csvParser) {
                 String courseID = record.get(CourseHeader.COURSE_ID.toString()).replaceAll("\\s+", "");
-                ;
                 String courseName = record.get(CourseHeader.NAME.toString()).replaceAll("\\s+", " ");
-                ;
                 String credits = record.get(CourseHeader.CREDITS.toString());
                 String slot = record.get(CourseHeader.SLOT.toString());
 
@@ -172,10 +164,8 @@ public class CSVDataLoader implements DataLoader {
             CSVParser csvParser = getCsvFormatReading().parse(new InputStreamReader(instReqData));
             for (CSVRecord record : csvParser) {
                 String program = record.get(InstituteReqHeader.PROGRAM.toString()).replaceAll("\\s+", " ");
-                ;
                 String semester = record.get(InstituteReqHeader.SEMESTER.toString());
                 String category = record.get(InstituteReqHeader.CATEGORY.toString()).replaceAll("\\s+", " ");
-                ;
                 String count = record.get(InstituteReqHeader.COUNT.toString());
 
                 if (!NumberUtils.isDigits(semester)) {
