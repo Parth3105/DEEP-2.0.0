@@ -6,7 +6,7 @@ export default class DashboardSummaryTable {
     this.registrationPanel = detailsPanel || null;
 
     this.attachViewDetailsHandler();
-    this.refresh();
+    this.pageRefreshReload();
   }
 
   showLoading() {
@@ -23,6 +23,26 @@ export default class DashboardSummaryTable {
     this.tableBody.innerHTML = '';
   }
 
+  pageRefreshReload() {
+    const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    this.showLoading();
+
+    return fetch(`${contextPath}admin/admin-dashboard/enrollment-phase-details`, {
+      method: "GET",
+      headers: { [csrfHeader]: csrfToken }
+    })
+      .then(res => res.text())
+      .then(fragmentHtml => {
+        this.populateFromFragment(fragmentHtml);
+      })
+      .catch(err => {
+        console.error("Page reload failed:", err);
+      });
+  }
+
   refresh() {
     const contextPath = document.querySelector('meta[name="context-path"]').getAttribute('content');
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
@@ -31,19 +51,14 @@ export default class DashboardSummaryTable {
     // Show loading row
     this.showLoading();
 
-    // 🔑 Return promise so caller can chain
-    return fetch(`${contextPath}admin/admin-dashboard/refresh-details`, {
+    // First do POST to refresh backend
+    return fetch(`${contextPath}admin/refresh-phase-details`, {
       method: "POST",
       headers: { [csrfHeader]: csrfToken }
     })
       .then(res => res.text())
-      .then(() => fetch(`${contextPath}admin/admin-dashboard/enrollment-phase-details`, {
-        method: "GET",
-        headers: { [csrfHeader]: csrfToken }
-      }))
-      .then(res => res.text())
-      .then(fragmentHtml => {
-        this.populateFromFragment(fragmentHtml);
+      .then(() => {
+        return this.pageRefreshReload();
       })
       .catch(err => console.error("Refresh failed:", err));
   }
