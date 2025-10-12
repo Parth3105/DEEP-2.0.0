@@ -77,8 +77,11 @@ public class AllocationSystem {
         else if(courses==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.COURSE_DATA_NOT_FOUND);
         else if(openFor==null) return new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.SEAT_MATRIX_NOT_FOUND);
         ResponseDto response=allocationInPhase(unmetReqCnt);
-        saveOutput();
-        return response;
+        ResponseDto allocationSavingResponse=saveOutput();
+
+        if(response.getStatus()!=ResponseStatus.OK) return response;
+        else if(allocationSavingResponse.getStatus()!=ResponseStatus.OK) return allocationSavingResponse;
+        else return response;
     }
 
     /**
@@ -299,10 +302,10 @@ public class AllocationSystem {
         }
     }
 
-    private void saveOutput(){
+    private ResponseDto saveOutput(){
         // record Allocation Results
         CompletableFuture<Void> recordResultAndCreateSheet=CompletableFuture.runAsync(() -> {
-            allocationDataLoader.saveAllocationResult(new ArrayList<>(students.values()));
+            allocationDataLoader.saveAllocationResult(new ArrayList<>(students.values()),program,semester);
             log.info("Allocation Result saved successfully!");
 //            System.out.println("\n\n Allocation Result saved \n\n");
         });
@@ -345,9 +348,12 @@ public class AllocationSystem {
 
         try {
             CompletableFuture.allOf(recordResultAndCreateSheet, recordSeatSummary, recordFailureLog, createAllocationResultSheet, createSeatSummarySheet).join();
-        } catch (CompletionException ce) {
-            log.error("Async task to record result-data failed with error: {}", ce.getCause().getMessage(), ce.getCause());
+        } catch (Exception e) {
+            log.error("Async task to record result-data failed with error: {}", e.getCause().getMessage(), e.getCause());
+            return new ResponseDto(ResponseStatus.INTERNAL_SERVER_ERROR,"Failed to record result-data for "+program+" Sem-"+semester+" with error: "+ e.getMessage());
         }
+
+        return new ResponseDto(ResponseStatus.OK,ResponseMessage.SUCCESS);
     }
 
     private ByteArrayOutputStream getAllocationFailureDetail() {

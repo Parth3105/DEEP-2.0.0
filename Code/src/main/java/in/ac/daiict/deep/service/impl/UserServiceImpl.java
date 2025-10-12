@@ -12,6 +12,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,6 @@ import java.io.*;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private UserRepo userRepo;
@@ -27,6 +28,15 @@ public class UserServiceImpl implements UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Value("${admin.config.mail}") private String adminEmail;
+
+    @Autowired
+    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder, EntityManager entityManager) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.entityManager = entityManager;
+    }
 
     @Override
     public User findUser(String username) {
@@ -46,7 +56,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void resetPassword(String username, String email, String password) {
-        userRepo.save(new User(username,passwordEncoder.encode(password),email));
+        if(email.equals(adminEmail)) userRepo.save(new User(username,passwordEncoder.encode(password),email,"ROLE_ADMIN"));
+        else userRepo.save(new User(username,passwordEncoder.encode(password),email));
     }
 
     @Override

@@ -151,13 +151,13 @@ public class AllocationDataLoader {
         return modelMapper.map(instituteReqs,new TypeToken<List<InstituteRequirement>>(){}.getType());
     }
 
-    public void saveAllocationResult(List<AllocationStudent> allocationStudent){
+    public void saveAllocationResult(List<AllocationStudent> allocationStudent, String program, int semester){
         List<AllocationResult> allocationResultList=new ArrayList<>();
         for(AllocationStudent student:allocationStudent){
             Set<String> allocatedCourses=student.getAllocatedCourses();
             for(String courseId: allocatedCourses) allocationResultList.add(new AllocationResult(student.getSid(),courseId));
         }
-        allocationResultService.bulkInsert(allocationResultList);
+        allocationResultService.bulkInsert(allocationResultList, program, semester);
     }
 
     public void saveSeatSummary(int semester, Map<String,Map<String,Integer>> availableSeats){

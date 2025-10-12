@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Table(name = "users")
 public class User implements Serializable {
     @Id
-    @Column(length = 12)
+    @Column(length = 100)
     private String username;
     @Column
     private String password;

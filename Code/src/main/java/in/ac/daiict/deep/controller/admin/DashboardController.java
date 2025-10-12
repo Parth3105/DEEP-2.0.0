@@ -65,6 +65,7 @@ public class DashboardController {
             return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
         ResponseDto responseDto = enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program, semester, closeDate);
+        if(responseDto.getStatus()==ResponseStatus.OK) responseDto=new ResponseDto(ResponseStatus.OK, "Preference collection period has begun for "+program+" Sem-"+semester+".");
         model.addAttribute("preferenceCollectionWindowStatus", responseDto);
         return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
@@ -78,6 +79,7 @@ public class DashboardController {
             return FragmentTemplate.TOAST_MESSAGE_DETAILS;
         }
         ResponseDto responseDto = enrollmentPhaseDetailsService.updateOnStartingPreferenceCollection(program, semester, closeDate);
+        if(responseDto.getStatus()==ResponseStatus.OK) responseDto=new ResponseDto(ResponseStatus.OK, "Preference collection period has been extended "+program+" Sem-"+semester+".");
         model.addAttribute("preferenceCollectionWindowStatus", responseDto);
         return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }

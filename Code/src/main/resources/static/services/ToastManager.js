@@ -44,7 +44,7 @@ export default class ToastManager {
     const toast = this.createToastElement(message, statusColor);
     // Prepend to container so older toasts are visually on top
     this.container.insertBefore(toast, this.container.firstChild);
-    this.activeToasts.push(toast); // add to the start of array (topmost)
+    this.activeToasts.unshift(toast); // add to the start of array (topmost)
     this.updateToastPositions();
   }
 
@@ -77,7 +77,7 @@ export default class ToastManager {
 
       // If there are queued toasts, show the next one at bottom
       if (this.toastQueue.length > 0) {
-        const nextToast = this.toastQueue.shift();
+        const nextToast = this.toastQueue.pop();
         this.showToastAtBottom(nextToast.message, nextToast.statusColor);
       }
 
@@ -87,7 +87,7 @@ export default class ToastManager {
 
   updateToastPositions() {
     this.activeToasts.forEach((toast, index) => {
-      const offset = (this.activeToasts.length - 1 - index) * 5;
+      const offset = index * 5;
       toast.style.transform = `translate(${offset}px, ${offset}px)`;
       toast.style.zIndex = 100 + (this.activeToasts.length - 1 - index);
     });

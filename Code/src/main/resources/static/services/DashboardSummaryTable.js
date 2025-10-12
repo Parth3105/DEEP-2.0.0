@@ -114,6 +114,19 @@ export default class DashboardSummaryTable {
       `;
       this.tableBody.insertAdjacentHTML("beforeend", rowHtml);
     });
+
+    const savedRowIndex = sessionStorage.getItem("openRowIndex");
+    if (savedRowIndex !== null && this.detailsData[savedRowIndex]) {
+      const savedDataDiv = this.detailsData[savedRowIndex];
+      this.registrationPanel.showDetails(savedDataDiv);
+      this.currentOpenRow = savedRowIndex;
+
+      const savedBtnImg = this.tableBody.querySelector(`.view-details-btn[data-row="${savedRowIndex}"] img`);
+      if (savedBtnImg) {
+        savedBtnImg.src = rightArrow;
+        savedBtnImg.dataset.state = 'right';
+      }
+    }
   }
 
   attachViewDetailsHandler() {
@@ -131,9 +144,11 @@ export default class DashboardSummaryTable {
       if (this.currentOpenRow === rowIndex) {
         this.registrationPanel.hideDetails();
         this.currentOpenRow = null;
+        sessionStorage.removeItem("openRowIndex");
       } else {
         this.registrationPanel.showDetails(dataDiv);
         this.currentOpenRow = rowIndex;
+        sessionStorage.setItem("openRowIndex", rowIndex);
       }
 
       const allBtns = this.tableBody.querySelectorAll('.view-details-btn img');

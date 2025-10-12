@@ -22,8 +22,8 @@ public class AllocationResultServiceImpl implements AllocationResultService {
 
     @Override
     @Transactional
-    public void bulkInsert(List<AllocationResult> allocationResultList) {
-        deleteAll();
+    public void bulkInsert(List<AllocationResult> allocationResultList, String program, int semester) {
+        allocationResultRepo.deleteBasedOnProgramAndSemester(program,semester);
         int batchSize = 100;
 
         for (int i = 0; i < allocationResultList.size(); i++) {
