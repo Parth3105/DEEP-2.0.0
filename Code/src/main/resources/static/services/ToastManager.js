@@ -4,9 +4,8 @@ export default class ToastManager {
   constructor() {
     this.container = document.getElementById("toast-container");
     this.template = document.getElementById("toast-template");
-    this.activeToasts = []; // currently displayed toasts
-    this.toastQueue = [];   // pending toasts
-    this.maxVisible = 3;    // max visible toasts
+    this.toasts = [];
+    this.maxVisible = 3;
   }
 
   printStatusResponse(responseOrStatus, optionalMessage) {
@@ -25,71 +24,59 @@ export default class ToastManager {
     const [statusKey] = statusEntry || [];
     const color = statusColors[status[statusKey]] || 'bg-red-600';
 
-    if (message) this.enqueueToast(message, color);
-    messages.forEach(warn => this.enqueueToast(warn, color));
-    if (!message && messages.length === 0) this.enqueueToast("Unexpected server response.", 'bg-red-600');
+    if (message) this.addToast(message, color);
+    messages.forEach(msg => this.addToast(msg, color));
+    if (!message && messages.length === 0) this.addToast("Unexpected server response.", 'bg-red-600');
   }
 
-  enqueueToast(message, statusColor) {
-    const toastData = { message, statusColor };
-    if (this.activeToasts.length < this.maxVisible) {
-      this.showToastAtBottom(toastData.message, toastData.statusColor);
-    } else {
-      this.toastQueue.push(toastData);
+  addToast(message, statusColor) {
+    // Add new toast at front
+    this.toasts.unshift({ message, statusColor });
+    this.refreshToastDisplay();
+  }
+
+  removeToast(index) {
+    // Remove toast at index
+    if (index >= 0 && index < this.toasts.length) {
+      this.toasts.splice(index, 1);
+      this.refreshToastDisplay();
     }
   }
 
-  // New toasts are added behind (at the bottom)
-  showToastAtBottom(message, statusColor) {
-    const toast = this.createToastElement(message, statusColor);
-    // Prepend to container so older toasts are visually on top
-    this.container.insertBefore(toast, this.container.firstChild);
-    this.activeToasts.unshift(toast); // add to the start of array (topmost)
-    this.updateToastPositions();
-  }
-
-  createToastElement(message, statusColor) {
+  createToastElement(toastData, index) {
     const toast = this.template.cloneNode(true);
     toast.id = '';
     toast.classList.remove("hidden");
-    toast.classList.add("flex", statusColor, "w-[100%]");
+    toast.classList.add("flex", toastData.statusColor, "w-[100%]");
     toast.style.maxWidth = "95%";
-
     toast.style.position = "absolute";
     toast.style.top = "0";
     toast.style.left = "1.5%";
 
     const text = toast.querySelector(".toast-message");
-    text.innerText = message;
+    text.innerText = toastData.message;
 
     const closeBtn = toast.querySelector(".toast-close");
-    closeBtn.addEventListener('click', () => this.removeToast(toast));
+    closeBtn.addEventListener('click', () => this.removeToast(index));
 
     return toast;
   }
 
-  removeToast(toast) {
-    toast.classList.add("opacity-0", "transition-opacity", "duration-500");
-    setTimeout(() => {
-      this.container.removeChild(toast);
-      const removedIndex = this.activeToasts.indexOf(toast);
-      this.activeToasts.splice(removedIndex, 1);
-
-      // If there are queued toasts, show the next one at bottom
-      if (this.toastQueue.length > 0) {
-        const nextToast = this.toastQueue.pop();
-        this.showToastAtBottom(nextToast.message, nextToast.statusColor);
-      }
-
-      this.updateToastPositions();
-    }, 500);
+  refreshToastDisplay() {
+    this.container.innerHTML = "";
+    // Render first maxVisible toasts
+    this.toasts.slice(0, this.maxVisible).forEach((toastData, idx) => {
+      const toastEl = this.createToastElement(toastData, idx);
+      this.container.appendChild(toastEl);
+    });
+    this.updateToastPositions();
   }
 
   updateToastPositions() {
-    this.activeToasts.forEach((toast, index) => {
+    Array.from(this.container.children).forEach((toast, index) => {
       const offset = index * 5;
       toast.style.transform = `translate(${offset}px, ${offset}px)`;
-      toast.style.zIndex = 100 + (this.activeToasts.length - 1 - index);
+      toast.style.zIndex = 100 + (this.maxVisible - 1 - index);
     });
   }
 }

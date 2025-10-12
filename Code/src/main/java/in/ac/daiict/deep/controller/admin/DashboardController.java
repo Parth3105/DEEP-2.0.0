@@ -72,8 +72,6 @@ public class DashboardController {
 
     @PostMapping(AdminEndpoint.EXTEND_COLLECTION_PERIOD)
     public String extendCollectionPeriod(@RequestParam("program") String program, @RequestParam("semester") int semester, @RequestParam("close-date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate closeDate, Model model){
-        System.out.println("Reached");
-
         if(!enrollmentPhaseDetailsService.fetchCollectionWindowState(program,semester).equalsIgnoreCase(CollectionWindowStateEnum.OPEN.toString())){
             model.addAttribute("notExtendable",new ResponseDto(ResponseStatus.BAD_REQUEST,ResponseMessage.CANNOT_EXTEND_PERIOD));
             return FragmentTemplate.TOAST_MESSAGE_DETAILS;
@@ -86,8 +84,6 @@ public class DashboardController {
 
     @PostMapping(AdminEndpoint.END_COLLECTION)
     public String endCollection(@RequestParam("program") String program, @RequestParam("semester") int semester, Model model){
-        System.out.println(program);
-        System.out.println(semester);
         enrollmentPhaseDetailsService.updateOnEndingPreferenceCollection(program,semester);
         return FragmentTemplate.TOAST_MESSAGE_DETAILS;
     }
