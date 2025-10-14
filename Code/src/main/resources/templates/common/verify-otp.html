@@ -39,59 +39,71 @@
 
             <!-- 6-Digit OTP Input Boxes -->
             <div class="relative z-0 w-full mb-5 group">
-              <div class="flex justify-between space-x-2">
+              <div class="flex flex-wrap justify-center gap-2 sm:gap-4">
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="0"
                 />
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="1"
                 />
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="2"
                 />
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="3"
                 />
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="4"
                 />
                 <input
-                        type="text"
+                        type="number"
                         maxlength="1"
                         autocomplete="off"
-                        class="otp-input w-12 h-12 text-center text-lg font-semibold border-2 border-black rounded-lg
+                        class="otp-input w-8 h-8 md:w-12 md:h-12 text-center text-base sm:text-lg font-semibold border-2 border-black rounded-lg
                                focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500
-                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                               dark:border-gray-600 dark:focus:border-blue-500 dark:focus:ring-blue-500 appearance-none
+                              [&::-webkit-outer-spin-button]:appearance-none
+                              [&::-webkit-inner-spin-button]:appearance-none"
                         data-index="5"
                 />
               </div>
@@ -153,7 +165,6 @@
 </script>
 
 <script type="module" th:src="@{/utils/general-utility.js}"></script>
-<script th:src="@{/utils/status-response.js}"></script>
 <script type="module" th:src="@{/student/js/verify-otp.js}"></script>
 </body>
 </html>
