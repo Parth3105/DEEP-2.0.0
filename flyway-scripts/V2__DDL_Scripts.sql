@@ -1,31 +1,31 @@
 CREATE TABLE students (
     sid VARCHAR(12) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    program VARCHAR(10) NOT NULL,
+    program VARCHAR(100) NOT NULL,
     semester INTEGER NOT NULL,
     has_enrolled BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE courses (
-    cid VARCHAR(10) PRIMARY KEY,
+    cid VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     credits INTEGER NOT NULL,
     slot VARCHAR(4) NOT NULL
 );
 
 CREATE TABLE institute_reqs (
-    program VARCHAR(10),
+    program VARCHAR(100),
     semester INTEGER,
-    category VARCHAR(10),
+    category VARCHAR(100),
     course_cnt INTEGER NOT NULL,
     PRIMARY KEY (program, semester, category)
 );
 
 CREATE TABLE course_offerings (
-    cid VARCHAR(10),
-    program VARCHAR(10),
+    cid VARCHAR(20),
+    program VARCHAR(100),
     semester INTEGER,
-    category VARCHAR(10) NOT NULL,
+    category VARCHAR(100) NOT NULL,
     seats INTEGER NOT NULL,
     PRIMARY KEY (cid, program, semester),
     FOREIGN KEY (cid) REFERENCES courses(cid) ON DELETE CASCADE
@@ -33,7 +33,7 @@ CREATE TABLE course_offerings (
 
 CREATE TABLE student_reqs (
     sid VARCHAR(12),
-    category VARCHAR(10),
+    category VARCHAR(100),
     course_cnt INTEGER NOT NULL,
     PRIMARY KEY (sid, category),
     FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE
@@ -51,7 +51,7 @@ CREATE TABLE course_prefs (
     sid VARCHAR(12),
     slot VARCHAR(4),
     pref INTEGER,
-    cid VARCHAR(10),
+    cid VARCHAR(20),
     PRIMARY KEY (sid, slot, pref),
     FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,
     FOREIGN KEY (cid) REFERENCES courses(cid) ON DELETE CASCADE
@@ -59,15 +59,15 @@ CREATE TABLE course_prefs (
 
 CREATE TABLE allocation_results (
     sid VARCHAR(12),
-    cid VARCHAR(10),
+    cid VARCHAR(20),
     PRIMARY KEY (sid, cid),
     FOREIGN KEY (sid) REFERENCES students(sid) ON DELETE CASCADE,
     FOREIGN KEY (cid) REFERENCES courses(cid) ON DELETE CASCADE
 );
 
 CREATE TABLE seat_summary (
-    cid VARCHAR(10),
-    program VARCHAR(10),
+    cid VARCHAR(20),
+    program VARCHAR(100),
     semester INTEGER,
     available_seats INTEGER,
     PRIMARY KEY (cid, program, semester),
@@ -81,7 +81,7 @@ CREATE TABLE uploads(
 
 CREATE TABLE allocation_reports(
     name VARCHAR(100),
-	program VARCHAR(10),
+	program VARCHAR(100),
     semester INTEGER,
     file BYTEA NOT NULL,
     PRIMARY KEY(name,program,semester)
@@ -101,7 +101,7 @@ CREATE TABLE otp_verification (
 );
 
 CREATE TABLE enrollment_phase_details (
-	program VARCHAR(10),
+	program VARCHAR(100),
 	semester INTEGER,
 	enrollment_phase VARCHAR(100) NOT NULL,
 	collection_window_state VARCHAR(100) NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE enrollment_phase_details (
 );
 
 CREATE TABLE allocation_summary(
-	program VARCHAR(10),
+	program VARCHAR(100),
     semester INTEGER,
     allocated_count INTEGER NOT NULL,
     unallocated_count INTEGER NOT NULL,
