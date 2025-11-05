@@ -21,7 +21,7 @@ public class AllocationReport {
     private String name;
 
     @Id
-    @Column(length = 10, nullable = false)
+    @Column(length = 100, nullable = false)
     private String program;
 
     @Id

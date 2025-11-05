@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @IdClass(EnrollmentPhaseDetailsPK.class)
 public class EnrollmentPhaseDetails {
     @Id
-    @Column(length = 10, nullable = false)
+    @Column(length = 100, nullable = false)
     private String program;
 
     @Id

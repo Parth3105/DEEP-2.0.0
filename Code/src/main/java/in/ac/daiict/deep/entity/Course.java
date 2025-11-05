@@ -19,7 +19,7 @@ import lombok.Setter;
 public class Course {
     @Id
     @NotBlank(message = "Course Data: Course-ID should not be blank.")
-    @Column(length = 10)
+    @Column(length = 20)
     private String cid;
 
     @NotBlank(message = "Course Data: Course-name should not be blank.")

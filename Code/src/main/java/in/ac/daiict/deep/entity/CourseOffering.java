@@ -19,12 +19,12 @@ import lombok.*;
 public class CourseOffering {
     @Id
     @NotBlank(message = "Seat Matrix: Program field should not be blank.")
-    @Column(length = 10)
+    @Column(length = 100)
     private String program;
 
     @Id
     @NotBlank(message = "Seat Matrix: Course-ID should not be blank.")
-    @Column(length = 10)
+    @Column(length = 20)
     private String cid;
 
     @Id
@@ -32,7 +32,7 @@ public class CourseOffering {
     private int semester;
 
     @NotBlank(message = "Seat Matrix: Category field should not be blank.")
-    @Column(length = 10, nullable = false)
+    @Column(length = 100, nullable = false)
     private String category;
 
     @PositiveOrZero(message = "Seat Matrix: seats >= 0")

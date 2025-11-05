@@ -22,7 +22,7 @@ public class StudentReq {
     private String sid;
 
     @Id
-    @Column(length = 10)
+    @Column(length = 100)
     private String category;
 
     @PositiveOrZero(message = "Student Requirement: Course-count >= 0")

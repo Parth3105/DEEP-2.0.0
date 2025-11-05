@@ -17,7 +17,7 @@ import lombok.*;
 public class Student {
     @Id
     @Size(min = 9, max = 9, message = "Student Data: Student-ID should contain 9 digits. For ex. 20220XXXX.")
-    @Column(length = 9)
+    @Column(length = 12)
     private String sid;
 
     @NotBlank(message = "Student Data: Student-name should not be blank.")
@@ -26,8 +26,8 @@ public class Student {
     private String name;
 
     @NotBlank(message = "Student Data: Program field should not be blank.")
-    @Size(max = 10, message = "Student Data: Program must be within 10 characters.")
-    @Column(length = 10, nullable = false)
+    @Size(max = 100, message = "Student Data: Program must be within 10 characters.")
+    @Column(length = 100, nullable = false)
     private String program;
 
     @Positive(message = "Student Data: Semester > 0") @Max(value = 8, message = "Student Data: Semester <= 8")

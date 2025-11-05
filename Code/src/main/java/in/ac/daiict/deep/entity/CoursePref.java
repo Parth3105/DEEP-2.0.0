@@ -31,6 +31,6 @@ public class CoursePref {
     private int pref;
 
     @NotBlank(message = "Course-Preference: Course-ID should not be blank.")
-    @Column(length = 10)
+    @Column(length = 20)
     private String cid;
 }

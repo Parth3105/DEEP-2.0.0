@@ -20,6 +20,6 @@ public class AllocationResult {
     @Column(length = 12)
     private String sid;
     @Id
-    @Column(length = 10)
+    @Column(length = 20)
     private String cid;
 }

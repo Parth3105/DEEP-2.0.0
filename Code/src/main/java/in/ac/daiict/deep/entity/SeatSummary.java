@@ -17,10 +17,10 @@ import lombok.Setter;
 @IdClass(SeatSummaryPK.class)
 public class SeatSummary {
     @Id
-    @Column(length = 10)
+    @Column(length = 20)
     private String cid;
     @Id
-    @Column(length = 10)
+    @Column(length = 100)
     private String program;
     @Id
     private int semester;

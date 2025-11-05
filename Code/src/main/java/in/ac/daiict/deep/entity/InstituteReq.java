@@ -22,7 +22,7 @@ import lombok.Setter;
 public class InstituteReq {
     @Id
     @NotBlank(message = "Institute Requirements: Program field should not be blank.")
-    @Column(length = 10)
+    @Column(length = 100)
     private String program;
 
     @Id
@@ -31,7 +31,7 @@ public class InstituteReq {
 
     @Id
     @NotBlank(message = "Institute Requirements: Category field should not be blank.")
-    @Column(length = 10)
+    @Column(length = 100)
     private String category;
 
     @PositiveOrZero(message = "Institute Requirements: Course-count >= 0")
